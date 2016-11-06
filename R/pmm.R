@@ -20,7 +20,7 @@ pmm <- function(xtrain, xtest, ytrain, k = 1) {
     xtrain <- as.numeric(factor(xtrain, levels = lvl))
     xtest <- as.numeric(factor(xtest, levels = lvl))
   }
-  nn <- knnx.index(data.frame(x = xtrain), data.frame(x = xtest), k)
-  take <- t(rmultinom(length(xtest), 1, rep(1, k)))
+  nn <- FNN::knnx.index(data.frame(x = xtrain), data.frame(x = xtest), k)
+  take <- t(stats::rmultinom(length(xtest), 1, rep(1, k)))
   ytrain[rowSums(nn*take)]
 }
