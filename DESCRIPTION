@@ -1,17 +1,19 @@
 Package: missRanger
 Type: Package
 Title: Imputation by Chained Random Forests
-Version: 0.1
-Date: 2016-10-05
-Author: Michael Mayer
+Version: 0.1.1
+Date: 2016-11-06
+Author: Michael Mayer <michael.mayer@consultag.ch>
 Maintainer: Michael Mayer <michael.mayer@consultag.ch>
-Description: Fast but less flexible version of the \code{missForest} package based on \code{ranger} (a fast implementation of random forests called "random jungle"). Between the iterative model fitting, we offer
-    predictive mean matching to add extra variability and to avoid imputation by values not already being present in the data set.
+Description: Fast version of the \code{missForest} package based on \code{ranger} (a fast implementation of random forests called "random jungle"). We offer
+    the option of predictive mean matching to add extra variability regarding multiple imputations and to avoid imputation by values not already being present in the data.
+Depends:
+    R (>= 3.3)
 Imports:
   stats,
   Rcpp,
-  ranger,
+  ranger (>= 0.5.0),
   FNN
-License: GPL-2
+License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1

@@ -12,7 +12,6 @@
 #'
 #' @examples pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1)
 pmm <- function(xtrain, xtest, ytrain, k = 1) {
-  require(FNN)
   stopifnot(length(xtrain) == length(ytrain), k >= 1L)
   if (is.factor(xtrain) || is.character(xtrain)) {
     xtrain <- as.character(xtrain)

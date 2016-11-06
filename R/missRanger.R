@@ -28,7 +28,6 @@
 #' head(iris)
 missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL) {
   cat("\nMissing value imputation by chained random forests\n")
-  require(ranger)
   if (!is.null(seed)) {
     set.seed(seed)
   }
@@ -47,7 +46,8 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
   }
   frac <- min(1, n.max/nrow(data))
   k <- 1
-  predError <- setNames(rep(1, length(visit.seq)), visit.seq)
+  predError <- rep(1, length(visit.seq))
+  names(predError) <- visit.seq
   crit <- TRUE
   completed <- setdiff(allVars, visit.seq)
   while (crit && k <= maxiter) {
@@ -61,7 +61,7 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
       } else {
         #factorHandling <- if (is.numeric(data[, v]) || is.factor(data[, v]) && length(levels(data[, v])) <= 2) "order" else "ignore"
         factorHandling <- "ignore"
-        fit <- ranger(reformulate(completed, response = v), data = data[!v.na, allVars], num.trees = 100,
+        fit <- ranger(stats::reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
                       sample.fraction = frac, write.forest = TRUE, respect.unordered.factors = factorHandling)
 
         pred <- predict(fit, data[v.na, allVars])$predictions
