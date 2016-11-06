@@ -61,7 +61,7 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
       } else {
         #factorHandling <- if (is.numeric(data[, v]) || is.factor(data[, v]) && length(levels(data[, v])) <= 2) "order" else "ignore"
         factorHandling <- "ignore"
-        fit <- ranger(stats::reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
+        fit <- ranger(reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
                       sample.fraction = frac, write.forest = TRUE, respect.unordered.factors = factorHandling)
 
         pred <- predict(fit, data[v.na, allVars])$predictions
