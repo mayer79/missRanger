@@ -1,4 +1,7 @@
 #' Missing Values Imputation by Chained Random Forests
+#' 
+#' @importFrom stats var reformulate
+#' @importFrom ranger ranger
 #'
 #' @description Uses the `ranger` package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
 #' Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids the imputation
@@ -61,12 +64,11 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
       } else {
         #factorHandling <- if (is.numeric(data[, v]) || is.factor(data[, v]) && length(levels(data[, v])) <= 2) "order" else "ignore"
         factorHandling <- "ignore"
-        fit <- ranger::ranger(stats::reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
+        fit <- ranger(reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
                       sample.fraction = frac, write.forest = TRUE, respect.unordered.factors = factorHandling)
-
-        pred <- ranger:::predict.ranger(fit, data[v.na, allVars])$predictions
+        pred <- predict(fit, data[v.na, allVars])$predictions
         data[v.na, v] <- if (pmm.k) pmm(fit$predictions, pred, data[!v.na, v], pmm.k) else pred
-        predError[[v]] <- fit$prediction.error/(if (fit$treetype == "Regression") stats::var(data[!v.na, v]) else 1)
+        predError[[v]] <- fit$prediction.error/(if (fit$treetype == "Regression") var(data[!v.na, v]) else 1)
         if (is.nan(predError[[v]])) {
           predError[[v]] <- 0
         }

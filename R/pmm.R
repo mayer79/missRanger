@@ -1,4 +1,6 @@
 #' Predictive Mean Matching
+#' 
+#' @importFrom stats rmultinom
 #'
 #' @description This function is used internally only but might help others to implement an efficient way of doing predictive mean matching on top of any prediction based missing value imputation. It works as follows:
 #' For each predicted value of a vector \code{xtest}, the closest \code{k} predicted values of another vector \code{xtrain} are identified by k-nearest neighbour. Then, one of those neighbours are randomly picked and its corresponding observed value in \code{ytrain} is returned.
@@ -21,6 +23,6 @@ pmm <- function(xtrain, xtest, ytrain, k = 1) {
     xtest <- as.numeric(factor(xtest, levels = lvl))
   }
   nn <- FNN::knnx.index(data.frame(x = xtrain), data.frame(x = xtest), k)
-  take <- t(stats::rmultinom(length(xtest), 1, rep(1, k)))
+  take <- t(rmultinom(length(xtest), 1, rep(1, k)))
   ytrain[rowSums(nn*take)]
 }
