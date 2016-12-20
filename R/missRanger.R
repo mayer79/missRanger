@@ -36,7 +36,7 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
   }
   allVars <- names(which(sapply(data, function(z) (is.factor(z) || is.numeric(z)) && any(!is.na(z)))))
   if (length(allVars) < ncol(data)) {
-    cat("\n  Variables ignored in imputation: ")
+    cat("\n  Variables ignored in imputation (wrong data type or all values missing: ")
     cat(setdiff(names(data), allVars), sep = ", ")
   }
   stopifnot(length(allVars) > 1)
@@ -81,5 +81,5 @@ missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL
     crit <- mean(predError) < mean(predErrorLast)
   }
   cat("\n")
-  if (k == maxiter && crit) data else data.last
+  if (k == 2 || k == maxiter && crit) data else data.last
 }
