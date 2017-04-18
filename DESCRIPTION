@@ -1,8 +1,8 @@
 Package: missRanger
 Type: Package
 Title: Imputation by Chained Random Forests
-Version: 0.1.2
-Date: 2016-12-20
+Version: 0.1.3
+Date: 2017-04-18
 Author: Michael Mayer <michael.mayer@consultag.ch>
 Maintainer: Michael Mayer <michael.mayer@consultag.ch>
 Description: Fast version of the \code{missForest} package based on \code{ranger} (a fast implementation of random forests called "random jungle"). We offer
@@ -15,4 +15,4 @@ Imports:
   FNN
 License: GPL-3
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

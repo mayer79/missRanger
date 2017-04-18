@@ -29,57 +29,75 @@
 #' head(irisImputed)
 #' head(irisWithNA)
 #' head(iris)
-missRanger <- function(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL) {
+missRanger <- function(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NULL) {
   cat("Missing value imputation by chained random forests")
+  
   if (!is.null(seed)) {
     set.seed(seed)
   }
+  
   allVars <- names(which(sapply(data, function(z) (is.factor(z) || is.numeric(z)) && any(!is.na(z)))))
+  
   if (length(allVars) < ncol(data)) {
     cat("\n  Variables ignored in imputation (wrong data type or all values missing: ")
     cat(setdiff(names(data), allVars), sep = ", ")
   }
-  stopifnot(length(allVars) > 1)
+  
+  stopifnot(length(allVars) > 1L)
+  
   data.na <- is.na(data[, allVars, drop = FALSE])
 
   count.seq <- sort(colMeans(data.na))
   visit.seq <- names(count.seq)[count.seq > 0]
+  
   if (!length(visit.seq)) {
     return(data)
   }
-  frac <- min(1, n.max/nrow(data))
-  k <- 1
+  
+  frac <- min(1, n.max / nrow(data))
+  k <- 1L
   predError <- rep(1, length(visit.seq))
   names(predError) <- visit.seq
   crit <- TRUE
   completed <- setdiff(allVars, visit.seq)
+  
   while (crit && k <= maxiter) {
     cat("\n  missRanger iteration ", k, ":", sep = "")
     data.last <- data
     predErrorLast <- predError
+    
     for (v in visit.seq) {
       v.na <- data.na[, v]
-      if (length(completed) == 0) {
+      
+      if (length(completed) == 0L) {
         data[, v] <- imputeUnivariate(data[, v])
       } else {
         #factorHandling <- if (is.numeric(data[, v]) || is.factor(data[, v]) && length(levels(data[, v])) <= 2) "order" else "ignore"
         factorHandling <- "ignore"
-        fit <- ranger::ranger(stats::reformulate(completed, response = v), data = data[!v.na, union(v, completed)], num.trees = 100,
-                      sample.fraction = frac, write.forest = TRUE, respect.unordered.factors = factorHandling)
-        pred <- stats::predict(fit, data[v.na, allVars])$predictions
+        fit <- ranger(reformulate(completed, response = v), 
+                      data = data[!v.na, union(v, completed)], 
+                      num.trees = 100,
+                      sample.fraction = frac, 
+                      write.forest = TRUE, 
+                      respect.unordered.factors = factorHandling)
+        pred <- predict(fit, data[v.na, allVars])$predictions
         data[v.na, v] <- if (pmm.k) pmm(fit$predictions, pred, data[!v.na, v], pmm.k) else pred
-        predError[[v]] <- fit$prediction.error/(if (fit$treetype == "Regression") stats::var(data[!v.na, v]) else 1)
+        predError[[v]] <- fit$prediction.error / (if (fit$treetype == "Regression") var(data[!v.na, v]) else 1)
+        
         if (is.nan(predError[[v]])) {
           predError[[v]] <- 0
         }
       }
+      
       completed <- union(completed, v)
       cat(".")
     }
+    
     cat("done")
-    k <- k + 1
+    k <- k + 1L
     crit <- mean(predError) < mean(predErrorLast)
   }
+  
   cat("\n")
-  if (k == 2 || k == maxiter && crit) data else data.last
+  if (k == 2L || (k == maxiter && crit)) data else data.last
 }

@@ -4,7 +4,7 @@
 \alias{missRanger}
 \title{Missing Values Imputation by Chained Random Forests}
 \usage{
-missRanger(data, n.max = 10000, maxiter = 10, pmm.k = 0, seed = NULL)
+missRanger(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NULL)
 }
 \arguments{
 \item{data}{A \code{data.frame} with missing values to impute.}
@@ -41,4 +41,3 @@ head(iris)
 
 [3] Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 }
-

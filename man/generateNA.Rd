@@ -20,4 +20,3 @@ Takes a data frame and replaces randomly part of the values by missing values. T
 \examples{
 head(generateNA(iris))
 }
-

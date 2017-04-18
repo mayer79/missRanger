@@ -10,6 +10,6 @@
 #' @examples head(generateNA(iris))
 generateNA <- function(data, p = 0.1) {
   n <- nrow(data)
-  data[] <- lapply(data, function(z) {z[sample(n, floor(n*p))] <- NA; z})
+  data[] <- lapply(data, function(z) {z[sample(n, floor(n * p))] <- NA; z})
   data
 }

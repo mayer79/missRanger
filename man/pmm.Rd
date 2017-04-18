@@ -4,7 +4,7 @@
 \alias{pmm}
 \title{Predictive Mean Matching}
 \usage{
-pmm(xtrain, xtest, ytrain, k = 1)
+pmm(xtrain, xtest, ytrain, k = 1L)
 }
 \arguments{
 \item{xtrain}{Vector with predicted values in the training data set.}
@@ -25,4 +25,3 @@ For each predicted value of a vector \code{xtest}, the closest \code{k} predicte
 \examples{
 pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1)
 }
-

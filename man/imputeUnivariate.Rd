@@ -19,4 +19,3 @@ Fills missing values of a vector of any type by sampling with replacement from t
 imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 }
-

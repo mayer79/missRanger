@@ -1,6 +1,7 @@
 #' Predictive Mean Matching
 #' 
 #' @importFrom stats rmultinom
+#' @importFrom FNN knnx.index
 #'
 #' @description This function is used internally only but might help others to implement an efficient way of doing predictive mean matching on top of any prediction based missing value imputation. It works as follows:
 #' For each predicted value of a vector \code{xtest}, the closest \code{k} predicted values of another vector \code{xtrain} are identified by k-nearest neighbour. Then, one of those neighbours are randomly picked and its corresponding observed value in \code{ytrain} is returned.
@@ -13,8 +14,9 @@
 #' @export
 #'
 #' @examples pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1)
-pmm <- function(xtrain, xtest, ytrain, k = 1) {
+pmm <- function(xtrain, xtest, ytrain, k = 1L) {
   stopifnot(length(xtrain) == length(ytrain), k >= 1L)
+  # join factor levels in xtest and xtrain and represent them as numerics
   if (is.factor(xtrain) || is.character(xtrain)) {
     xtrain <- as.character(xtrain)
     xtest  <- as.character(xtest)
@@ -23,7 +25,7 @@ pmm <- function(xtrain, xtest, ytrain, k = 1) {
     xtest <- as.numeric(factor(xtest, levels = lvl))
   }
   k <- min(k, length(xtrain))
-  nn <- FNN::knnx.index(data.frame(x = xtrain), data.frame(x = xtest), k)
+  nn <- knnx.index(data.frame(x = xtrain), data.frame(x = xtest), k)
   take <- t(rmultinom(length(xtest), 1, rep(1, k)))
-  ytrain[rowSums(nn*take)]
+  ytrain[rowSums(nn * take)]
 }
