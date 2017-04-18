@@ -23,8 +23,15 @@ head(iris)
 ```
 
 ## Installation
-library(devtools)
+Just install from github through `devtools'.
+
+```
+# install.packages(devtools)
+library(devtools) 
 install_github("mayer79/missRanger")
+```
+
+## References
 
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
 
