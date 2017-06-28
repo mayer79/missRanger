@@ -21,8 +21,17 @@ head(irisImputed)
 head(irisWithNA)
 head(iris)
 ```
-## Warning
-The newest version uses default hyperparameters of `ranger`. Better use lower `num.trees` or `sample.fraction` if the data set is larger than a few hundereds lines.
+
+## Changes in Version 0.1.3
+Now uses defaults of `ranger`. They can be changed by passing additional arguments to `missRanger`:
+
+```
+# Impute by chained extratrees, each with 200 trees.
+irisWithNA <- generateNA(iris)
+head(irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 200, splitrule = "extratrees"))
+```
+
+Hint: If the data set is larger than a few hundereds lines, better decrease `num.trees` and/or `sample.fraction`.
 
 ## Installation
 Just install from github through `devtools'.
