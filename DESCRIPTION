@@ -11,7 +11,7 @@ Depends:
     R (>= 3.3)
 Imports:
   stats,
-  ranger (>= 0.5.0),
+  ranger (>= 0.6.0),
   FNN
 License: GPL-3
 LazyData: TRUE

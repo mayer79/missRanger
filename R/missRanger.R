@@ -9,10 +9,12 @@
 #' matching tries to raise the variance in the resulting conditional distributions to a realistic level.
 #' This would allow e.g. to do multiple imputation when repeating the call to `missRanger'.
 #' @param data A \code{data.frame} with missing values to impute.
-#' @param n.max Maximum size of bootstrap samples in the bagging steps of the random forests.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param pmm.k Number of candidate non-missing values to sample from in the predictive mean matching step. Use \code{pmm.k = 0} to avoid this step.
 #' @param seed Integer seed to initialize the random generator.
+#' @param ... Arguments passed to \code{ranger}. Don't use \code{formula}, \code{data} or \code{seed}. They are already handled by the algorithm. Not
+#'        all \code{ranger} options do make sense (e.g. \code{write.forest = FALSE} will cause the algorithm to crash.
+#'        If the data set is large, better use less trees \code{num.trees = 100} and/or a low value of \code{sample.fraction}. 
 #'
 #' @return A \code{data.frame} as \code{data} but with imputed missing values.
 #' @references
@@ -29,7 +31,7 @@
 #' head(irisImputed)
 #' head(irisWithNA)
 #' head(iris)
-missRanger <- function(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NULL) {
+missRanger <- function(data, maxiter = 10L, pmm.k = 0, seed = NULL, ...) {
   cat("Missing value imputation by chained random forests")
   
   if (!is.null(seed)) {
@@ -44,9 +46,7 @@ missRanger <- function(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NUL
   }
   
   stopifnot(length(allVars) > 1L)
-  
   data.na <- is.na(data[, allVars, drop = FALSE])
-
   count.seq <- sort(colMeans(data.na))
   visit.seq <- names(count.seq)[count.seq > 0]
   
@@ -54,7 +54,6 @@ missRanger <- function(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NUL
     return(data)
   }
   
-  frac <- min(1, n.max / nrow(data))
   k <- 1L
   predError <- rep(1, length(visit.seq))
   names(predError) <- visit.seq
@@ -72,14 +71,9 @@ missRanger <- function(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NUL
       if (length(completed) == 0L) {
         data[, v] <- imputeUnivariate(data[, v])
       } else {
-        #factorHandling <- if (is.numeric(data[, v]) || is.factor(data[, v]) && length(levels(data[, v])) <= 2) "order" else "ignore"
-        factorHandling <- "ignore"
-        fit <- ranger(reformulate(completed, response = v), 
-                      data = data[!v.na, union(v, completed)], 
-                      num.trees = 100,
-                      sample.fraction = frac, 
-                      write.forest = TRUE, 
-                      respect.unordered.factors = factorHandling)
+        fit <- ranger(formula = reformulate(completed, response = v), 
+                      data = data[!v.na, union(v, completed)],
+                      ...)
         pred <- predict(fit, data[v.na, allVars])$predictions
         data[v.na, v] <- if (pmm.k) pmm(fit$predictions, pred, data[!v.na, v], pmm.k) else pred
         predError[[v]] <- fit$prediction.error / (if (fit$treetype == "Regression") var(data[!v.na, v]) else 1)

@@ -4,18 +4,20 @@
 \alias{missRanger}
 \title{Missing Values Imputation by Chained Random Forests}
 \usage{
-missRanger(data, n.max = 10000, maxiter = 10L, pmm.k = 0, seed = NULL)
+missRanger(data, maxiter = 10L, pmm.k = 0, seed = NULL, ...)
 }
 \arguments{
 \item{data}{A \code{data.frame} with missing values to impute.}
-
-\item{n.max}{Maximum size of bootstrap samples in the bagging steps of the random forests.}
 
 \item{maxiter}{Maximum number of chaining iterations.}
 
 \item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching step. Use \code{pmm.k = 0} to avoid this step.}
 
 \item{seed}{Integer seed to initialize the random generator.}
+
+\item{...}{Arguments passed to \code{ranger}. Don't use \code{formula}, \code{data} or \code{seed}. They are already handled by the algorithm. Not
+all \code{ranger} options do make sense (e.g. \code{write.forest = FALSE} will cause the algorithm to crash.
+If the data set is large, better use less trees \code{num.trees = 100} and/or a low value of \code{sample.fraction}.}
 }
 \value{
 A \code{data.frame} as \code{data} but with imputed missing values.

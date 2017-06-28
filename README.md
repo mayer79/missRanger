@@ -21,6 +21,8 @@ head(irisImputed)
 head(irisWithNA)
 head(iris)
 ```
+## Warning
+The newest version uses default hyperparameters of `ranger`. Better use lower `num.trees` or `sample.fraction` if the data set is larger than a few hundereds lines.
 
 ## Installation
 Just install from github through `devtools'.
