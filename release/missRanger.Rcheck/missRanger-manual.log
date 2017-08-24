@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.12.20)  24 AUG 2017 11:39
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.12.20)  24 AUG 2017 16:41
 entering extended mode
-**C:/Users/MMA/AppData/Local/Temp/Rtmp4OkVse/Rd2pdf2bf82db34ff8/Rd2.tex
-(C:/Users/MMA/AppData/Local/Temp/Rtmp4OkVse/Rd2pdf2bf82db34ff8/Rd2.tex
+**C:/Users/MMA/AppData/Local/Temp/RtmpMtChuo/Rd2pdf2a785e257c90/Rd2.tex
+(C:/Users/MMA/AppData/Local/Temp/RtmpMtChuo/Rd2pdf2a785e257c90/Rd2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -626,7 +626,7 @@ Now handling font encoding PD1 ...
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.aux)
+(C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -681,8 +681,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.out)
-(C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.out)
+(C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.out)
+(C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -707,13 +707,13 @@ File: t1zi4.fd 2016/12/29 T1/zi4 (Inconsolata)
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
 (Font)              scaled to size 10.0pt on input line 28.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 30.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 30.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 32.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 32.
 
 (C:\PROGRA~3\Latex\tex\latex\psnfss\t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.toc
+(C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -728,14 +728,14 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 
 {C:/PROGRA~3/Latex/pdftex/config/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 59.
+(Font)              scaled to size 9.0pt on input line 61.
  (C:\PROGRA~3\Latex\tex\latex\base\utf8.def
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
 (C:\PROGRA~3\Latex\tex\latex\base\utf8.def
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [2]
-Overfull \hbox (22.66647pt too wide) in paragraph at lines 132--133
+Overfull \hbox (22.66647pt too wide) in paragraph at lines 134--135
 \T1/ptm/m/n/10 Di-men-sional Data in C++ and R. Jour-nal of Sta-tis-ti-cal Soft
 -ware, in press. http://arxiv.org/abs/1508.04409. 
  []
@@ -743,19 +743,19 @@ Overfull \hbox (22.66647pt too wide) in paragraph at lines 132--133
 (C:\PROGRA~3\Latex\tex\latex\base\utf8.def
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [3]
-(C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.ind [4]
+(C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.ind [4]
 [5
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 194.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 194.
- (C:\Users\MMA\AppData\Local\Temp\Rtmp4OkVse\Rd2pdf2bf82db34ff8\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 194.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 194.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 196.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 196.
+ (C:\Users\MMA\AppData\Local\Temp\RtmpMtChuo\Rd2pdf2a785e257c90\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 196.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 196.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: 051928DD307A86D9A3BEB7FA4833DEAA;249.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 194.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 196.
  ) 
 Here is how much of TeX's memory you used:
  6603 strings out of 493921
@@ -764,14 +764,14 @@ Here is how much of TeX's memory you used:
  9747 multiletter control sequences out of 15000+200000
  38185 words of font info for 48 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 38i,5n,36p,521b,549s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,5n,36p,907b,549s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/PROGRA~3/Latex/fonts/enc/dvips/fontname/8r.enc}{C:/PROGRA~3/Latex/fonts/e
 nc/dvips/inconsolata/i4-t1-0.enc}<C:/PROGRA~3/Latex/fonts/type1/public/inconsol
 ata/Inconsolata-zi4r.pfb><C:/PROGRA~3/Latex/fonts/type1/urw/helvetic/uhvr8a.pfb
 ><C:/PROGRA~3/Latex/fonts/type1/urw/times/utmb8a.pfb><C:/PROGRA~3/Latex/fonts/t
 ype1/urw/times/utmr8a.pfb><C:/PROGRA~3/Latex/fonts/type1/urw/times/utmr8a.pfb><
 C:/PROGRA~3/Latex/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Rd2.pdf (5 pages, 95468 bytes).
+Output written on Rd2.pdf (5 pages, 95846 bytes).
 PDF statistics:
  119 PDF objects out of 1000 (max. 8388607)
  38 named destinations out of 1000 (max. 500000)

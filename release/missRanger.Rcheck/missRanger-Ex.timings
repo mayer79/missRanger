@@ -1,5 +1,5 @@
 name	user	system	elapsed
-generateNA	0.02	0.00	0.01	
+generateNA	0	0	0	
 imputeUnivariate	0	0	0	
-missRanger	0.98	0.02	0.63	
+missRanger	1.93	0.18	0.97	
 pmm	0	0	0	

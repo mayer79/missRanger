@@ -9,7 +9,7 @@ generateNA(data, p = 0.1, seed = NULL)
 \arguments{
 \item{data}{A \code{data.frame}.}
 
-\item{p}{Proportion of missing values to approximatly add to each column of \code{data}.}
+\item{p}{Proportion of missing values to approximately add to each column of \code{data}.}
 
 \item{seed}{An integer seed.}
 }

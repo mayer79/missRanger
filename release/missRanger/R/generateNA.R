@@ -3,7 +3,7 @@
 #' @description Takes a data frame and replaces randomly part of the values by missing values. 
 #' 
 #' @param data A \code{data.frame}.
-#' @param p Proportion of missing values to approximatly add to each column of \code{data}.
+#' @param p Proportion of missing values to approximately add to each column of \code{data}.
 #' @param seed An integer seed.
 #'
 #' @return \code{data} with missing values.

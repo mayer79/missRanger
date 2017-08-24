@@ -18,7 +18,7 @@ pmm(xtrain, xtest, ytrain, k = 1L, seed = NULL)
 \item{seed}{Integer random seed.}
 }
 \value{
-Vector with predicted values in the test data set based on preditive mean matching.
+Vector with predicted values in the test data set based on predictive mean matching.
 }
 \description{
 This function is used internally only but might help others 

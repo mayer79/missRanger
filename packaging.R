@@ -9,13 +9,18 @@ stopifnot(basename(getwd()) == "missRanger")
 pkg <- "release/missRanger"
 unlink(pkg, force = TRUE, recursive = TRUE)
 create(pkg, descr = list(
-  Title = "missRanger - Imputation by Chained Random Forests",
-  Description = "Fast version of the \\code{missForest} package based on \\code{ranger} (a fast implementation of random forests called 'random jungle'). We offer the option of predictive mean matching to add extra variability regarding multiple imputations and to avoid imputation by values not already being present in the data.",
-  Version = "0.1.2",
-  `Authors@R` = 'person("Michael", "Mayer", email = "mayermichael79@gmail.com", role = c("aut", "cre"))',
-  Depends = "R (>= 3.3.2)",
-  Imports = list("stats", "FNN", "ranger (>= 0.6.0)"),
-  License = "GPL-3"), 
+            Title = "missRanger - An R Package for Fast Imputation of Missing Values",
+            Type = "Package",
+            Version = "1.0.0",
+            Date = Sys.Date(),
+            Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute mixed-type data sets by chaining tree ensembles, introduced by Stekhoven, D.J. and Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the lightning fast random jungle package 'ranger'. Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids imputation with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow e.g. to do multiple imputation when repeating the call to 'missRanger'.",
+            
+            `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
+            Depends = "R (>= 3.3.2)",
+            Imports = list("stats", "FNN (>= 1.1)", "ranger (>= 0.6.0)"),
+            License = "GPL(>= 2)",
+            Author = "Michael Mayer [aut, cre, cph]",
+            Maintainer = "Michael Mayer <mayermichael79@gmail.com>"), 
   rstudio = FALSE)
 
 # Add R files
@@ -32,9 +37,12 @@ check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pk
 # tar and zip file plus check
 build(pkg, manual = TRUE) # tar
 build(pkg, binary = TRUE) # zip
+check_built( dirname(normalizePath(pkg)))
 
 # Install the package (locally)
 install(pkg) # tar
+
+devtools::release(pkg)
 
 # RESTART RSTUDIO
 if (FALSE) {

@@ -4,7 +4,8 @@
 * using session charset: ISO8859-1
 * using option '--as-cran'
 * checking for file 'missRanger/DESCRIPTION' ... OK
-* this is package 'missRanger' version '0.1.2'
+* checking extension type ... Package
+* this is package 'missRanger' version '1.0.0'
 * package encoding: UTF-8
 * checking package namespace information ... OK
 * checking package dependencies ... OK

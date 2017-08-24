@@ -11,7 +11,7 @@ missRanger(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...)
 
 \item{maxiter}{Maximum number of chaining iterations.}
 
-\item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching step. Use \code{pmm.k = 0} to avoid this step.}
+\item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.}
 
 \item{seed}{Integer seed to initialize the random generator.}
 
@@ -23,11 +23,11 @@ If the data set is large, better use less trees \code{num.trees = 100} and/or a 
 A \code{data.frame} as \code{data} but with imputed missing values.
 }
 \description{
-Uses the `ranger` package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
+Uses the "ranger" package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
 Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids the imputation
 with values not present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean
 matching tries to raise the variance in the resulting conditional distributions to a realistic level.
-This would allow e.g. to do multiple imputation when repeating the call to `missRanger'.
+This would allow e.g. to do multiple imputation when repeating the call to "missRanger".
 }
 \examples{
 irisWithNA <- generateNA(iris)

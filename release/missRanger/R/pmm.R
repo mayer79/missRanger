@@ -17,7 +17,7 @@
 #' @param k Number of nearest neighbours to choose from. Set \code{k = 0} if no predictive mean matching is to be done.
 #' @param seed Integer random seed.
 #'
-#' @return Vector with predicted values in the test data set based on preditive mean matching.
+#' @return Vector with predicted values in the test data set based on predictive mean matching.
 #' @export
 #'
 #' @examples 
