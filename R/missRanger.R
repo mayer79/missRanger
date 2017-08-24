@@ -32,7 +32,7 @@
 #' head(irisWithNA)
 #' head(iris)
 missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...) {
-  cat("Missing value imputation by chained random forests")
+  cat("\nMissing value imputation by chained random forests")
   
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
             is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,

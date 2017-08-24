@@ -31,18 +31,23 @@ file.copy(fp, file.path(pkg, "R"))
 # Create Rd files
 document(pkg)
 
+# Add further files
+devtools::use_cran_comments(pkg)
+devtools::use_news_md(pkg)
+devtools::use_readme_md(pkg)
+
 # Check
 check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pkg)))
 
 # tar and zip file plus check
 build(pkg, manual = TRUE) # tar
-build(pkg, binary = TRUE) # zip
-check_built( dirname(normalizePath(pkg)))
+# build(pkg, binary = TRUE) # zip
 
 # Install the package (locally)
 install(pkg) # tar
 
 devtools::release(pkg)
+
 
 # RESTART RSTUDIO
 if (FALSE) {

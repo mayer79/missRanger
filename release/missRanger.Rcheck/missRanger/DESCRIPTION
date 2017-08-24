@@ -10,9 +10,9 @@ LazyData: true
 Type: Package
 Date: 2017-08-24
 Imports: stats, FNN (>= 1.1), ranger (>= 0.6.0)
-Author: person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))
+Author: Michael Mayer [aut, cre, cph]
 Maintainer: Michael Mayer <mayermichael79@gmail.com>
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-08-24 14:40:50 UTC; MMA
-Built: R 3.3.2; ; 2017-08-24 14:40:53 UTC; windows
+Packaged: 2017-08-24 16:29:36 UTC; Michael
+Built: R 3.4.1; ; 2017-08-24 16:29:41 UTC; windows
