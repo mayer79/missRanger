@@ -37,7 +37,7 @@
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
 missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...) {
-  cat("\nMissing value imputation by chained random forests")
+  cat("\nMissing value imputation by chained tree ensembles")
   
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
             is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
