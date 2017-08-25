@@ -4,18 +4,17 @@
  
 This package uses the `ranger` package [1] to do fast missing value imputation by chained tree ensembles, see [2] and [3]. 
 Between the iterative model fitting, it offers the option of using predictive mean matching. This firstly avoids the 
-imputation with values not present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive 
+imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive 
 mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow 
-e.g. to do multiple imputation when repeating the call to `missRanger`. 
+e.g. to do multiple imputation when repeating the call to missRanger(). 
 
 Please check the help `?missRanger` for how to call the function and to see all options. 
-The below example first generates a data set with about 10% missing values in each column. 
-Then those gaps are filled by `missRanger`. In the end, the resulting data frame is displayed.
- 
+
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This example first generates a data set with about 10% missing values in each column. 
+Then those gaps are filled by `missRanger`. In the end, the resulting data frame is displayed.
 
 ``` r
 library(missRanger)
@@ -24,12 +23,16 @@ library(missRanger)
 irisWithNA <- generateNA(iris)
  
 # Impute missing values with missRanger
-irisImputed <- missRanger(irisWithNA, pmm.k = 3)
+irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
  
 # Check results
 head(irisImputed)
 head(irisWithNA)
 head(iris)
+
+# With extra trees algorithm
+irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, splitrule = "extratrees", num.trees = 100)
+head(irisImputed_et)
 ```
 
 ## References

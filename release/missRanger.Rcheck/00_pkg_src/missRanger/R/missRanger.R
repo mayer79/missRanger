@@ -27,10 +27,13 @@
 #'
 #' @examples
 #' irisWithNA <- generateNA(iris)
-#' irisImputed <- missRanger(irisWithNA, pmm.k = 3)
+#' irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 #' head(irisImputed)
 #' head(irisWithNA)
-#' head(iris)
+#'
+#' # With extra trees algorithm
+#' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
+#' head(irisImputed_et)
 missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...) {
   cat("\nMissing value imputation by chained random forests")
   

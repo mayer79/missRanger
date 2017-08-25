@@ -31,10 +31,13 @@ This would allow e.g. to do multiple imputation when repeating the call to "miss
 }
 \examples{
 irisWithNA <- generateNA(iris)
-irisImputed <- missRanger(irisWithNA, pmm.k = 3)
+irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
-head(iris)
+
+# With extra trees algorithm
+irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
+head(irisImputed_et)
 }
 \references{
 [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
