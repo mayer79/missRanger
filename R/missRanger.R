@@ -1,22 +1,24 @@
-#' Missing Values Imputation by Chained Random Forests
+#' Fast Imputation of Missing Values by Chained Tree Ensembles
 #' 
 #' @importFrom stats var reformulate predict
 #' @importFrom ranger ranger
 #'
-#' @description Uses the "ranger" package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
-#' Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids the imputation
-#' with values not present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean
-#' matching tries to raise the variance in the resulting conditional distributions to a realistic level.
-#' This would allow e.g. to do multiple imputation when repeating the call to "missRanger".
+#' @description Uses the "ranger" package [1] to do fast missing value imputation by chained tree ensembles, see [2] and [3].
+#' Between the iterative model fitting, it offers the option of predictive mean matching. This firstly avoids imputation
+#' with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean
+#' matching tries to raise the variance in the resulting conditional distributions to a realistic level and, as such, 
+#' allows to do multiple imputation when repeating the call to missRanger(). The iterative chaining stops as soon as \code{maxiter}
+#' is reached or if the average out-of-bag estimate of performance stops improving.
 #' @param data A \code{data.frame} with missing values to impute.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param pmm.k Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.
 #' @param seed Integer seed to initialize the random generator.
-#' @param ... Arguments passed to \code{ranger}. Don't use \code{formula}, \code{data} or \code{seed}. They are already handled by the algorithm. Not
-#'        all \code{ranger} options do make sense (e.g. \code{write.forest = FALSE} will cause the algorithm to crash.
-#'        If the data set is large, better use less trees \code{num.trees = 100} and/or a low value of \code{sample.fraction}. 
+#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees 
+#' (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
+#' The following arguments are incompatible: \code{formula}, \code{data}, \code{write.forest}, 
+#' \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
-#' @return A \code{data.frame} as \code{data} but with imputed missing values.
+#' @return An imputed \code{data.frame}.
 #' @references
 #' [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
 #'
