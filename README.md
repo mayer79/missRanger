@@ -35,6 +35,12 @@ irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, splitrule = "extratrees", nu
 head(irisImputed_et)
 ```
 
+## Installation
+Release 1.0.0 on CRAN
+```
+install.packages("missRanger")
+```
+
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
  
