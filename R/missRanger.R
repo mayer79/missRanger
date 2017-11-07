@@ -37,6 +37,7 @@
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
 missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...) {
+  
   cat("\nMissing value imputation by chained tree ensembles")
   
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
@@ -46,7 +47,10 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, ...) {
               "split.select.weights", "dependent.variable.name",
               "classification") %in% names(list(...))))
   
-  set.seed(seed)
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }  
+  
   allVars <- names(which(vapply(data, function(z) (is.factor(z) || is.numeric(z)) && any(!is.na(z)), 
                                 TRUE)))
   
