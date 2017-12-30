@@ -6,7 +6,7 @@ This package uses the `ranger` package [1] to do fast missing value imputation b
 Between the iterative model fitting, it offers the option of using predictive mean matching. This firstly avoids the 
 imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive 
 mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow 
-e.g. to do multiple imputation when repeating the call to missRanger(). 
+e.g. to do multiple imputation when repeating the call to missRanger(). Package `mice` utilizes the `randomForest` package with only ten trees as default.
 
 Please check the help `?missRanger` for how to call the function and to see all options. 
 
