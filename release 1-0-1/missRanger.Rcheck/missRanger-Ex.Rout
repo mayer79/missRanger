@@ -175,7 +175,7 @@ Missing value imputation by chained tree ensembles
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.7 0.14 1.75 NA NA 
+Time elapsed:  1.94 0.2 1.87 NA NA 
 > grDevices::dev.off()
 null device 
           1 

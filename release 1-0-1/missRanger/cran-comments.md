@@ -7,9 +7,8 @@
 
 0 errors | 0 warnings | 0 note
 
-* This is an update with one bug fix and one improvement.
+* This is a new release.
 
 ## Reverse dependencies
 
-No reverse dependencies.
-
+This is a new release, so there are no reverse dependencies.
