@@ -92,7 +92,7 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
       v.na <- data.na[, v]
       
       if (length(completed) == 0L) {
-        data[, v] <- imputeUnivariate(data[, v])
+        data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         fit <- ranger(formula = reformulate(completed, response = v), 
                       data = data[!v.na, union(v, completed)],
@@ -100,7 +100,7 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
         pred <- predict(fit, data[v.na, allVars])$predictions
         data[v.na, v] <- if (pmm.k) pmm(xtrain = fit$predictions, 
                                         xtest = pred, 
-                                        ytrain = data[!v.na, v], 
+                                        ytrain = data[[v]][!v.na], 
                                         k = pmm.k) else pred
         predError[[v]] <- fit$prediction.error / (if (fit$treetype == "Regression") var(data[!v.na, v]) else 1)
         
