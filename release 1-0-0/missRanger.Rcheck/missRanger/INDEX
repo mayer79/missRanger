@@ -1,5 +1,0 @@
-generateNA              Adds Missing Values to a Data Set
-imputeUnivariate        Univariate Imputation
-missRanger              Missing Values Imputation by Chained Random
-                        Forests
-pmm                     Predictive Mean Matching
