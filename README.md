@@ -2,7 +2,7 @@
  
 ## Description
  
-This package uses the `ranger` package [1] to do fast missing value imputation by chained tree ensembles, see [2] and [3]. 
+This package uses the `ranger` package [1] to do fast missing value imputation by chained random forest, see [2] and [3]. 
 Between the iterative model fitting, it offers the option of using predictive mean matching. This firstly avoids the 
 imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive 
 mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow 
@@ -47,7 +47,7 @@ iris %>%
 
 ```
 ## Installation
-Release 1.0.3 on CRAN
+Release 1.0.4 on CRAN
 ```
 install.packages("missRanger")
 ```

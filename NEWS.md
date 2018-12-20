@@ -1,5 +1,5 @@
-# missRanger 1.0.3
+# missRanger 1.0.4
 
-* Thanks at Andrew Landgraf to make the code working with tibbles. So if the input is a tibble, then the resulting data frame will be a tibble as well.
+* Thanks @markgrujic to suggest an additional argument "returnOOB" to return the average OOB prediction error in the resulting data frame.
 
 

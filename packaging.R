@@ -11,9 +11,9 @@ unlink(pkg, force = TRUE, recursive = TRUE)
 create(pkg, descr = list(
             Title = "Fast Imputation of Missing Values",
             Type = "Package",
-            Version = "1.0.3",
+            Version = "1.0.4",
             Date = Sys.Date(),
-            Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute mixed-type data sets by chaining tree ensembles, introduced by Stekhoven, D.J. and Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the lightning fast random jungle package 'ranger'. Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids imputation with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow e.g. to do multiple imputation when repeating the call to missRanger().",
+            Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the lightning fast random jungle package 'ranger'. Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids imputation with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow e.g. to do multiple imputation when repeating the call to missRanger().",
             
             `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
             Depends = "R (>= 3.4.0)",
@@ -47,7 +47,11 @@ build(pkg, manual = TRUE) # tar
 # Install the package (locally)
 install(pkg) # tar
 
-devtools::release(pkg)
+# check_rhub(pkg)
+check_win_devel(pkg)
+
+setwd(file.path("D:/missRanger", pkg))
+devtools::release()
 
 
 # RESTART RSTUDIO
