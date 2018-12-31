@@ -46,6 +46,67 @@ iris %>%
   head
 
 ```
+
+## How to deal with date variables etc.?
+`missRanger` natively deals with numeric and character/factor variables. In real-world data sets, also other types of variables appear, e.g. date variables. These can be imputed as well, but it requires some pre- and post-processing:
+
+1. Transform the variable to a numeric or character/factor.
+
+2. Impute with `pmm.k` > 0, so that no new values are created.
+
+3. Transform the imputed variable back to its original type.
+
+### Example
+``` r
+library(missRanger)
+library(lubridate)
+library(tidyverse)
+
+# Add a date variable to iris
+iris$random_date <- seq.Date(as.Date("1998-12-17"), 
+                             by = "1 day", 
+                             length.out = nrow(iris))
+
+set.seed(3234)
+irisWithNA <- generateNA(iris, p = 0.2)
+head(irisWithNA$random_date)
+# Output: "1998-12-17" NA           NA           NA           "1998-12-21" "1998-12-22"
+
+# Convert date to numeric, impute with PMM, convert back to date
+irisImputed <- irisWithNA %>% 
+  mutate(random_date = as.numeric(random_date)) %>% 
+  missRanger(pmm.k = 5, num.trees = 100) %>% 
+  mutate(random_date = as.Date(random_date, origin = "1970-01-01"))
+
+head(irisImputed$random_date)
+# Output: "1998-12-17" "1999-01-13" "1999-02-04" "1999-01-22" "1998-12-21" "1998-12-22"
+
+```
+
+## How to deal with censored variables?
+There is no obvious way of how to deal with survival variables in imputation models, mostly since it is unclear of how to use them as covariables to predict other variables. 
+
+Options discussed in [add citation] include:
+
+- Use both status variable s and (censored) time variable t
+
+- s and log(t)
+
+- KM(t), and, optionally s
+
+By KM(t), we denote the Kaplan-Meier estimate at each value of t.
+
+The third option is the most elegant one as it explicitly deals with censoring information.
+
+Let's go through an example to explain it:
+
+### Example
+
+``` r
+to do
+
+```
+
 ## Installation
 Release 1.0.4 on CRAN
 ```
