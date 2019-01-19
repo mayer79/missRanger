@@ -107,6 +107,16 @@ to do
 
 ```
 
+## How to use `missRanger` in multiple imputation settings?
+
+to do
+
+``` r
+to do
+
+```
+
+
 ## Installation
 Release 1.0.4 on CRAN
 ```
