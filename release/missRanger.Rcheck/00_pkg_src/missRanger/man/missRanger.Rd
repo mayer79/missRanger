@@ -5,7 +5,7 @@
 \title{Fast Imputation of Missing Values by Chained Random Forests}
 \usage{
 missRanger(data, maxiter = 10L, pmm.k = 0L, seed = NULL,
-  verbose = 1, returnOOB = FALSE, ...)
+  verbose = 1, returnOOB = FALSE, case.weights = NULL, ...)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
@@ -20,6 +20,8 @@ missRanger(data, maxiter = 10L, pmm.k = 0L, seed = NULL,
 variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).}
 
 \item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob".}
+
+\item{case.weights}{Vector with weight per observation in the data set used in fitting the random forests.}
 
 \item{...}{Arguments passed to \code{ranger}. If the data set is large, better use less trees 
 (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
@@ -51,7 +53,7 @@ head(irisImputed_et)
 \references{
 [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
 
-[2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118, doi: 10.1093/bioinformatics/btr597
+[2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
 
 [3] Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 }

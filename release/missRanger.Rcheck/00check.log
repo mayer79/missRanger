@@ -1,11 +1,11 @@
-* using log directory 'D:/missRanger/release/missRanger.Rcheck'
-* using R version 3.5.0 (2018-04-23)
+* using log directory 'C:/projects/missRanger/release/missRanger.Rcheck'
+* using R version 3.6.0 (2019-04-26)
 * using platform: x86_64-w64-mingw32 (64-bit)
 * using session charset: ISO8859-1
 * using option '--as-cran'
 * checking for file 'missRanger/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'missRanger' version '1.0.4'
+* this is package 'missRanger' version '1.0.5'
 * package encoding: UTF-8
 * checking package namespace information ... OK
 * checking package dependencies ... OK
@@ -14,10 +14,10 @@
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
-* checking serialization versions ... OK
 * checking whether package 'missRanger' can be installed ... OK
 * checking installed package size ... OK
 * checking package directory ... OK
+* checking for future file timestamps ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
 * checking for left-over files ... OK

@@ -17,6 +17,7 @@
 #' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and 
 #'                variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob".
+#' @param case.weights Vector with weight per observation in the data set used in fitting the random forests.
 #' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees 
 #' (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
 #' The following arguments are incompatible: \code{formula}, \code{data}, \code{write.forest}, 
@@ -26,7 +27,7 @@
 #' @references
 #' [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
 #'
-#' [2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118, doi: 10.1093/bioinformatics/btr597
+#' [2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
 #'
 #' [3] Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 #' @export
@@ -40,7 +41,8 @@
 #' # With extra trees algorithm
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
-missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1, returnOOB = FALSE, ...) {
+missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1, 
+                       returnOOB = FALSE, case.weights = NULL, ...) {
   if (verbose > 0) {
     cat("\nMissing value imputation by random forests\n")
   }
@@ -50,7 +52,11 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
             is.numeric(pmm.k), length(pmm.k) == 1L, pmm.k >= 0L,
             !(c("formula", "data", "write.forest", "probability", 
               "split.select.weights", "dependent.variable.name",
-              "classification") %in% names(list(...))))
+              "classification", "case.weights") %in% names(list(...))))
+  
+  if (!is.null(case.weights)) {
+    stopifnot(length(case.weights) == nrow(data), !anyNA(case.weights))
+  }
   
   if (!is.null(seed)) {
     set.seed(seed)
@@ -97,6 +103,7 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
       } else {
         fit <- ranger(formula = reformulate(completed, response = v), 
                       data = data[!v.na, union(v, completed)],
+                      case.weights = case.weights[!v.na],
                       ...)
         pred <- predict(fit, data[v.na, allVars])$predictions
         data[v.na, v] <- if (pmm.k) pmm(xtrain = fit$predictions, 
