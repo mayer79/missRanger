@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  13 JUN 2019 20:21
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  13 JUN 2019 20:48
 entering extended mode
-**C:/Users/Michael/AppData/Local/Temp/RtmpkhYqG8/Rd2pdf26044cba29a0/Rd2.tex
-(C:/Users/Michael/AppData/Local/Temp/RtmpkhYqG8/Rd2pdf26044cba29a0/Rd2.tex
+**C:/Users/Michael/AppData/Local/Temp/Rtmpy09sPJ/Rd2pdf1e846af35f4f/Rd2.tex
+(C:/Users/Michael/AppData/Local/Temp/Rtmpy09sPJ/Rd2pdf1e846af35f4f/Rd2.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 75 language(s) loaded.
 
@@ -828,38 +828,38 @@ File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ) [3]
-Overfull \hbox (22.66647pt too wide) in paragraph at lines 185--186
+Overfull \hbox (22.66647pt too wide) in paragraph at lines 186--187
 \T1/ptm/m/n/10 Di-men-sional Data in C++ and R. Jour-nal of Sta-tis-ti-cal Soft
 -ware, in press. http://arxiv.org/abs/1508.04409. 
  []
 
 
-Overfull \hbox (42.93695pt too wide) in paragraph at lines 187--188
+Overfull \hbox (42.93695pt too wide) in paragraph at lines 188--189
 \T1/ptm/m/n/10 tion for mixed-type data', Bioin-for-mat-ics, 28(1) 2012, 112-11
 8. https://doi.org/10.1093/bioinformatics/btr597. 
  []
 
 
-Overfull \hbox (11.24715pt too wide) in paragraph at lines 200--200
+Overfull \hbox (11.24715pt too wide) in paragraph at lines 201--201
  []\T1/zi4/m/n/9 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees 
 = 100, splitrule = "extratrees")[] 
  []
 
-("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
+[4] ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-) [4] (Rd2.ind [5]
+) (Rd2.ind [5]
 [6
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 252.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 252.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 262.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 262.
  (Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 252.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 252.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 262.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 262.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: 980C4C638EB1ABD90E2D77D0397676F4;312.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 252.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 262.
  ) 
 Here is how much of TeX's memory you used:
  6644 strings out of 493305
@@ -868,7 +868,7 @@ Here is how much of TeX's memory you used:
  10037 multiletter control sequences out of 15000+200000
  38185 words of font info for 48 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,6n,36p,911b,549s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,6n,36p,911b,590s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}{C:/Users/Michael/Ap
 pData/Roaming/MiKTeX/2.9/fonts/enc/dvips/inconsolata/i4-t1-0.enc}<C:/Users/Mich
 ael/AppData/Roaming/MiKTeX/2.9/fonts/type1/public/inconsolata/Inconsolata-zi4r.
@@ -877,7 +877,7 @@ m Files/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.
 9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw
 /times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pf
 b>
-Output written on Rd2.pdf (6 pages, 102473 bytes).
+Output written on Rd2.pdf (6 pages, 103057 bytes).
 PDF statistics:
  136 PDF objects out of 1000 (max. 8388607)
  46 named destinations out of 1000 (max. 500000)

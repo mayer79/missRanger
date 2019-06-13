@@ -102,7 +102,16 @@ head(irisWithNA)
 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 head(irisImputed_et)
 
-missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+# Do not impute Species. Note that since it contains missings, it cannot be used
+# to impute the other variables.
+irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+
+# Impute everything univariately by PMM only.
+irisImputed <- missRanger(irisWithNA, . ~ 1, pmm.k = 3)
+
+# Use Species and Petal.Length to impute Species and Petal.Length.
+irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
+                          pmm.k = 3, num.trees = 100)
 
 
 

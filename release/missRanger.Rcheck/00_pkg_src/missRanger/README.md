@@ -44,8 +44,22 @@ iris %>%
   generateNA %>% 
   missRanger(verbose = 0) %>% 
   head
+```
 
-Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed by which variables.
+Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed by which variables:
+
+``` r
+# Impute all variables with all
+missRanger(irisWithNA, . ~ ., pmm.k = 3, num.trees = 100)
+
+# Impute all variables with all except Species
+missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100)
+
+# Impute Species and Sepal.Width by Sepal.Width
+missRanger(irisWithNA, Species + Sepal.Width ~ Species, pmm.k = 3, num.trees = 100)
+
+# Impute all variables univariatly
+missRanger(irisWithNA, . ~ 1, pmm.k = 3)
 ```
 
 ## How to deal with date variables etc.?

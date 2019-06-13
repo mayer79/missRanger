@@ -32,7 +32,7 @@ file.copy(fp, file.path(pkg, "R"))
 document(pkg)
 
 # Add further files
-# devtools::use_cran_comments(pkg) (is required)
+devtools::use_cran_comments(pkg)
 mdfiles <- c("NEWS.md", "README.md")
 stopifnot(file.exists(mdfiles))
 file.copy(mdfiles, pkg)

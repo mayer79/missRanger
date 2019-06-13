@@ -13,7 +13,8 @@ missRanger(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
 
 \item{formula}{A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). 
 Defaults to . ~ ., i.e. use all variables to impute all variables. If e.g. all variables (with missings) should be imputed by all 
-variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for both sides of the formula.}
+variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for both sides of the formula.
+Note that variables with missings must appear in the left hand side if they should be used on the right hand side.}
 
 \item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.}
 
@@ -55,7 +56,16 @@ head(irisWithNA)
 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 head(irisImputed_et)
 
-missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+# Do not impute Species. Note that since it contains missings, it cannot be used
+# to impute the other variables.
+irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+
+# Impute everything univariately by PMM only.
+irisImputed <- missRanger(irisWithNA, . ~ 1, pmm.k = 3)
+
+# Use Species and Petal.Length to impute Species and Petal.Length.
+irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
+                          pmm.k = 3, num.trees = 100)
 }
 \references{
 [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
