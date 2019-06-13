@@ -11,8 +11,11 @@
 #' is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration,
 #' the second last (i.e. best) imputed data is returned.
 #' @param data A \code{data.frame} or \code{tibble} with missing values to impute.
-#' @param maxiter Maximum number of chaining iterations.
+#' @param formula A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). 
+#'                Defaults to . ~ ., i.e. use all variables to impute all variables. If e.g. all variables (with missings) should be imputed by all 
+#'                variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for both sides of the formula.
 #' @param pmm.k Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.
+#' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
 #' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and 
 #'                variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
@@ -41,15 +44,18 @@
 #' # With extra trees algorithm
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
-missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1, 
-                       returnOOB = FALSE, case.weights = NULL, ...) {
+#' 
+#' missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
+                       verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
   if (verbose > 0) {
     cat("\nMissing value imputation by random forests\n")
   }
   
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
-            is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
+            inherits(formula, "formula"), 
             is.numeric(pmm.k), length(pmm.k) == 1L, pmm.k >= 0L,
+            is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
             !(c("formula", "data", "write.forest", "probability", 
               "split.select.weights", "dependent.variable.name",
               "classification", "case.weights") %in% names(list(...))))
@@ -62,28 +68,42 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
     set.seed(seed)
   }  
   
-  allVars <- names(which(vapply(data, function(z) (is.factor(z) || is.numeric(z)) && any(!is.na(z)), TRUE)))
+  # Select variables to be imputed. Currently, only factor or numeric variables 
+  # are supported. We will visit them from few to many missings.
+  relevantVars <- allVarsTwoSided(formula, data[1, ])
   
-  if (verbose > 0 && length(allVars) < ncol(data)) {
-    cat("\n  Variables ignored in imputation (wrong data type or all values missing: ")
-    cat(setdiff(names(data), allVars), sep = ", ")
-  }
-  
-  stopifnot(length(allVars) > 1L)
-  data.na <- is.na(data[, allVars, drop = FALSE])
-  count.seq <- sort(colMeans(data.na))
-  visit.seq <- names(count.seq)[count.seq > 0]
+  ok <- vapply(data[, relevantVars[[1]], drop = FALSE], 
+               function(z) (is.factor(z) || is.numeric(z)), TRUE)  
+  data.na <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
+  count.seq <- sort(colSums(data.na))
+  visit.seq <- names(count.seq)[count.seq > 0 & count.seq < nrow(data)]
   
   if (!length(visit.seq)) {
     return(data)
   }
   
+  if (verbose > 0) {
+    cat("\n  Variables that will be imputed: ")
+    cat(visit.seq, sep = ", ")
+  }
+  
+  # Select variables used to impute. They are not allowed to contain missings
+  # except those that will be imputed during the process.
+  completed <- setdiff(relevantVars[[2]], visit.seq)
+  ok <- vapply(data[, completed, drop = FALSE], function(z) !anyNA(z), TRUE)
+  completed <- completed[ok]
+  imputeBy <- union(intersect(relevantVars[[2]], visit.seq), completed)
+  
+  if (verbose > 0) {
+    cat("\n  Variables that will be used: ")
+    cat(imputeBy, sep = ", ")
+  }
+
   verboseDigits <- 4  # prediction of OOB prediction errors (if verbose = 2)
   j <- 1L             # iterator
   predError <- rep(1, length(visit.seq))
   names(predError) <- visit.seq
   crit <- TRUE        # criterion on OOB prediction error to keep iterating
-  completed <- setdiff(allVars, visit.seq)
   
   if (verbose >= 2) {
     cat("\n", abbreviate(visit.seq, minlength = verboseDigits + 2), sep = "\t")
@@ -102,10 +122,10 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         fit <- ranger(formula = reformulate(completed, response = v), 
-                      data = data[!v.na, union(v, completed)],
+                      data = data[!v.na, union(v, completed), drop = FALSE],
                       case.weights = case.weights[!v.na],
                       ...)
-        pred <- predict(fit, data[v.na, allVars])$predictions
+        pred <- predict(fit, data[v.na, completed, drop = FALSE])$predictions
         data[v.na, v] <- if (pmm.k) pmm(xtrain = fit$predictions, 
                                         xtest = pred, 
                                         ytrain = data[[v]][!v.na], 
@@ -117,13 +137,14 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
         }
       }
       
-      completed <- union(completed, v)
+      if (j == 1L && (v %in% imputeBy)) {
+        completed <- union(completed, v)
+      }
       
       if (verbose == 1) {
         cat(".")
       } else if (verbose >= 2) {
         cat(format(round(predError[[v]], verboseDigits), nsmall = verboseDigits), "\t")
-
       }
     }
 
@@ -143,3 +164,4 @@ missRanger <- function(data, maxiter = 10L, pmm.k = 0L, seed = NULL, verbose = 1
   attr(data.last, "oob") <- predErrorLast 
   data.last
 }
+

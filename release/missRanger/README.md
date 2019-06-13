@@ -45,6 +45,7 @@ iris %>%
   missRanger(verbose = 0) %>% 
   head
 
+Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed by which variables.
 ```
 
 ## How to deal with date variables etc.?

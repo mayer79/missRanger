@@ -4,15 +4,20 @@
 \alias{missRanger}
 \title{Fast Imputation of Missing Values by Chained Random Forests}
 \usage{
-missRanger(data, maxiter = 10L, pmm.k = 0L, seed = NULL,
-  verbose = 1, returnOOB = FALSE, case.weights = NULL, ...)
+missRanger(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
+  seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL,
+  ...)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
 
-\item{maxiter}{Maximum number of chaining iterations.}
+\item{formula}{A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). 
+Defaults to . ~ ., i.e. use all variables to impute all variables. If e.g. all variables (with missings) should be imputed by all 
+variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for both sides of the formula.}
 
 \item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.}
+
+\item{maxiter}{Maximum number of chaining iterations.}
 
 \item{seed}{Integer seed to initialize the random generator.}
 
@@ -49,6 +54,8 @@ head(irisWithNA)
 # With extra trees algorithm
 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 head(irisImputed_et)
+
+missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
 }
 \references{
 [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
