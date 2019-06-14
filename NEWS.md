@@ -11,6 +11,8 @@
 
 - `Species + Sepal.Length ~ Species + Petal.Length`: Use `Species` and `Petal.Length` to impute `Species` and `Sepal.Length`. Only works if `Petal.Length` does not contain missing values because it does not appear on the left hand side and is therefore not imputed itself.
 
+- `. ~ 1`: Univariate imputation for all relevant columns (as nothing is selected on the right hand side).
+
 ## Minor interface changes
 
 * The function `imputeUnivariate` has received a `seed` argument.

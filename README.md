@@ -63,7 +63,7 @@ head(m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100))
 head(m <- missRanger(irisWithNA, Species + Sepal.Width ~ Species, pmm.k = 3, num.trees = 100))
 
 # Impute all variables univariatly
-head(m <- missRanger(irisWithNA, . ~ 1, pmm.k = 3))
+head(m <- missRanger(irisWithNA, . ~ 1))
 ```
 
 ## How to deal with date variables etc.?
