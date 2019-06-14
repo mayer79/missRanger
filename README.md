@@ -46,20 +46,24 @@ iris %>%
   head
 ```
 
-Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed by which variables:
+Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed (on the left hand side of the formula) by which variables (those on the right hand side):
 
 ``` r
-# Impute all variables with all
-missRanger(irisWithNA, . ~ ., pmm.k = 3, num.trees = 100)
+# Impute all variables with all (default behaviour). Note that variables without
+# missing values will be skipped from the left hand side of the formula.
+head(m <- missRanger(irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 100))
+
+# Same
+head(m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100))
 
 # Impute all variables with all except Species
-missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100)
+head(m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100))
 
 # Impute Species and Sepal.Width by Sepal.Width
-missRanger(irisWithNA, Species + Sepal.Width ~ Species, pmm.k = 3, num.trees = 100)
+head(m <- missRanger(irisWithNA, Species + Sepal.Width ~ Species, pmm.k = 3, num.trees = 100))
 
 # Impute all variables univariatly
-missRanger(irisWithNA, . ~ 1, pmm.k = 3)
+head(m <- missRanger(irisWithNA, . ~ 1, pmm.k = 3))
 ```
 
 ## How to deal with date variables etc.?
@@ -133,9 +137,15 @@ to do
 
 
 ## Installation
-Release 1.0.4 on CRAN
-```
+From CRAN:
+``` r
 install.packages("missRanger")
+```
+
+Latest version from github:
+``` r
+library(devtools)
+install_github("mayer79/missRanger/release/missRanger")
 ```
 
 ## References

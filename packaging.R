@@ -24,7 +24,8 @@ create(pkg, descr = list(
   rstudio = FALSE)
 
 # Add R files
-Rfiles <- c("generateNA.R", "imputeUnivariate.R", "missRanger.R", "pmm.R", "allVarsTwoSided.R")
+Rfiles <- c("generateNA.R", "imputeUnivariate.R", "missRanger.R", 
+            "pmm.R", "allVarsTwoSided.R")
 stopifnot(file.exists(fp <- file.path("R", Rfiles)))
 file.copy(fp, file.path(pkg, "R"))
 
@@ -42,7 +43,7 @@ check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pk
 
 # tar and zip file plus check
 build(pkg, manual = TRUE) # tar
-# build(pkg, binary = TRUE) # zip
+build(pkg, binary = TRUE) # zip
 
 # Install the package (locally)
 install(pkg) # tar

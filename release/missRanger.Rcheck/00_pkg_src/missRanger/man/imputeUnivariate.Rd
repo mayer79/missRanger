@@ -4,10 +4,12 @@
 \alias{imputeUnivariate}
 \title{Univariate Imputation}
 \usage{
-imputeUnivariate(x)
+imputeUnivariate(x, seed = NULL)
 }
 \arguments{
 \item{x}{A vector of any type possibly containing missing values.}
+
+\item{seed}{An integer seed.}
 }
 \value{
 A vector of the same length and type as \code{x} but without missing values.
@@ -21,4 +23,8 @@ non-missing value to run.
 imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
+
+# Impute a whole data set univariately
+ir <- generateNA(iris)
+head(imputed <- do.call(data.frame, lapply(ir, imputeUnivariate)))
 }

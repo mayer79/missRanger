@@ -76,6 +76,10 @@ imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
 
+# Impute a whole data set univariately
+ir <- generateNA(iris)
+head(imputed <- do.call(data.frame, lapply(ir, imputeUnivariate)))
+
 
 
 base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
@@ -102,12 +106,12 @@ head(irisWithNA)
 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 head(irisImputed_et)
 
-# Do not impute Species. Note that since it contains missings, it cannot be used
-# to impute the other variables.
+# Do not impute Species. Note: Since this variable contains missings, it cannot be used
+# to impute the other variables as well.
 irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
 
-# Impute everything univariately by PMM only.
-irisImputed <- missRanger(irisWithNA, . ~ 1, pmm.k = 3)
+# Impute univariately only.
+irisImputed <- missRanger(irisWithNA, . ~ 1)
 
 # Use Species and Petal.Length to impute Species and Petal.Length.
 irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 

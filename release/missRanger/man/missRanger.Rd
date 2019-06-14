@@ -31,7 +31,7 @@ variable, 2 to print the OOB prediction error per iteration and variable (1 minu
 
 \item{...}{Arguments passed to \code{ranger}. If the data set is large, better use less trees 
 (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
-The following arguments are incompatible: \code{formula}, \code{data}, \code{write.forest}, 
+The following arguments are incompatible: \code{data}, \code{write.forest}, 
 \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
@@ -56,12 +56,12 @@ head(irisWithNA)
 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 head(irisImputed_et)
 
-# Do not impute Species. Note that since it contains missings, it cannot be used
-# to impute the other variables.
+# Do not impute Species. Note: Since this variable contains missings, it cannot be used
+# to impute the other variables as well.
 irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
 
-# Impute everything univariately by PMM only.
-irisImputed <- missRanger(irisWithNA, . ~ 1, pmm.k = 3)
+# Impute univariately only.
+irisImputed <- missRanger(irisWithNA, . ~ 1)
 
 # Use Species and Petal.Length to impute Species and Petal.Length.
 irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
