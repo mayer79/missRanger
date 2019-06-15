@@ -87,11 +87,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
                function(z) (is.factor(z) || is.numeric(z)) && anyNA(z) && !all(is.na(z)))  
   data.na <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
   visit.seq <- names(sort(colSums(data.na)))
-  
-  if (!length(visit.seq)) {
-    return(data)
-  }
-  
+
   if (verbose > 0) {
     cat("\n  Variables to impute: ")
     cat(visit.seq, sep = ", ")
@@ -106,6 +102,14 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   if (verbose > 0) {
     cat("\n  Variables used to impute: ")
     cat(imputeBy, sep = ", ")
+  }
+  
+  if (!length(visit.seq)) {
+    if (verbose > 0) {
+      cat("\n")
+    }
+    
+    return(data)
   }
 
   # Initialization  

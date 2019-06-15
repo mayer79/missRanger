@@ -40,8 +40,8 @@ Since release 1.0.3, thanks to Andrew Landgraf, it is now possible to use in lin
 library(tidyverse)
 
 iris %>% 
-  as.tibble %>% 
   generateNA %>% 
+  as.tibble %>% 
   missRanger(verbose = 0) %>% 
   head
 ```

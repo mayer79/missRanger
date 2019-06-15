@@ -13,6 +13,10 @@
 
 - `. ~ 1`: Univariate imputation for all relevant columns (as nothing is selected on the right hand side).
 
+* The first argument of `generateNA` is called `x` instead of `data` in consistency with `imputeUnivariate`.
+
+* `imputeUnivariate` now also works for data frames and matrices.
+
 ## Minor interface changes
 
 * The function `imputeUnivariate` has received a `seed` argument.
