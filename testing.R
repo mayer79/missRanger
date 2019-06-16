@@ -27,8 +27,8 @@ head(ir)
 head(missRanger(ir))
 
 ir$Species <- NA
-head(missRanger(ir))
+head(missRanger(ir, pmm.k = 5))
 
 ir$Species <- iris$Species
-head(missRanger(ir))
+head(missRanger(ir, pmm.k = 3))
 
