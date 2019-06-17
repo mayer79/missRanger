@@ -4,30 +4,30 @@
 #' @importFrom ranger ranger
 #'
 #' @description Uses the "ranger" package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
-#' Between the iterative model fitting, it offers the option of predictive mean matching. This firstly avoids imputation
-#' with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean
-#' matching tries to raise the variance in the resulting conditional distributions to a realistic level and, as such, 
-#' allows to do multiple imputation when repeating the call to missRanger(). The iterative chaining stops as soon as \code{maxiter}
-#' is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration,
-#' the second last (i.e. best) imputed data is returned.
+#' Between the iterative model fitting, it offers the option of predictive mean matching. 
+#' This firstly avoids imputation with values not present in the original data 
+#' (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean
+#' matching tries to raise the variance in the resulting conditional distributions to 
+#' a realistic level and, as such, allows to do multiple imputation when repeating the call to missRanger(). The iterative chaining stops as soon as \code{maxiter}
+#' is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration, the second last (i.e. best) imputed data is returned.
 #' @param data A \code{data.frame} or \code{tibble} with missing values to impute.
-#' @param formula A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). 
-#'                Defaults to . ~ ., i.e. use all variables to impute all variables. If e.g. all variables (with missings) should be imputed by all 
-#'                variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for both sides of the formula.
-#'                Note that variables with missings must appear in the left hand side if they should be used on the right hand side.
+#' @param formula A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). Defaults to . ~ ., i.e. use all variables to impute all variables. 
+#' If e.g. all variables (with missings) should be imputed by all variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for each side of the formula. Further note that variables 
+#' with missings must appear in the left hand side if they should be used on the right hand side.
 #' @param pmm.k Number of candidate non-missing values to sample from in the predictive mean matching step. 0 to avoid this step.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
-#' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and 
-#'                variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
+#' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob".
 #' @param case.weights Vector with weight per observation in the data set used in fitting the random forests.
-#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees 
-#' (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
-#' The following arguments are incompatible: \code{data}, \code{write.forest}, 
-#' \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
+#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
+#' The following arguments are incompatible: \code{data}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
 #' @return An imputed \code{data.frame}.
+#' 
+#' @title missRanger
+#' @author Michael Mayer
+#' 
 #' @references
 #' [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
 #'
@@ -84,10 +84,20 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   relevantVars <- allVarsTwoSided(formula, data[1, ])
 
   ok <- vapply(data[, relevantVars[[1]], drop = FALSE], FUN.VALUE = TRUE,
-               function(z) (is.factor(z) || is.numeric(z)) && anyNA(z) && !all(is.na(z)))  
+               function(z) (is.numeric(z) || is.factor(z) || is.character(z) || 
+                            is.logical(z)) && anyNA(z) && !all(is.na(z)))  
   data.na <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
   visit.seq <- names(sort(colSums(data.na)))
-
+  
+  # ranger does not allow for logical responses and converts character 
+  # responses to character. Here, we convert these types to factors in a way that
+  # can be reverted before exiting.
+  wasCharacter <- visit.seq[vapply(data[, visit.seq, drop = FALSE], is.character, TRUE)]
+  wasLogical <- visit.seq[vapply(data[, visit.seq, drop = FALSE], is.logical, TRUE)]
+  if (length(zz <- c(wasCharacter, wasLogical))) {
+    data[, zz] <- lapply(data[, zz, drop = FALSE], as.factor)
+  }
+  
   if (verbose > 0) {
     cat("\n  Variables to impute: ")
     cat(visit.seq, sep = ", ")
@@ -178,6 +188,14 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   
   if (returnOOB) {
     attr(data.last, "oob") <- predErrorLast 
+  }
+  
+  # Undo the conversions from character and logical to factors.
+  if (length(wasCharacter)) {
+    data.last[, wasCharacter] <- lapply(data.last[, wasCharacter, drop = FALSE], as.character)
+  }
+  if (length(wasLogical)) {
+    data.last[, wasLogical] <- lapply(data.last[, wasLogical, drop = FALSE], as.logical)
   }
   
   data.last

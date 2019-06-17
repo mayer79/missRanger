@@ -7,8 +7,10 @@
 #' one of the closest \code{k} values in the prediction vector \code{xtrain} 
 #' is randomly chosen and its observed value in \code{ytrain} is returned. 
 #' 
-#' @param xtrain Vector with predicted values in the training data. 
-#'        Can be of type logical, numeric, character, or factor.
+#' @title missRanger pmm
+#' @author Michael Mayer
+#' 
+#' @param xtrain Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.
 #' @param xtest Vector with predicted values in the test data.
 #' @param ytrain Vector of observed values in the training data.
 #' @param k Number of nearest neighbours to sample from.

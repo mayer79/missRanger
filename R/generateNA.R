@@ -2,10 +2,10 @@
 #'
 #' @description Takes a vector, matrix or data frame and replaces some values by NA. 
 #' 
+#' @author Michael Mayer
+#' 
 #' @param x A vector, matrix or \code{data.frame}.
-#' @param p Proportion of missing values to add to \code{x}. 
-#'          If \code{x} is a \code{data.frame}, pass a vector 
-#'          to use different values for different columns of \code{x}.
+#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, pass a vector to use different values for different columns of \code{x}.
 #' @param seed An integer seed.
 #'
 #' @return \code{x} with missing values.

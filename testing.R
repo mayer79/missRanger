@@ -16,7 +16,7 @@ ir$Species[1:3] <- NA
 ir$s <- ir$Species == "setosa"
 ir$Sepal.Length[1:3] <- NA
 
-head(missRanger(ir))
+head(missRanger(ir)) 
 
 # Check order of imputation
 ir <- iris

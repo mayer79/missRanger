@@ -4,6 +4,8 @@
 #' by sampling with replacement from the non-missing values. For data frames, 
 #' this sampling is done by column.
 #' 
+#' @author Michael Mayer
+#' 
 #' @param x A vector, matrix or data frame.
 #' @param seed An integer seed.
 #'
