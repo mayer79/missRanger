@@ -42,6 +42,7 @@
 #' head(irisImputed)
 #' head(irisWithNA)
 #'
+#' \dontrun{
 #' # With extra trees algorithm
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
@@ -56,6 +57,7 @@
 #' # Use Species and Petal.Length to impute Species and Petal.Length.
 #' irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
 #'                           pmm.k = 3, num.trees = 100)
+#' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
                        verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
   if (verbose > 0) {

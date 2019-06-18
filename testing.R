@@ -32,3 +32,19 @@ head(missRanger(ir, pmm.k = 5))
 ir$Species <- iris$Species
 head(missRanger(ir, pmm.k = 3))
 
+
+#=====================================================================================
+#  generateNA
+#=====================================================================================
+
+generateNA(1:10, seed = 3)
+generateNA(1:10, seed = 3)
+generateNA(rep(TRUE, 10))
+generateNA(rep(Sys.Date(), 10))
+generateNA(cbind(1:10, 1:10), p = 0.5)
+
+summary(generateNA(head(iris), p = 0.5))
+generateNA(iris[1, ], p = 0.5)
+generateNA(iris[1, ], p = 0.55)
+generateNA(iris[1:2, ], p = 0.5)
+generateNA(iris[1:5, 1], p = 0.55)

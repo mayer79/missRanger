@@ -5,7 +5,7 @@
 #' @author Michael Mayer
 #' 
 #' @param x A vector, matrix or \code{data.frame}.
-#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, pass a vector to use different values for different columns of \code{x}.
+#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column instead.
 #' @param seed An integer seed.
 #'
 #' @return \code{x} with missing values.
@@ -25,7 +25,7 @@ generateNA <- function(x, p = 0.1, seed = NULL) {
   
   generateNaVec <- function(z, p) {
     n <- length(z)
-    z[sample(n, p * n)] <- NA
+    z[sample(n, round(p * n))] <- NA
     z
   }
   
