@@ -5,7 +5,7 @@
 #' @author Michael Mayer
 #' 
 #' @param x A vector, matrix or \code{data.frame}.
-#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column instead.
+#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column.
 #' @param seed An integer seed.
 #'
 #' @return \code{x} with missing values.

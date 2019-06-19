@@ -48,3 +48,36 @@ generateNA(iris[1, ], p = 0.5)
 generateNA(iris[1, ], p = 0.55)
 generateNA(iris[1:2, ], p = 0.5)
 generateNA(iris[1:5, 1], p = 0.55)
+
+#=====================================================================================
+#  imputeUnivariate
+#=====================================================================================
+
+imputeUnivariate(generateNA(1:10))
+imputeUnivariate(generateNA(rep(TRUE, 10)))
+imputeUnivariate(generateNA(rep(Sys.Date(), 10)))
+imputeUnivariate(generateNA(cbind(1:10, 1:10), p = 0.5))
+
+imputeUnivariate(generateNA(head(iris), p = 0.5))
+imputeUnivariate(generateNA(iris[1, ], p = 0.55)) # Error
+imputeUnivariate(generateNA(iris[1:2, ], p = 0.5))
+imputeUnivariate(generateNA(iris[1:5, 1], p = 0.55))
+imputeUnivariate(c(NA, 1:3))
+
+imputeUnivariate(c(NA, 0, 1, 0, 1))
+imputeUnivariate(c("A", "A", NA))
+imputeUnivariate(as.factor(c("A", "A", NA)))
+imputeUnivariate(cbind(1, NA))
+
+#=====================================================================================
+#  allVarsTwoSided
+#=====================================================================================
+
+allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
+allVarsTwoSided(. ~ ., iris)
+allVarsTwoSided(. -Species ~ Sepal.Width, iris)
+allVarsTwoSided(. ~ Sepal.Width, iris)
+allVarsTwoSided(. ~ 1, iris)
+allVarsTwoSided(1 ~ Species, iris)
+allVarsTwoSided(1 ~ 1) # Error
+allVarsTwoSided(log(SepalLength~.), data = iris) # Error
