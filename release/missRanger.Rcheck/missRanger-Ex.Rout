@@ -62,7 +62,7 @@ Type 'q()' to quit R.
 [[2]]
 [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
 
-> allVarsTwoSided(.-Species ~ Sepal.Width, iris)
+> allVarsTwoSided(. -Species ~ Sepal.Width, iris)
 [[1]]
 [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width" 
 
@@ -89,19 +89,29 @@ Type 'q()' to quit R.
 > 
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: generateNA
-> ### Title: Adds Missing Values to a Data Set
+> ### Title: Adds Missing Values to a Vector, Matrix or Data Frame
 > ### Aliases: generateNA
 > 
 > ### ** Examples
 > 
-> head(generateNA(iris))
+> head(generateNA(iris, p = 0.2))
   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-1          5.1         3.5          1.4          NA  setosa
-2          4.9         3.0          1.4         0.2    <NA>
+1          5.1         3.5           NA          NA  setosa
+2          4.9         3.0          1.4         0.2  setosa
 3          4.7         3.2          1.3         0.2  setosa
-4           NA         3.1          1.5         0.2  setosa
-5          5.0         3.6          1.4         0.2    <NA>
-6          5.4         3.9           NA         0.4    <NA>
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa
+> head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
+  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1          NA           NA          NA  setosa
+2          4.9          NA          1.4          NA    <NA>
+3          4.7          NA           NA          NA    <NA>
+4          4.6          NA           NA          NA    <NA>
+5          5.0          NA           NA          NA  setosa
+6          5.4          NA           NA          NA    <NA>
+> generateNA(1:10, p = 0.5, seed = 3345)
+ [1] NA NA  3 NA  5 NA  7 NA  9 10
 > 
 > 
 > 
@@ -127,17 +137,14 @@ Type 'q()' to quit R.
 > imputeUnivariate(as.factor(c("A", "A", NA)))
 [1] A A A
 Levels: A
-> 
-> # Impute a whole data set univariately
-> ir <- generateNA(iris)
-> head(imputed <- do.call(data.frame, lapply(ir, imputeUnivariate)))
-  Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
-1          5.0         3.5          1.4         0.2     setosa
-2          4.9         3.0          1.4         0.2 versicolor
-3          4.7         3.2          1.2         0.2  virginica
-4          6.1         3.1          1.5         0.2     setosa
-5          5.0         3.6          1.4         0.2     setosa
-6          5.4         3.9          1.7         0.4 versicolor
+> head(imputeUnivariate(generateNA(iris)))
+  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa
 > 
 > 
 > 
@@ -151,7 +158,7 @@ Levels: A
 > 
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: missRanger
-> ### Title: Fast Imputation of Missing Values by Chained Random Forests
+> ### Title: missRanger
 > ### Aliases: missRanger
 > 
 > ### ** Examples
@@ -161,83 +168,77 @@ Levels: A
 
 Missing value imputation by random forests
 
-  Variables to impute: Sepal.Length, Sepal.Width, Species, Petal.Width, Petal.Length
+  Variables to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
   Variables used to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
 iter 1:	.....
 iter 2:	.....
 iter 3:	.....
+iter 4:	.....
+iter 5:	.....
+iter 6:	.....
+iter 7:	.....
 > head(irisImputed)
-  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-1          5.1         3.5          1.4         0.4  setosa
-2          4.9         3.0          1.4         0.2  setosa
-3          4.7         3.2          1.3         0.2  setosa
-4          4.3         3.1          1.5         0.2  setosa
-5          5.0         3.6          1.4         0.2  setosa
-6          5.4         3.9          1.5         0.4  setosa
-> head(irisWithNA)
-  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-1          5.1         3.5          1.4          NA  setosa
-2          4.9         3.0          1.4         0.2    <NA>
-3          4.7         3.2          1.3         0.2  setosa
-4           NA         3.1          1.5         0.2  setosa
-5          5.0         3.6          1.4         0.2    <NA>
-6          5.4         3.9           NA         0.4    <NA>
-> 
-> # With extra trees algorithm
-> irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
-
-Missing value imputation by random forests
-
-  Variables to impute: Sepal.Length, Sepal.Width, Species, Petal.Width, Petal.Length
-  Variables used to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
-iter 1:	.....
-iter 2:	.....
-iter 3:	.....
-> head(irisImputed_et)
   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 1          5.1         3.5          1.4         0.2  setosa
 2          4.9         3.0          1.4         0.2  setosa
 3          4.7         3.2          1.3         0.2  setosa
-4          5.5         3.1          1.5         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
 5          5.0         3.6          1.4         0.2  setosa
-6          5.4         3.9          1.4         0.4  setosa
+6          5.4         3.9          1.7         0.4  setosa
+> head(irisWithNA)
+  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa
 > 
-> # Do not impute Species. Note: Since this variable contains missings, it cannot be used
-> # to impute the other variables as well.
-> irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
-
-Missing value imputation by random forests
-
-  Variables to impute: Sepal.Length, Sepal.Width, Petal.Width, Petal.Length
-  Variables used to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width
-iter 1:	....
-iter 2:	....
-iter 3:	....
-iter 4:	....
-iter 5:	....
-> 
-> # Impute univariately only.
-> irisImputed <- missRanger(irisWithNA, . ~ 1)
-
-Missing value imputation by random forests
-
-  Variables to impute: Sepal.Length, Sepal.Width, Species, Petal.Width, Petal.Length
-  Variables used to impute: 
-iter 1:	.....
-> 
-> # Use Species and Petal.Length to impute Species and Petal.Length.
-> irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
-+                           pmm.k = 3, num.trees = 100)
-
-Missing value imputation by random forests
-
-  Variables to impute: Species, Petal.Length
-  Variables used to impute: Species, Petal.Length
-iter 1:	..
-iter 2:	..
-iter 3:	..
-iter 4:	..
-iter 5:	..
+> ## Not run: 
+> ##D # With extra trees algorithm
+> ##D irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
+> ##D head(irisImputed_et)
+> ##D 
+> ##D # Do not impute Species. Note: Since this variable contains missings, it won't be used
+> ##D # for imputing other variables.
+> ##D head(irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100))
+> ##D 
+> ##D # Impute univariately only.
+> ##D head(irisImputed <- missRanger(irisWithNA, . ~ 1))
+> ##D 
+> ##D # Use Species and Petal.Length to impute Species and Petal.Length.
+> ##D head(irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
+> ##D                                pmm.k = 3, num.trees = 100))
+> ##D                                
+> ##D # Multiple imputation: Fill data 20 times, run 20 analyses and pool their results.
+> ##D require(mice)
+> ##D filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
+> ##D                     simplify = FALSE)
+> ##D models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
+> ##D summary(pooled_fit <- pool(models)) # Realistically inflated standard errors and p values
+> ##D 
+> ##D # A data set with logicals, numerics, characters and factors.
+> ##D n <- 100
+> ##D X <- data.frame(x1 = seq_len(n), 
+> ##D                 x2 = log(seq_len(n)), 
+> ##D                 x3 = sample(LETTERS[1:3], n, replace = TRUE),
+> ##D                 x4 = factor(sample(LETTERS[1:3], n, replace = TRUE)),
+> ##D                 x5 = seq_len(n) > 50)
+> ##D head(X)
+> ##D X_NA <- generateNA(X, p = seq(0, 0.8, by = .2))
+> ##D head(X_NA)
+> ##D 
+> ##D head(X_imp <- missRanger(X_NA))
+> ##D head(X_imp <- missRanger(X_NA, pmm = 3))
+> ##D head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 0))
+> ##D head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 2, returnOOB = TRUE))
+> ##D attr(X_imp, "oob") # OOB prediction errors per column.
+> ##D 
+> ##D # The formula interface
+> ##D head(X_imp <- missRanger(X_NA, x2 ~ x2 + x3, pmm = 3)) # Does not use x3 because of NAs
+> ##D head(X_imp <- missRanger(X_NA, x2 + x3 ~ x2 + x3, pmm = 3))
+> ##D head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
+> ## End(Not run)
 > 
 > 
 > 
@@ -251,19 +252,21 @@ iter 5:	..
 > 
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 > ### Name: pmm
-> ### Title: Predictive Mean Matching
+> ### Title: missRanger pmm
 > ### Aliases: pmm
 > 
 > ### ** Examples
 > 
-> pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1) # 0
+> pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
 [1] 0
-> pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 3) # 0 or 1
-[1] 1
-> pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 1) # B
+> pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0
+[1] 0
+> pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2) # "A" or "B"
 [1] "B"
-> pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 2) # A or B
-[1] "B"
+> pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
+[1] 2
+> pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
+[1] 2
 > 
 > 
 > 
@@ -274,7 +277,7 @@ iter 5:	..
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  3.69 0.85 3.3 NA NA 
+Time elapsed:  1.77 0.29 1.7 NA NA 
 > grDevices::dev.off()
 null device 
           1 

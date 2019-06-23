@@ -9,18 +9,21 @@ allVarsTwoSided(formula, data)
 \arguments{
 \item{formula}{A two-sided formula object.}
 
-\item{data}{A \code{data.frame}. Primarily used to deal with "." in the formula.}
+\item{data}{A \code{data.frame} used to evaluate any "." appearing in the formula.}
 }
 \value{
 A \code{list} with two character vectors of variable names.
 }
 \description{
-Takes a formula and a data frame and returns all variable names in both the lhs and the rhs. 
-lhs and rhs are evaluated separately. This is relevant if both sides contain a "." (= all variables).
+Takes a formula and a data frame and returns all variable names in both the left hand side and the right hand side. 
+Dots (".") are evaluated separately within both sides of the formula. Functions like "log" etc. are not supported.
 }
 \examples{
 allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
 allVarsTwoSided(. ~ ., iris)
-allVarsTwoSided(.-Species ~ Sepal.Width, iris)
+allVarsTwoSided(. -Species ~ Sepal.Width, iris)
 allVarsTwoSided(. ~ Sepal.Width, iris)
+}
+\author{
+Michael Mayer
 }

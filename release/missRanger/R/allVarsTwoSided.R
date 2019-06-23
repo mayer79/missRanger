@@ -2,10 +2,13 @@
 #'
 #' @importFrom stats terms.formula reformulate
 #'
-#' @description Takes a formula and a data frame and returns all variable names in both the lhs and the rhs. 
-#' lhs and rhs are evaluated separately. This is relevant if both sides contain a "." (= all variables).
+#' @description Takes a formula and a data frame and returns all variable names in both the left hand side and the right hand side. 
+#' Dots (".") are evaluated separately within both sides of the formula. Functions like "log" etc. are not supported.
+#' 
+#' @author Michael Mayer
+#' 
 #' @param formula A two-sided formula object.
-#' @param data A \code{data.frame}. Primarily used to deal with "." in the formula.
+#' @param data A \code{data.frame} used to evaluate any "." appearing in the formula.
 #'
 #' @return A \code{list} with two character vectors of variable names.
 #' 
@@ -14,11 +17,12 @@
 #' @examples 
 #' allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
 #' allVarsTwoSided(. ~ ., iris)
-#' allVarsTwoSided(.-Species ~ Sepal.Width, iris)
+#' allVarsTwoSided(. -Species ~ Sepal.Width, iris)
 #' allVarsTwoSided(. ~ Sepal.Width, iris)
 allVarsTwoSided <- function(formula, data) {
   stopifnot(inherits(formula, "formula"), 
-            length(formula <- as.character(formula)) == 3L)
+            length(formula <- as.character(formula)) == 3L,
+            is.data.frame(data))
   
   lapply(formula[2:3], function(z) attr(terms.formula(
     reformulate(z), data = data), "term.labels"))

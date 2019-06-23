@@ -1,7 +1,7 @@
 allVarsTwoSided         Extraction of Variable Names from Two-Sided
                         Formula.
-generateNA              Adds Missing Values to a Data Set
+generateNA              Adds Missing Values to a Vector, Matrix or Data
+                        Frame
 imputeUnivariate        Univariate Imputation
-missRanger              Fast Imputation of Missing Values by Chained
-                        Random Forests
-pmm                     Predictive Mean Matching
+missRanger              missRanger
+pmm                     missRanger pmm

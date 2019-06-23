@@ -1,27 +1,39 @@
-#' Adds Missing Values to a Data Set
+#' Adds Missing Values to a Vector, Matrix or Data Frame
 #'
-#' @description Takes a data frame and replaces randomly part of the values by missing values. 
+#' @description Takes a vector, matrix or data frame and replaces some values by NA. 
 #' 
-#' @param data A \code{data.frame}.
-#' @param p Proportion of missing values to approximately add to each column of \code{data}.
+#' @author Michael Mayer
+#' 
+#' @param x A vector, matrix or \code{data.frame}.
+#' @param p Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column.
 #' @param seed An integer seed.
 #'
-#' @return \code{data} with missing values.
+#' @return \code{x} with missing values.
 #' 
 #' @export
 #'
-#' @examples head(generateNA(iris))
-generateNA <- function(data, p = 0.1, seed = NULL) {
-  stopifnot(is.numeric(p), length(p) == 1L, p >= 0, p <= 1, 
-            is.data.frame(data), (di <- dim(data)) >= 1L)
+#' @examples 
+#' head(generateNA(iris, p = 0.2))
+#' head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
+#' generateNA(1:10, p = 0.5, seed = 3345)
+generateNA <- function(x, p = 0.1, seed = NULL) {
+  stopifnot(p >= 0, p <= 1, is.atomic(x) || is.data.frame(x))
   
   if (!is.null(seed)) {
     set.seed(seed)  
   }
-
-  v <- sample(c(TRUE, FALSE), prod(di), replace = TRUE, prob = c(p, 1 - p))
-  dim(v) <- di
-  data[v] <- NA
-  data
+  
+  generateNaVec <- function(z, p) {
+    n <- length(z)
+    z[sample(n, round(p * n))] <- NA
+    z
+  }
+  
+  if (is.atomic(x)) {
+    return(generateNaVec(x, p))
+  } 
+  
+  x[] <- Map(generateNaVec, x, p)
+ 
+  x
 }
-

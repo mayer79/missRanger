@@ -10,6 +10,7 @@
 #' matching tries to raise the variance in the resulting conditional distributions to 
 #' a realistic level and, as such, allows to do multiple imputation when repeating the call to missRanger(). The iterative chaining stops as soon as \code{maxiter}
 #' is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration, the second last (i.e. best) imputed data is returned.
+#' 
 #' @param data A \code{data.frame} or \code{tibble} with missing values to impute.
 #' @param formula A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). Defaults to . ~ ., i.e. use all variables to impute all variables. 
 #' If e.g. all variables (with missings) should be imputed by all variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for each side of the formula. Further note that variables 
@@ -18,10 +19,10 @@
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
 #' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
-#' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob".
-#' @param case.weights Vector with weight per observation in the data set used in fitting the random forests.
-#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 100}) and/or a low value of \code{sample.fraction}. 
-#' The following arguments are incompatible: \code{data}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
+#' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.
+#' @param case.weights Vector with non-negative case weights.
+#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
+#' The following arguments are incompatible with \code{ranger}: \code{data}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
 #' @return An imputed \code{data.frame}.
 #' 
@@ -29,11 +30,14 @@
 #' @author Michael Mayer
 #' 
 #' @references
-#' [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409.
+#' [1] Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. 
+#' http://arxiv.org/abs/1508.04409.
 #'
-#' [2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
+#' [2] Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. 
+#' https://doi.org/10.1093/bioinformatics/btr597.
 #'
-#' [3] Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
+#' [3] Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. 
+#' http://www.jstatsoft.org/v45/i03/
 #' @export
 #'
 #' @examples
@@ -47,20 +51,49 @@
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
 #' 
-#' # Do not impute Species. Note: Since this variable contains missings, it cannot be used
-#' # to impute the other variables as well.
-#' irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+#' # Do not impute Species. Note: Since this variable contains missings, it won't be used
+#' # for imputing other variables.
+#' head(irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100))
 #' 
 #' # Impute univariately only.
-#' irisImputed <- missRanger(irisWithNA, . ~ 1)
+#' head(irisImputed <- missRanger(irisWithNA, . ~ 1))
 #' 
 #' # Use Species and Petal.Length to impute Species and Petal.Length.
-#' irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
-#'                           pmm.k = 3, num.trees = 100)
+#' head(irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
+#'                                pmm.k = 3, num.trees = 100))
+#'                                
+#' # Multiple imputation: Fill data 20 times, run 20 analyses and pool their results.
+#' require(mice)
+#' filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
+#'                     simplify = FALSE)
+#' models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
+#' summary(pooled_fit <- pool(models)) # Realistically inflated standard errors and p values
+#' 
+#' # A data set with logicals, numerics, characters and factors.
+#' n <- 100
+#' X <- data.frame(x1 = seq_len(n), 
+#'                 x2 = log(seq_len(n)), 
+#'                 x3 = sample(LETTERS[1:3], n, replace = TRUE),
+#'                 x4 = factor(sample(LETTERS[1:3], n, replace = TRUE)),
+#'                 x5 = seq_len(n) > 50)
+#' head(X)
+#' X_NA <- generateNA(X, p = seq(0, 0.8, by = .2))
+#' head(X_NA)
+#' 
+#' head(X_imp <- missRanger(X_NA))
+#' head(X_imp <- missRanger(X_NA, pmm = 3))
+#' head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 0))
+#' head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 2, returnOOB = TRUE))
+#' attr(X_imp, "oob") # OOB prediction errors per column.
+#' 
+#' # The formula interface
+#' head(X_imp <- missRanger(X_NA, x2 ~ x2 + x3, pmm = 3)) # Does not use x3 because of NAs
+#' head(X_imp <- missRanger(X_NA, x2 + x3 ~ x2 + x3, pmm = 3))
+#' head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
 #' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
                        verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
-  if (verbose > 0) {
+  if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
   
@@ -81,8 +114,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     set.seed(seed)
   }  
   
-  # Select variables to be imputed. Currently, only factor or numeric variables 
-  # are supported. We will visit them from few to many missings.
+  # Select variables to be imputed. We will visit them from few to many missings.
   relevantVars <- allVarsTwoSided(formula, data[1, ])
 
   ok <- vapply(data[, relevantVars[[1]], drop = FALSE], FUN.VALUE = TRUE,
@@ -100,7 +132,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     data[, zz] <- lapply(data[, zz, drop = FALSE], as.factor)
   }
   
-  if (verbose > 0) {
+  if (verbose) {
     cat("\n  Variables to impute: ")
     cat(visit.seq, sep = ", ")
   }
@@ -111,13 +143,13 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   imputeBy <- relevantVars[[2]][ok]
   completed <- setdiff(imputeBy, visit.seq)
   
-  if (verbose > 0) {
+  if (verbose) {
     cat("\n  Variables used to impute: ")
     cat(imputeBy, sep = ", ")
   }
   
   if (!length(visit.seq)) {
-    if (verbose > 0) {
+    if (verbose) {
       cat("\n")
     }
     
@@ -136,7 +168,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   
   # Looping over iterations and variables to impute
   while (crit && j <= maxiter) {
-    if (verbose > 0) {
+    if (verbose) {
       cat("\niter ", j, ":\t", sep = "")
     }
     data.last <- data
@@ -179,7 +211,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     crit <- mean(predError) < mean(predErrorLast)
   }
   
-  if (verbose > 0) {
+  if (verbose) {
     cat("\n")
   }
   

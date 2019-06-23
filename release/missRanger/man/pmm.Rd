@@ -2,36 +2,39 @@
 % Please edit documentation in R/pmm.R
 \name{pmm}
 \alias{pmm}
-\title{Predictive Mean Matching}
+\title{missRanger pmm}
 \usage{
 pmm(xtrain, xtest, ytrain, k = 1L, seed = NULL)
 }
 \arguments{
-\item{xtrain}{Vector with predicted values in the training data set.}
+\item{xtrain}{Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.}
 
-\item{xtest}{Vector with predicted values in the test data set.}
+\item{xtest}{Vector as \code{xtrain} with predicted values in the test data.}
 
-\item{ytrain}{Vector with observed response in the training data set.}
+\item{ytrain}{Vector of the observed values in the training data. Can be of any type.}
 
-\item{k}{Number of nearest neighbours to choose from. Set \code{k = 0} if no predictive mean matching is to be done.}
+\item{k}{Number of nearest neighbours to sample from.}
 
 \item{seed}{Integer random seed.}
 }
 \value{
-Vector with predicted values in the test data set based on predictive mean matching.
+Vector of the same length as \code{xtest} with values from \code{xtrain}.
 }
 \description{
-This function is used internally only but might help others 
-to implement an efficient way of doing predictive mean matching on top 
-of any prediction based missing value imputation. It works as follows:
-For each predicted value of a vector \code{xtest}, the closest \code{k} 
-predicted values of another vector \code{xtrain} are identified by 
-k-nearest neighbour. Then, one of those neighbours is randomly picked 
-and its corresponding observed value in \code{ytrain} is returned.
+For each value in the prediction vector \code{xtest}, 
+one of the closest \code{k} values in the prediction vector \code{xtrain} 
+is randomly chosen and its observed value in \code{ytrain} is returned.
+}
+\details{
+Predictive Mean Matching
 }
 \examples{
-pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1) # 0
-pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 3) # 0 or 1
-pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 1) # B
-pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 2) # A or B
+pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
+pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0
+pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2) # "A" or "B"
+pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
+pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
+}
+\author{
+Michael Mayer
 }

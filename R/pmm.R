@@ -11,8 +11,8 @@
 #' @author Michael Mayer
 #' 
 #' @param xtrain Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.
-#' @param xtest Vector with predicted values in the test data.
-#' @param ytrain Vector of observed values in the training data.
+#' @param xtest Vector as \code{xtrain} with predicted values in the test data.
+#' @param ytrain Vector of the observed values in the training data. Can be of any type.
 #' @param k Number of nearest neighbours to sample from.
 #' @param seed Integer random seed.
 #'
@@ -20,21 +20,21 @@
 #' @export
 #'
 #' @examples 
-#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1) # 0
-#' pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1), k = 1) # 0
+#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
+#' pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0
 #' pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2) # "A" or "B"
 #' pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
-#' pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2, k = 1) # 2
+#' pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
 pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
-  stopifnot(length(xtrain) >= 1L, length(xtest) >= 1L, 
+  stopifnot(length(xtrain) >= 1L, (nt <- length(xtest)) >= 1L, 
             length(xtrain) == length(ytrain), 
             mode(xtrain) %in% c("logical", "numeric", "character"),
             mode(xtrain) == mode(xtest),
             k >= 1L)
   
   # Handle trivial case
-  if (length(ytrain) == 1L) {
-    return(rep(ytrain, length(xtest)))
+  if (length(u <- unique(ytrain)) == 1L) {
+    return(rep(u, nt))
   }
   
   if (!is.null(seed)) {
@@ -67,6 +67,6 @@ pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
   
   k <- min(k, length(xtrain))
   nn <- knnx.index(xtrain, xtest, k)
-  take <- t(rmultinom(length(xtest), 1L, rep(1L, k)))
+  take <- t(rmultinom(nt, 1L, rep(1L, k)))
   ytrain[rowSums(nn * take)]
 }

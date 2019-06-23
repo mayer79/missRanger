@@ -5,7 +5,7 @@
 * using option '--as-cran'
 * checking for file 'missRanger/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'missRanger' version '2.0.1'
+* this is package 'missRanger' version '2.1.0'
 * package encoding: UTF-8
 * checking package namespace information ... OK
 * checking package dependencies ... OK

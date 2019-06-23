@@ -8,19 +8,31 @@ stopifnot(basename(getwd()) == "missRanger")
 
 pkg <- "release/missRanger"
 unlink(pkg, force = TRUE, recursive = TRUE)
-create(pkg, descr = list(
-            Title = "Fast Imputation of Missing Values",
-            Type = "Package",
-            Version = "2.0.1",
-            Date = Sys.Date(),
-            Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the lightning fast random jungle package 'ranger'. Between the iterative model fitting, we offer the option of using predictive mean matching. This firstly avoids imputation with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow e.g. to do multiple imputation when repeating the call to missRanger().",
-            
-            `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
-            Depends = "R (>= 3.5.0)",
-            Imports = list("stats", "FNN (>= 1.1)", "ranger (>= 0.10)"),
-            License = "GPL(>= 2)",
-            Author = "Michael Mayer [aut, cre, cph]",
-            Maintainer = "Michael Mayer <mayermichael79@gmail.com>"), 
+create(
+  pkg, 
+  descr = list(
+    Title = "Fast Imputation of Missing Values",
+    Type = "Package",
+    Version = "2.1.0",
+    Date = Sys.Date(),
+    Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
+    mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
+    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
+    lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
+    we offer the option of using predictive mean matching. This firstly avoids imputation 
+    with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
+    Secondly, predictive mean matching tries to raise the variance in the resulting conditional 
+    distributions to a realistic level. This would allow e.g. to do multiple imputation when 
+    repeating the call to missRanger(). 
+    A formula interface allows to control which variables should be imputed by which.",
+    
+    `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
+    Depends = "R (>= 3.5.0)",
+    Imports = list("stats", "FNN (>= 1.1)", "ranger (>= 0.10)"),
+    Suggests = list("mice (>= 3.0)"),
+    License = "GPL(>= 2)",
+    Author = "Michael Mayer [aut, cre, cph]",
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"), 
   rstudio = FALSE)
 
 # Add R files

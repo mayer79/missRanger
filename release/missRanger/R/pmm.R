@@ -3,47 +3,70 @@
 #' @importFrom stats rmultinom
 #' @importFrom FNN knnx.index
 #'
-#' @description This function is used internally only but might help others 
-#' to implement an efficient way of doing predictive mean matching on top 
-#' of any prediction based missing value imputation. It works as follows:
-#' For each predicted value of a vector \code{xtest}, the closest \code{k} 
-#' predicted values of another vector \code{xtrain} are identified by 
-#' k-nearest neighbour. Then, one of those neighbours is randomly picked 
-#' and its corresponding observed value in \code{ytrain} is returned.
+#' @description For each value in the prediction vector \code{xtest}, 
+#' one of the closest \code{k} values in the prediction vector \code{xtrain} 
+#' is randomly chosen and its observed value in \code{ytrain} is returned. 
 #' 
-#' @param xtrain Vector with predicted values in the training data set.
-#' @param xtest Vector with predicted values in the test data set.
-#' @param ytrain Vector with observed response in the training data set.
-#' @param k Number of nearest neighbours to choose from. Set \code{k = 0} if no predictive mean matching is to be done.
+#' @title missRanger pmm
+#' @author Michael Mayer
+#' 
+#' @param xtrain Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.
+#' @param xtest Vector as \code{xtrain} with predicted values in the test data.
+#' @param ytrain Vector of the observed values in the training data. Can be of any type.
+#' @param k Number of nearest neighbours to sample from.
 #' @param seed Integer random seed.
 #'
-#' @return Vector with predicted values in the test data set based on predictive mean matching.
+#' @return Vector of the same length as \code{xtest} with values from \code{xtrain}.
 #' @export
 #'
 #' @examples 
-#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 1) # 0
-#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1), k = 3) # 0 or 1
-#' pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 1) # B
-#' pmm(xtrain = c("A", "A", "B"), xtest = "B", ytrain = c("B", "A", "B"), k = 2) # A or B
+#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
+#' pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0
+#' pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2) # "A" or "B"
+#' pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
+#' pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
 pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
-  stopifnot(length(xtrain) >= 1L, length(xtest) >= 1L, 
-            length(xtrain) == length(ytrain), k >= 1L)
+  stopifnot(length(xtrain) >= 1L, (nt <- length(xtest)) >= 1L, 
+            length(xtrain) == length(ytrain), 
+            mode(xtrain) %in% c("logical", "numeric", "character"),
+            mode(xtrain) == mode(xtest),
+            k >= 1L)
+  
+  # Handle trivial case
+  if (length(u <- unique(ytrain)) == 1L) {
+    return(rep(u, nt))
+  }
   
   if (!is.null(seed)) {
     set.seed(seed)
   }
   
-  # join factor levels in xtest and xtrain and represent them as numerics
-  if (is.factor(xtrain) || is.character(xtrain)) {
+  # STEP 1: Turn xtrain and xtest into numbers.
+  
+  # Handles the case of inconsistent factor levels of xtrain and xtest.
+  if (is.factor(xtrain) && (nlevels(xtrain) != nlevels(xtest) || 
+                            !all(levels(xtrain) == levels(xtest)))) {
     xtrain <- as.character(xtrain)
     xtest <- as.character(xtest)
-    lvl <- unique(c(xtrain, xtest))
-    xtrain <- as.numeric(factor(xtrain, levels = lvl))
-    xtest <- as.numeric(factor(xtest, levels = lvl))
   }
+  
+  # Turns character vectors into factors.
+  if (is.character(xtrain)) {
+    lvl <- unique(c(xtrain, xtest))
+    xtrain <- factor(xtrain, levels = lvl)
+    xtest <- factor(xtest, levels = lvl)
+  } 
+  
+  # Turns everything into numbers.
+  if (!is.numeric(xtrain) && mode(xtrain) %in% c("logical", "numeric")) {
+    xtrain <- as.numeric(xtrain)
+    xtest <- as.numeric(xtest)
+  } 
+  
+  # STEP 2: PMM based on k-nearest neightbour.
   
   k <- min(k, length(xtrain))
   nn <- knnx.index(xtrain, xtest, k)
-  take <- t(rmultinom(length(xtest), 1L, rep(1L, k)))
+  take <- t(rmultinom(nt, 1L, rep(1L, k)))
   ytrain[rowSums(nn * take)]
 }

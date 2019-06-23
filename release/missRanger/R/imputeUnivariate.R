@@ -1,33 +1,46 @@
 #' Univariate Imputation
 #'
-#' @description Fills missing values of a vector of any type by sampling 
-#' with replacement from the non-missing values. Requires at least one 
-#' non-missing value to run.
+#' @description Fills missing values of a vector, matrix or data frame 
+#' by sampling with replacement from the non-missing values. For data frames, 
+#' this sampling is done within column.
 #' 
-#' @param x A vector of any type possibly containing missing values.
+#' @author Michael Mayer
+#' 
+#' @param x A vector, matrix or data frame.
 #' @param seed An integer seed.
 #'
-#' @return A vector of the same length and type as \code{x} but without missing values.
+#' @return \code{x} without missing values.
 #' @export
 #'
 #' @examples
 #' imputeUnivariate(c(NA, 0, 1, 0, 1))
 #' imputeUnivariate(c("A", "A", NA))
 #' imputeUnivariate(as.factor(c("A", "A", NA)))
-#' 
-#' # Impute a whole data set univariately
-#' ir <- generateNA(iris)
-#' head(imputed <- do.call(data.frame, lapply(ir, imputeUnivariate)))
+#' head(imputeUnivariate(generateNA(iris)))
 imputeUnivariate <- function(x, seed = NULL) {
-  stopifnot(is.atomic(x), length(x) >= 1L)
+  stopifnot(is.atomic(x) || is.data.frame(x))
   
   if (!is.null(seed)) {
     set.seed(seed)  
   }
   
-  ok <- !is.na(x)
-  if (any(!ok)) {
-    x[!ok] <- sample(x[ok], sum(!ok), replace = TRUE)
+  imputeVec <- function(z) {
+    na <- is.na(z)
+    if ((s <- sum(na))) {
+      if (s == length(z)) {
+        stop("No non-missing elements to sample from.")
+      }
+      z[na] <- sample(z[!na], s, replace = TRUE)
+    }
+    z
   }
+  
+  if (is.atomic(x)) {
+    return(imputeVec(x))
+  } 
+ 
+  x[] <- lapply(x, imputeVec)
+
   x
 }
+  

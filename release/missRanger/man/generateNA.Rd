@@ -2,23 +2,28 @@
 % Please edit documentation in R/generateNA.R
 \name{generateNA}
 \alias{generateNA}
-\title{Adds Missing Values to a Data Set}
+\title{Adds Missing Values to a Vector, Matrix or Data Frame}
 \usage{
-generateNA(data, p = 0.1, seed = NULL)
+generateNA(x, p = 0.1, seed = NULL)
 }
 \arguments{
-\item{data}{A \code{data.frame}.}
+\item{x}{A vector, matrix or \code{data.frame}.}
 
-\item{p}{Proportion of missing values to approximately add to each column of \code{data}.}
+\item{p}{Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column.}
 
 \item{seed}{An integer seed.}
 }
 \value{
-\code{data} with missing values.
+\code{x} with missing values.
 }
 \description{
-Takes a data frame and replaces randomly part of the values by missing values.
+Takes a vector, matrix or data frame and replaces some values by NA.
 }
 \examples{
-head(generateNA(iris))
+head(generateNA(iris, p = 0.2))
+head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
+generateNA(1:10, p = 0.5, seed = 3345)
+}
+\author{
+Michael Mayer
 }

@@ -2,13 +2,13 @@
 #'
 #' @importFrom stats terms.formula reformulate
 #'
-#' @description Takes a formula and a data frame and returns all variable names in both the lhs and the rhs. 
-#' Regarding "." in the formula, lhs and rhs are evaluated separately. Functions like "log" etc. are not allowed.
+#' @description Takes a formula and a data frame and returns all variable names in both the left hand side and the right hand side. 
+#' Dots (".") are evaluated separately within both sides of the formula. Functions like "log" etc. are not supported.
 #' 
 #' @author Michael Mayer
 #' 
 #' @param formula A two-sided formula object.
-#' @param data A \code{data.frame}. Used to deal with "." in the formula.
+#' @param data A \code{data.frame} used to evaluate any "." appearing in the formula.
 #'
 #' @return A \code{list} with two character vectors of variable names.
 #' 

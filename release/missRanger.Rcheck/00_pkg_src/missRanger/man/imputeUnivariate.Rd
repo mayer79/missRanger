@@ -7,24 +7,24 @@
 imputeUnivariate(x, seed = NULL)
 }
 \arguments{
-\item{x}{A vector of any type possibly containing missing values.}
+\item{x}{A vector, matrix or data frame.}
 
 \item{seed}{An integer seed.}
 }
 \value{
-A vector of the same length and type as \code{x} but without missing values.
+\code{x} without missing values.
 }
 \description{
-Fills missing values of a vector of any type by sampling 
-with replacement from the non-missing values. Requires at least one 
-non-missing value to run.
+Fills missing values of a vector, matrix or data frame 
+by sampling with replacement from the non-missing values. For data frames, 
+this sampling is done within column.
 }
 \examples{
 imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
-
-# Impute a whole data set univariately
-ir <- generateNA(iris)
-head(imputed <- do.call(data.frame, lapply(ir, imputeUnivariate)))
+head(imputeUnivariate(generateNA(iris)))
+}
+\author{
+Michael Mayer
 }
