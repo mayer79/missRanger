@@ -57,7 +57,7 @@ head(m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100))
 # Impute all variables with all except Species
 head(m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100))
 
-# Impute Species and Sepal.Width by Sepal.Width
+# Impute Species and Sepal.Width by Species
 head(m <- missRanger(irisWithNA, Species + Sepal.Width ~ Species, pmm.k = 3, num.trees = 100))
 
 # Impute all variables univariatly
@@ -130,7 +130,7 @@ For machine learning tasks, imputation is typically seen as a fixed data prepara
 
 For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing data appear. One of the standard approaches here is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard error plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
 
-The package `mice` takes over this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In order to keep variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
+The package `mice` takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In order to keep variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
 
 The following example shows how easy such workflow looks like.
 
