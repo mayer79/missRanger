@@ -3,7 +3,7 @@
 This is a summary of all changes since version 1.x.x.
 
 ## Major changes
-* `missRanger` now also imputes and uses logical variables and character variables as well. Performance of `missRanger` will tend to be better thanks to this fix.
+* `missRanger` now also imputes and uses logical variables and character variables.
 
 * Added formula interface to specify which variables to impute (those on the left hand side) and those used to do so (those on the right hand side). Here some (pseudo) examples:
 
@@ -26,6 +26,8 @@ This is a summary of all changes since version 1.x.x.
 * The function `imputeUnivariate` has received a `seed` argument.
 
 * The function `generateNA` offers now the possibility to use different proportions of missings for each column.
+
+* If `verbose` is not 0, then `missRanger` will show which variables will be imputed in which order and which variables will be used for imputation.
 
 ## Minor bug fix
 

@@ -9,6 +9,7 @@ mean matching tries to raise the variance in the resulting conditional distribut
 e.g. to do multiple imputation when repeating the call to missRanger(). Package `mice` utilizes the `randomForest` package with only ten trees as default.
 
 Please check the help `?missRanger` for how to call the function and to see all options. 
+
 ## Example
 
 This example first generates a data set with about 10% missing values in each column. 
@@ -39,12 +40,12 @@ library(tidyverse)
 
 iris %>% 
   generateNA %>% 
-  as.tibble %>% 
+  as_tibble %>% 
   missRanger(verbose = 0) %>% 
   head
 ```
 
-Since release 2.0.1, following an idea of Marvin Wright, a formula interface is used to control which variables are to be imputed (on the left hand side of the formula) by which variables (those on the right hand side):
+Since release 2.0.1, following an idea of Marvin N. Wright, a formula interface is used to control which variables are to be imputed (on the left hand side of the formula) by which variables (those on the right hand side):
 
 ``` r
 # Impute all variables with all (default behaviour). Note that variables without
@@ -69,7 +70,7 @@ head(m <- missRanger(irisWithNA, . ~ 1))
 
 1. Transform the variable to a numeric or character/factor.
 
-2. Impute with `pmm.k` > 0, so that no impossible values are created.
+2. Impute with `pmm.k` > 0 to make sure no impossible values are created.
 
 3. Transform the imputed variable back to its original type.
 
@@ -126,9 +127,9 @@ to do
 
 ## How to use `missRanger` in multiple imputation settings?
 
-For machine learning tasks, imputation is typically seen as a fixed data preparation task like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
+For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
 
-For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing data appear. One of the standard approaches here is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard error plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
+For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [4]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
 
 The package `mice` takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In order to keep variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
 
@@ -196,6 +197,8 @@ install_github("mayer79/missRanger/release/missRanger")
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
  
-[2]  Stekhoven, D.J. and Buehlmann, P. (2012), 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118, doi: 10.1093/bioinformatics/btr597
+[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1) 2012, 112-118, doi: 10.1093/bioinformatics/btr597
 
 [3]  Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
+
+[4] Rubin, D.B. (1987). *Multiple Imputation for Nonresponse in Surveys.* New York: John Wiley and Sons.
