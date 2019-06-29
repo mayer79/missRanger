@@ -9,9 +9,9 @@ pmm(xtrain, xtest, ytrain, k = 1L, seed = NULL)
 \arguments{
 \item{xtrain}{Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.}
 
-\item{xtest}{Vector as \code{xtrain} with predicted values in the test data.}
+\item{xtest}{Vector as \code{xtrain} with predicted values in the test data. Missing values are not allowed.}
 
-\item{ytrain}{Vector of the observed values in the training data. Can be of any type.}
+\item{ytrain}{Vector of the observed values in the training data. Must be of same length as \code{xtrain}. Missing values in either of \code{xtrain} or \code{ytrain} will be dropped in a pairwise manner.}
 
 \item{k}{Number of nearest neighbours to sample from.}
 

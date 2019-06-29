@@ -19,28 +19,6 @@ library('missRanger')
 base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
 cleanEx()
-nameEx("allVarsTwoSided")
-### * allVarsTwoSided
-
-flush(stderr()); flush(stdout())
-
-base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-### Name: allVarsTwoSided
-### Title: Extraction of Variable Names from Two-Sided Formula.
-### Aliases: allVarsTwoSided
-
-### ** Examples
-
-allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
-allVarsTwoSided(. ~ ., iris)
-allVarsTwoSided(. -Species ~ Sepal.Width, iris)
-allVarsTwoSided(. ~ Sepal.Width, iris)
-
-
-
-base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-base::cat("allVarsTwoSided", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
-cleanEx()
 nameEx("generateNA")
 ### * generateNA
 
@@ -96,7 +74,7 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-irisWithNA <- generateNA(iris)
+irisWithNA <- generateNA(iris, seed = 34)
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)

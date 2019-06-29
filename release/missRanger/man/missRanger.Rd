@@ -6,7 +6,7 @@
 \usage{
 missRanger(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL,
-  ...)
+  imputeSpecial = FALSE, ...)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
@@ -21,14 +21,17 @@ with missings must appear in the left hand side if they should be used on the ri
 
 \item{seed}{Integer seed to initialize the random generator.}
 
-\item{verbose}{Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).}
+\item{verbose}{Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
+Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be usedful to detect if some variables are unexpectedly skipped.}
 
 \item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.}
 
 \item{case.weights}{Vector with non-negative case weights.}
 
+\item{imputeSpecial}{Logical flag. If TRUE, non-numeric columns of mode "numeric" (e.g. Dates, POSIXct etc.) will be imputed as well.}
+
 \item{...}{Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
-The following arguments are incompatible with \code{ranger}: \code{data}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}.}
+The following arguments are e.g. incompatible with \code{ranger}: \code{mtry}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
 An imputed \code{data.frame}.
@@ -46,7 +49,7 @@ is reached or if the average out-of-bag estimate of performance stops improving.
 Fast Imputation of Missing Values by Chained Random Forests
 }
 \examples{
-irisWithNA <- generateNA(iris)
+irisWithNA <- generateNA(iris, seed = 34)
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)

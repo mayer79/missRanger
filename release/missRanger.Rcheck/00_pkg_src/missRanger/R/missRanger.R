@@ -1,6 +1,6 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
-#' @importFrom stats var reformulate predict setNames
+#' @importFrom stats var reformulate terms.formula predict setNames
 #' @importFrom ranger ranger
 #'
 #' @description Uses the "ranger" package [1] to do fast missing value imputation by chained random forests, see [2] and [3].
@@ -19,10 +19,12 @@
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
 #' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
+#' Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be usedful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.
 #' @param case.weights Vector with non-negative case weights.
+#' @param imputeSpecial Logical flag. If TRUE, non-numeric columns of mode "numeric" (e.g. Dates, POSIXct etc.) will be imputed as well. 
 #' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
-#' The following arguments are incompatible with \code{ranger}: \code{data}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
+#' The following arguments are e.g. incompatible with \code{ranger}: \code{mtry}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
 #' @return An imputed \code{data.frame}.
 #' 
@@ -41,7 +43,7 @@
 #' @export
 #'
 #' @examples
-#' irisWithNA <- generateNA(iris)
+#' irisWithNA <- generateNA(iris, seed = 34)
 #' irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 #' head(irisImputed)
 #' head(irisWithNA)
@@ -92,7 +94,8 @@
 #' head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
 #' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
-                       verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
+                       verbose = 1, returnOOB = FALSE, case.weights = NULL, 
+                       imputeSpecial = FALSE, ...) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
@@ -100,11 +103,11 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   # Some initial checks
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
             inherits(formula, "formula"), 
+            length(formula <- as.character(formula)) == 3L,
             is.numeric(pmm.k), length(pmm.k) == 1L, pmm.k >= 0L,
             is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
-            !(c("formula", "data", "write.forest", "probability", 
-              "split.select.weights", "dependent.variable.name",
-              "classification", "case.weights") %in% names(list(...))))
+            !(c("write.forest", "probability", "split.select.weights", "mtry",  
+                "dependent.variable.name", "classification") %in% names(list(...))))
   
   if (!is.null(case.weights)) {
     stopifnot(length(case.weights) == nrow(data), !anyNA(case.weights))
@@ -115,55 +118,55 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   }  
   
   # Select variables to be imputed. We will visit them from few to many missings.
-  relevantVars <- allVarsTwoSided(formula, data[1, ])
+  relevantVars <- lapply(formula[2:3], function(z) attr(terms.formula(
+    reformulate(z), data = data[1, ]), "term.labels"))
 
   ok <- vapply(data[, relevantVars[[1]], drop = FALSE], FUN.VALUE = TRUE,
-               function(z) (is.numeric(z) || is.factor(z) || is.character(z) || 
-                            is.logical(z)) && anyNA(z) && !all(is.na(z)))  
-  data.na <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
-  visit.seq <- names(sort(colSums(data.na)))
-  
-  # ranger does not allow for logical responses and converts character 
-  # responses to character. Here, we convert these types to factors in a way that
-  # can be reverted before exiting.
-  wasCharacter <- visit.seq[vapply(data[, visit.seq, drop = FALSE], is.character, TRUE)]
-  wasLogical <- visit.seq[vapply(data[, visit.seq, drop = FALSE], is.logical, TRUE)]
-  if (length(zz <- c(wasCharacter, wasLogical))) {
-    data[, zz] <- lapply(data[, zz, drop = FALSE], as.factor)
-  }
+               function(z) !(typeof2(z) %in% c("", if (!imputeSpecial) "special")) && 
+                 anyNA(z) && !all(is.na(z)))
+  dataNA <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
+  visitSeq <- names(sort(colSums(dataNA)))
   
   if (verbose) {
     cat("\n  Variables to impute: ")
-    cat(visit.seq, sep = ", ")
+    cat(visitSeq, sep = ", ")
   }
   
   # Select inital ("completed") and final ("imputeBy") covariables for the random forests.
-  ok <- relevantVars[[2]] %in% visit.seq |
+  ok <- relevantVars[[2]] %in% visitSeq |
     !vapply(data[, relevantVars[[2]], drop = FALSE], anyNA, TRUE)
   imputeBy <- relevantVars[[2]][ok]
-  completed <- setdiff(imputeBy, visit.seq)
+  completed <- setdiff(imputeBy, visitSeq)
   
   if (verbose) {
     cat("\n  Variables used to impute: ")
     cat(imputeBy, sep = ", ")
   }
   
-  if (!length(visit.seq)) {
+  if (!length(visitSeq)) {
     if (verbose) {
       cat("\n")
     }
-    
     return(data)
   }
-
+  
+  # Conversion of non-factor/non-numeric variables
+  types <- vapply(data[, visitSeq, drop = FALSE], typeof2, "")
+  types <- types[!(types %in% c("numeric", "factor"))]
+  if (length(convert <- names(types))) {
+    classes <- lapply(data[, convert, drop = FALSE], class)
+    data[, convert] <- lapply(data[, convert, drop = FALSE], function(v)
+      if (is.character(v) || is.logical(v)) as.factor(v) else as.numeric(v))
+  }
+  
   # Initialization  
   j <- 1L             # iterator
   crit <- TRUE        # criterion on OOB prediction error to keep iterating
   verboseDigits <- 4L # formatting of OOB prediction errors (if verbose = 2)
-  predError <- setNames(rep(1, length(visit.seq)), visit.seq)
+  predError <- setNames(rep(1, length(visitSeq)), visitSeq)
   
   if (verbose >= 2) {
-    cat("\n", abbreviate(visit.seq, minlength = verboseDigits + 2L), sep = "\t")
+    cat("\n", abbreviate(visitSeq, minlength = verboseDigits + 2L), sep = "\t")
   }
   
   # Looping over iterations and variables to impute
@@ -171,11 +174,11 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     if (verbose) {
       cat("\niter ", j, ":\t", sep = "")
     }
-    data.last <- data
+    dataLast <- data
     predErrorLast <- predError
     
-    for (v in visit.seq) {
-      v.na <- data.na[, v]
+    for (v in visitSeq) {
+      v.na <- dataNA[, v]
       
       if (length(completed) == 0L) {
         data[[v]] <- imputeUnivariate(data[[v]])
@@ -216,22 +219,40 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   }
   
   if (j == 2L || (j == maxiter && crit)) {
-    data.last <- data
+    dataLast <- data
     predErrorLast <- predError
   }
   
   if (returnOOB) {
-    attr(data.last, "oob") <- predErrorLast 
+    attr(dataLast, "oob") <- predErrorLast 
   }
   
-  # Undo the conversions from character and logical to factors.
-  if (length(wasCharacter)) {
-    data.last[, wasCharacter] <- lapply(data.last[, wasCharacter, drop = FALSE], as.character)
-  }
-  if (length(wasLogical)) {
-    data.last[, wasLogical] <- lapply(data.last[, wasLogical, drop = FALSE], as.logical)
+  # Undo the conversions
+  if (length(convert)) {
+    f <- function(v, ty, cl) {
+      switch(ty, logical = as.logical(v), character = as.character(v),
+             special = {class(v) <- cl; v}, v)
+    }
+    dataLast[, convert] <- Map(f, dataLast[, convert, drop = FALSE], types, classes)
   }
   
-  data.last
+  dataLast
 }
 
+#' A version of \code{typeof} internally used by \code{missRanger}.
+#'
+#' @description Returns either "numeric" (double or integer), "factor", "character", "logical", "special" (mode numeric, but neither double nor integer) or "" (otherwise).
+#' \code{missRanger} requires this information to deal with response types not natively supported by \code{ranger}.
+#' 
+#' @author Michael Mayer
+#' 
+#' @param object Any object.
+#'
+#' @return A string.
+typeof2 <- function(object) {
+  if (is.numeric(object)) "numeric" else
+    if (is.factor(object)) "factor" else
+      if (is.character(object)) "character" else
+        if (is.logical(object)) "logical" else
+          if (mode(object) == "numeric") "special" else ""
+}  

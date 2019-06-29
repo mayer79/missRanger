@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  23 JUN 2019 17:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  29 JUN 2019 16:10
 entering extended mode
-**C:/Users/Michael/AppData/Local/Temp/RtmpkXHluP/Rd2pdf1b34ccf73bf/Rd2.tex
-(C:/Users/Michael/AppData/Local/Temp/RtmpkXHluP/Rd2pdf1b34ccf73bf/Rd2.tex
+**C:/Users/Michael/AppData/Local/Temp/RtmpADmGhj/Rd2pdf560a786c1b/Rd2.tex
+(C:/Users/Michael/AppData/Local/Temp/RtmpADmGhj/Rd2pdf560a786c1b/Rd2.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 75 language(s) loaded.
 
@@ -817,71 +817,72 @@ File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 
 {C:/Users/Michael/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 74.
+(Font)              scaled to size 9.0pt on input line 75.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ) [2]
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-)
-("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
-File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-) [3] [4]
-Overfull \hbox (22.66647pt too wide) in paragraph at lines 217--219
+) [3]
+Overfull \hbox (22.66647pt too wide) in paragraph at lines 182--184
 \T1/ptm/m/n/10 Di-men-sional Data in C++ and R. Jour-nal of Sta-tis-ti-cal Soft
 -ware, in press. http://arxiv.org/abs/1508.04409. 
  []
 
 
-Overfull \hbox (42.93695pt too wide) in paragraph at lines 220--222
+Overfull \hbox (42.93695pt too wide) in paragraph at lines 185--187
 \T1/ptm/m/n/10 tion for mixed-type data', Bioin-for-mat-ics, 28(1) 2012, 112-11
 8. https://doi.org/10.1093/bioinformatics/btr597. 
  []
 
 
-Overfull \hbox (11.24715pt too wide) in paragraph at lines 236--236
+Overfull \hbox (11.24715pt too wide) in paragraph at lines 201--201
  []\T1/zi4/m/n/9 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees 
 = 100, splitrule = "extratrees")[] 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 239.
+LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 204.
 
 (C:\Users\Michael\AppData\Roaming\MiKTeX\2.9\tex\latex\inconsolata\ts1zi4.fd
 File: ts1zi4.fd 2018/01/14 TS1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `TS1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 239.
+(Font)              scaled to size 9.0pt on input line 204.
 
-Overfull \hbox (0.75328pt too wide) in paragraph at lines 247--247
+[4]
+Overfull \hbox (0.75328pt too wide) in paragraph at lines 212--212
  []\T1/zi4/m/n/9 head(irisImputed <- missRanger(irisWithNA, Species + Petal.Len
 gth ~ Species + Petal.Length,[] 
  []
 
-[5] ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-) (Rd2.ind [6]
-[7] [8
+) [5]
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
+File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
+) (Rd2.ind [6] [7
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 333.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 333.
- (Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 333.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 333.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 325.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 325.
+
+(Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 325.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 325.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: 980C4C638EB1ABD90E2D77D0397676F4;312.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 333.
+(rerunfilecheck)             Checksum: 69A05F3CB229D604648FAA3762298D58;296.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 325.
  ) 
 Here is how much of TeX's memory you used:
- 6669 strings out of 493305
- 95024 string characters out of 3138868
- 174947 words of memory out of 3000000
+ 6667 strings out of 493305
+ 94972 string characters out of 3138868
+ 175947 words of memory out of 3000000
  10049 multiletter control sequences out of 15000+200000
  38474 words of font info for 49 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,5n,36p,343b,590s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,5n,36p,342b,590s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/Michael/AppData/Roaming/MiKTeX/2.9/fonts/enc/dvips/inconsolata/i4-t
 s1.enc}{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}{C:/Users/Micha
 el/AppData/Roaming/MiKTeX/2.9/fonts/enc/dvips/inconsolata/i4-t1-0.enc}<C:/Users
@@ -891,9 +892,9 @@ rogram Files/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKT
 eX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
 1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri
 8a.pfb>
-Output written on Rd2.pdf (8 pages, 109466 bytes).
+Output written on Rd2.pdf (7 pages, 108322 bytes).
 PDF statistics:
- 158 PDF objects out of 1000 (max. 8388607)
- 55 named destinations out of 1000 (max. 500000)
+ 152 PDF objects out of 1000 (max. 8388607)
+ 53 named destinations out of 1000 (max. 500000)
  49 words of extra memory for PDF output out of 10000 (max. 10000000)
 

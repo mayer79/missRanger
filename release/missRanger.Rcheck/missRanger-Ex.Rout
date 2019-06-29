@@ -36,52 +36,6 @@ Type 'q()' to quit R.
 > base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
 > base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
 > cleanEx()
-> nameEx("allVarsTwoSided")
-> ### * allVarsTwoSided
-> 
-> flush(stderr()); flush(stdout())
-> 
-> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-> ### Name: allVarsTwoSided
-> ### Title: Extraction of Variable Names from Two-Sided Formula.
-> ### Aliases: allVarsTwoSided
-> 
-> ### ** Examples
-> 
-> allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
-[[1]]
-[1] "Species"     "Sepal.Width"
-
-[[2]]
-[1] "Petal.Width"
-
-> allVarsTwoSided(. ~ ., iris)
-[[1]]
-[1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
-
-[[2]]
-[1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
-
-> allVarsTwoSided(. -Species ~ Sepal.Width, iris)
-[[1]]
-[1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width" 
-
-[[2]]
-[1] "Sepal.Width"
-
-> allVarsTwoSided(. ~ Sepal.Width, iris)
-[[1]]
-[1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
-
-[[2]]
-[1] "Sepal.Width"
-
-> 
-> 
-> 
-> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-> base::cat("allVarsTwoSided", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
-> cleanEx()
 > nameEx("generateNA")
 > ### * generateNA
 > 
@@ -163,7 +117,7 @@ Levels: A
 > 
 > ### ** Examples
 > 
-> irisWithNA <- generateNA(iris)
+> irisWithNA <- generateNA(iris, seed = 34)
 > irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 
 Missing value imputation by random forests
@@ -174,9 +128,6 @@ iter 1:	.....
 iter 2:	.....
 iter 3:	.....
 iter 4:	.....
-iter 5:	.....
-iter 6:	.....
-iter 7:	.....
 > head(irisImputed)
   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 1          5.1         3.5          1.4         0.2  setosa
@@ -188,7 +139,7 @@ iter 7:	.....
 > head(irisWithNA)
   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 1          5.1         3.5          1.4         0.2  setosa
-2          4.9         3.0          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2    <NA>
 3          4.7         3.2          1.3         0.2  setosa
 4          4.6         3.1          1.5         0.2  setosa
 5          5.0         3.6          1.4         0.2  setosa
@@ -277,7 +228,7 @@ iter 7:	.....
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.77 0.29 1.7 NA NA 
+Time elapsed:  1.61 0.05 1.41 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -1,7 +1,7 @@
-allVarsTwoSided         Extraction of Variable Names from Two-Sided
-                        Formula.
 generateNA              Adds Missing Values to a Vector, Matrix or Data
                         Frame
 imputeUnivariate        Univariate Imputation
 missRanger              missRanger
 pmm                     missRanger pmm
+typeof2                 A version of 'typeof' internally used by
+                        'missRanger'.

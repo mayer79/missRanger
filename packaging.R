@@ -36,8 +36,7 @@ create(
   rstudio = FALSE)
 
 # Add R files
-Rfiles <- c("generateNA.R", "imputeUnivariate.R", "missRanger.R", 
-            "pmm.R", "allVarsTwoSided.R")
+Rfiles <- c("generateNA.R", "imputeUnivariate.R", "missRanger.R", "pmm.R")
 stopifnot(file.exists(fp <- file.path("R", Rfiles)))
 file.copy(fp, file.path(pkg, "R"))
 

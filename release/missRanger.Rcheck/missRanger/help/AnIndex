@@ -1,5 +1,5 @@
-allVarsTwoSided	allVarsTwoSided
 generateNA	generateNA
 imputeUnivariate	imputeUnivariate
 missRanger	missRanger
 pmm	pmm
+typeof2	typeof2

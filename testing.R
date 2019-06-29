@@ -57,12 +57,16 @@ irisWithNA <- generateNA(iris)
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 
 # With extra trees algorithm
-irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
+irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, 
+                             splitrule = "extratrees")
 head(irisImputed_et)
+
+# With one single tree
+head(missRanger(irisWithNA, pmm.k = 3, num.trees = 1))
 
 # Do not impute Species. Note: Since this variable contains missings, it cannot be used
 # to impute the other variables.
-irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100)
+head(irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100))
 
 # Impute univariately only.
 head(irisImputed <- missRanger(irisWithNA, . ~ 1, verbose = 2))
@@ -70,6 +74,16 @@ head(irisImputed <- missRanger(irisWithNA, . ~ 1, verbose = 2))
 # Use Species and Petal.Length to impute Species and Petal.Length.
 head(irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length,
                           pmm.k = 3, num.trees = 100))
+
+ir <- iris
+ir$s <- iris$Species == "setosa"
+ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
+ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
+ir$ch <- as.character(iris$Species)
+ir <- generateNA(ir, c(rep(0.2, 7), 0, 0))
+head(m <- missRanger(ir, pmm.k = 4))
+head(m <- missRanger(ir, pmm.k = 4, imputeSpecial = TRUE))
+
 
 #=====================================================================================
 #  generateNA
@@ -107,18 +121,6 @@ imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
 imputeUnivariate(cbind(1, NA))
 
-#=====================================================================================
-#  allVarsTwoSided
-#=====================================================================================
-
-allVarsTwoSided(Species + Sepal.Width ~ Petal.Width, iris)
-allVarsTwoSided(. ~ ., iris)
-allVarsTwoSided(. -Species ~ Sepal.Width, iris)
-allVarsTwoSided(. ~ Sepal.Width, iris)
-allVarsTwoSided(. ~ 1, iris)
-allVarsTwoSided(1 ~ Species, iris)
-allVarsTwoSided(1 ~ 1) # Error
-allVarsTwoSided(log(SepalLength~.), data = iris) # Error
 
 #=====================================================================================
 #  pmm
@@ -135,7 +137,10 @@ pmm(xtrain = 1, xtest = 1, ytrain = 1:2) # Error
 pmm(1, xtest = Sys.Date(), ytrain = TRUE) # Works!
 pmm(1:2, xtest = Sys.Date(), ytrain = c(FALSE, TRUE)) # Works!
 pmm(1:10, 3:4, 1:10) # 3 4
-
+pmm(c(NA, 1, 2), 1, ytrain = c(0, 1, NA)) # 1
+pmm(c(NA, 1, 2), 1, ytrain = c(0, NA, 3)) # 3
+pmm(c(NA, 1, 2), 1, ytrain = c(0, NA, NA)) # Error
+pmm(c(NA, 1, 2), NA, ytrain = c(0, NA, 3)) # Error
 
 #=====================================================================================
 #  multiple imputation
