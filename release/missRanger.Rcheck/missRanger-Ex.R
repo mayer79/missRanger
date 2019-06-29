@@ -31,9 +31,14 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
+generateNA(1:10, p = 0.5, seed = 3345)
+generateNA(rep(Sys.Date(), 10))
+generateNA(cbind(1:10, 10:1), p = 0.2)
+head(generateNA(iris))
 head(generateNA(iris, p = 0.2))
 head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
-generateNA(1:10, p = 0.5, seed = 3345)
+head(generateNA(iris, p = c(Sepal.Length = 1)))
+head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
 
 
 
@@ -56,6 +61,8 @@ imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
 head(imputeUnivariate(generateNA(iris)))
+head(imputeUnivariate(generateNA(iris), v = "Species"))
+head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
 
 
 

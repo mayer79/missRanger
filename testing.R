@@ -21,7 +21,7 @@ head(missRanger(ir))
 # Check order of imputation
 ir <- iris
 for (i in 1:ncol(ir)) {
-  ir[i, 1:i] <- NA
+  ir[1:i, ncol(ir) + 1 - i] <- NA
 }
 head(ir)
 head(missRanger(ir))
@@ -89,17 +89,23 @@ head(m <- missRanger(ir, pmm.k = 4, imputeSpecial = TRUE))
 #  generateNA
 #=====================================================================================
 
-generateNA(1:10, seed = 3)
-generateNA(1:10, seed = 3)
-generateNA(rep(TRUE, 10))
+generateNA(1:10, p = 0.5, seed = 3345)
 generateNA(rep(Sys.Date(), 10))
-generateNA(cbind(1:10, 1:10), p = 0.5)
+generateNA(cbind(1:10, 10:1), p = 0.2)
+head(generateNA(iris))
+head(generateNA(iris, p = 0.2))
+head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
+head(generateNA(iris, p = c(Sepal.Length = 1)))
+head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
 
 summary(generateNA(head(iris), p = 0.5))
 generateNA(iris[1, ], p = 0.5)
 generateNA(iris[1, ], p = 0.55)
 generateNA(iris[1:2, ], p = 0.5)
 generateNA(iris[1:5, 1], p = 0.55)
+
+head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
+head(generateNA(iris, p = c(Sepal.Length = 1)))
 
 #=====================================================================================
 #  imputeUnivariate
@@ -121,6 +127,11 @@ imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
 imputeUnivariate(cbind(1, NA))
 
+head(imputeUnivariate(generateNA(iris), v = "Species"))
+head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
+head(imputeUnivariate(generateNA(iris), v = "a"))
+
+head(imputeUnivariate(generateNA(dplyr::as_tibble(iris))))
 
 #=====================================================================================
 #  pmm

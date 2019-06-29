@@ -7,9 +7,10 @@
 #' @author Michael Mayer
 #' 
 #' @param x A vector, matrix or data frame.
+#' @param v A character vector of column names to impute (only relevant if \code{x} is a data frame). The default \code{NULL} imputes all columns.
 #' @param seed An integer seed.
 #'
-#' @return \code{x} without missing values.
+#' @return \code{x} with imputed values.
 #' @export
 #'
 #' @examples
@@ -17,7 +18,9 @@
 #' imputeUnivariate(c("A", "A", NA))
 #' imputeUnivariate(as.factor(c("A", "A", NA)))
 #' head(imputeUnivariate(generateNA(iris)))
-imputeUnivariate <- function(x, seed = NULL) {
+#' head(imputeUnivariate(generateNA(iris), v = "Species"))
+#' head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
+imputeUnivariate <- function(x, v = NULL, seed = NULL) {
   stopifnot(is.atomic(x) || is.data.frame(x))
   
   if (!is.null(seed)) {
@@ -35,11 +38,14 @@ imputeUnivariate <- function(x, seed = NULL) {
     z
   }
   
+  # vector or matrix
   if (is.atomic(x)) {
     return(imputeVec(x))
   } 
  
-  x[] <- lapply(x, imputeVec)
+  # data frame
+  v <- if (is.null(v)) names(x) else intersect(v, names(x))
+  x[, v] <- lapply(x[, v, drop = FALSE], imputeVec)
 
   x
 }

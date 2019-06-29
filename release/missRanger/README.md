@@ -1,7 +1,5 @@
 # missRanger
- 
-## Description
- 
+
 This package uses the `ranger` package [1] to do fast missing value imputation by chained random forest, see [2] and [3]. 
 Between the iterative model fitting, it offers the option of using predictive mean matching. This firstly avoids the 
 imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive 
@@ -10,7 +8,20 @@ e.g. to do multiple imputation when repeating the call to missRanger(). Package 
 
 Please check the help `?missRanger` for how to call the function and to see all options. 
 
-## Example
+
+## Installation
+From CRAN:
+``` r
+install.packages("missRanger")
+```
+
+Latest version from github:
+``` r
+library(devtools)
+install_github("mayer79/missRanger/release/missRanger")
+```
+
+## Examples
 
 This example first generates a data set with about 10% missing values in each column. 
 Then those gaps are filled by `missRanger`. In the end, the resulting data frame is displayed.
@@ -67,12 +78,11 @@ head(m <- missRanger(irisWithNA, . ~ 1))
 
 ## Imputation takes too much time. What can I do?
 
-`missRanger` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forst implementation `ranger` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
+`missRanger` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forest implementation `ranger` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
 
-Here are the tweaks to make things faster:
+Here are tweaks to make things faster:
 
-### Make `ranger` faster
-- Use less trees, e.g. by setting `num.trees = 50`. Even one single tree might be sufficient. Typically, the number of iterations until convergence will increase though with fewer trees.
+- Use less trees, e.g. by setting `num.trees = 50`. Even one single tree might be sufficient. Typically, the number of iterations until convergence will increase with fewer trees though.
 
 - Use smaller bootstrap samples by setting e.g. `sample.fraction = 0.1`.
 
@@ -81,9 +91,6 @@ Here are the tweaks to make things faster:
 - Use a low tree depth `max.depth = 6`.
 
 - Use large leafs, e.g. `min.node.size = 10000`.
-
-
-### Other options
 
 - Use a low `max.iter`, e.g. 1 or 2.
 
@@ -108,35 +115,7 @@ system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 1))
 system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, sample.fraction = 0.1))
 ```
 
-## How to deal with date variables etc.?
-
-`missRanger` natively deals with numeric, logical and character/factor variables. In real-world data sets, also other types of variables appear, e.g. date variables. Since release 2.1.0, such special columns can be imputed as well by setting `imputeSpecial = TRUE`. In future releases, this might even become the default. With earlier versions, such variables would have been converted to numeric before imputation, and then converted back.
-
-### Example
-``` r
-library(missRanger)
-library(lubridate)
-library(tidyverse)
-
-# Add a date variable to iris
-iris$random_date <- seq.Date(as.Date("1998-12-17"), 
-                             by = "1 day", 
-                             length.out = nrow(iris))
-
-set.seed(3234)
-irisWithNA <- generateNA(iris, p = 0.2)
-head(irisWithNA$random_date)
-# Output: "1998-12-17" NA           NA           NA           "1998-12-21" "1998-12-22"
-
-# Convert date to numeric, impute with PMM, convert back to date
-irisImputed <- irisWithNA %>% 
-  missRanger(pmm.k = 5, num.trees = 100, imputeSpecial = TRUE)
-
-head(irisImputed$random_date)
-# Output: "1998-12-17" "1998-12-18" "1998-12-19" "1999-01-02" "1998-12-21" "1998-12-22"
-
-```
-## Use `case.weights` to weight down contribution of rows with many missings
+## Trick: Use `case.weights` to weight down contribution of rows with many missings
 
 Since version 1.0.5, the underlying models can utilize case weights. This might be e.g. useful to weight down the contribution of rows with many missings.
 
@@ -155,31 +134,6 @@ head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5,
                      case.weights = non_miss))
 ```
 
-## How to deal with censored variables?
-
-There is no obvious way of how to deal with survival variables in imputation models, mostly since it is unclear of how to use them as covariables to predict other variables. 
-
-Options discussed in [add citation] include:
-
-- Use both status variable s and (censored) time variable t
-
-- s and log(t)
-
-- KM(t), and, optionally s
-
-By KM(t), we denote the Kaplan-Meier estimate at each value of t.
-
-The third option is the most elegant one as it explicitly deals with censoring information.
-
-Let's go through an example to explain it:
-
-### Example
-
-``` r
-to do
-
-```
-
 ## How to use `missRanger` in multiple imputation settings?
 
 For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
@@ -194,8 +148,8 @@ The following example shows how easy such workflow looks like.
 set.seed(35)
 irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
 
-# Generate 20 complete data sets.
-filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
+# Generate 100 complete data sets.
+filled <- replicate(100, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
                     simplify = FALSE)
                            
 # Run a linear model for each of the completed data sets.                           
@@ -236,24 +190,126 @@ summary(lm(Sepal.Length ~ ., data = multiple_data[[1]]))
 ```
 The standard errors and p values of the multiple imputation are larger than of the original data set. This reflects the additional uncertainty introduced by the presence of missing values in a realistic way. In contrast, a linear model on just one imputed data set leads to as small standard errors as the original filled data set, even if 10% of the values were generated by the others. 
 
+## How to deal with censored variables?
 
-## Installation
-From CRAN:
+There is no obvious way of how to deal with survival variables as covariables in imputation models. 
+
+Options discussed in White [5] include:
+
+- Use both status variable s and (censored) time variable t
+
+- s and log(t)
+
+- surv(t), and, optionally s
+
+By surv(t), we denote the Nelson-Aalen survival estimate at each value of t.
+
+The third option is the most elegant one as it explicitly deals with censoring information. 
+
+### Example
+
 ``` r
-install.packages("missRanger")
+library(survival)
+library(dplyr)
+head(veteran)
+
+# For illustration, we use data from a randomized two-arm trial 
+# about lung cancer. The aim is to estimate the treatment effect
+# of "trt" with reliable inference using Cox regression. Unfortunately, 
+# we generated missing values in the covariables "age" and "karno" (performance
+# status). One approach is to use multiple imputation, see the section above.
+# It is recommended to use the model response in the imputation models - 
+# even if it sounds wrong. In case of a censored survival response
+# (i.e. consisting of a time/status pair), an elegant 
+# possibility is to represent it by the estimated Nelson-Aalen estimates [5].
+
+# Add the Nelson-Aalen survival probabilities "surv" to the data set
+veteran2 <- summary(survfit(Surv(time, status) ~ 1, data = veteran), 
+                times = veteran$time)[c("time", "surv")] %>% 
+            as_tibble %>% 
+            right_join(veteran)
+
+# Add missing values to some columns. We do not add missing values
+# in the survival information as this is usually the response of the (Cox-) 
+# modelling process following the imputation.
+
+set.seed(96)
+veteran_with_NA <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
+
+# Generate 20 complete data sets and remove "surv"
+filled <- replicate(20, missRanger(veteran_with_NA, . ~ . - time - status, 
+  verbose = 0, pmm.k = 3, num.trees = 100), simplify = FALSE)
+
+filled <- lapply(filled, function(data) {data$surv <- NULL; data})
+
+# Run a Cox proportional hazards regression for each of the completed data sets
+models <- lapply(filled, function(x) coxph(Surv(time, status) ~ ., x))
+
+# Pool the results by mice.
+require(mice)
+summary(pooled_fit <- pool(models))
+
+#                       estimate   std.error   statistic        df      p.value
+# trt                0.220877833 0.156103989  1.41494035 21860.788 1.571002e-01
+# celltypesmallcell  0.802075691 0.212546964  3.77363985 97340.728 1.609783e-04
+# celltypeadeno      1.072464023 0.234826408  4.56705032 44738.067 4.959525e-06
+# celltypelarge      0.241215386 0.239557872  1.00691905 11615.999 3.139946e-01
+# karno             -0.034840740 0.004220004 -8.25609188 23839.238 0.000000e+00
+# diagtime          -0.001339932 0.005630740 -0.23796730 55730.472 8.119073e-01
+# age               -0.005933645 0.007396932 -0.80217651  3224.462 4.225100e-01
+# prior              0.001350964 0.018458043  0.07319105 32576.741 9.416545e-01
+
+# On the original
+summary(coxph(Surv(time, status) ~ ., veteran))
+
+#                         coef  exp(coef)   se(coef)      z Pr(>|z|)    
+# trt                2.946e-01  1.343e+00  2.075e-01  1.419  0.15577    
+# celltypesmallcell  8.616e-01  2.367e+00  2.753e-01  3.130  0.00175 ** 
+# celltypeadeno      1.196e+00  3.307e+00  3.009e-01  3.975 7.05e-05 ***
+# celltypelarge      4.013e-01  1.494e+00  2.827e-01  1.420  0.15574    
+# karno             -3.282e-02  9.677e-01  5.508e-03 -5.958 2.55e-09 ***
+# diagtime           8.132e-05  1.000e+00  9.136e-03  0.009  0.99290    
+# age               -8.706e-03  9.913e-01  9.300e-03 -0.936  0.34920    
+# prior              7.159e-03  1.007e+00  2.323e-02  0.308  0.75794
+
 ```
 
-Latest version from github:
+## Trick: How to deal with date variables etc.?
+
+`missRanger` natively deals with numeric, logical and character/factor variables. In real-world data sets, also other types of variables appear, e.g. date variables. Since release 2.1.0, such special columns can be imputed as well by setting `imputeSpecial = TRUE`. In future releases, this might even become the default. With earlier versions, such variables would have been converted to numeric before imputation, and then converted back.
+
+### Example
 ``` r
-library(devtools)
-install_github("mayer79/missRanger/release/missRanger")
+library(missRanger)
+library(lubridate)
+library(tidyverse)
+
+# Add a date variable to iris
+iris$random_date <- seq.Date(as.Date("1998-12-17"), 
+                             by = "1 day", 
+                             length.out = nrow(iris))
+
+set.seed(3234)
+irisWithNA <- generateNA(iris, p = 0.2)
+head(irisWithNA$random_date)
+# Output: "1998-12-17" NA           NA           NA           "1998-12-21" "1998-12-22"
+
+# Convert date to numeric, impute with PMM, convert back to date
+irisImputed <- irisWithNA %>% 
+  missRanger(pmm.k = 5, num.trees = 100, imputeSpecial = TRUE)
+
+head(irisImputed$random_date)
+# Output: "1998-12-17" "1998-12-18" "1998-12-19" "1999-01-02" "1998-12-21" "1998-12-22"
+
 ```
 
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
  
-[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1) 2012, 112-118, doi: 10.1093/bioinformatics/btr597
+[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1), 112-118, doi: 10.1093/bioinformatics/btr597
 
-[3]  Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
+[3]  Van Buuren, S. and Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 
 [4] Rubin, D.B. (1987). *Multiple Imputation for Nonresponse in Surveys.* New York: John Wiley and Sons.
+
+[5] White IR and Royston P. (2009). Imputing missing covariate values for the Cox model. Statistics in medicine, 28(15), 1982-1998. doi:10.1002/sim.3618

@@ -29,6 +29,8 @@ This is a summary of all changes since version 1.x.x.
 
 * The function `imputeUnivariate` has received a `seed` argument.
 
+* The function `imputeUnivariate` has received a `v` argument, specifying columns to impute.
+
 * The function `generateNA` offers now the possibility to use different proportions of missings for each column.
 
 * If `verbose` is not 0, then `missRanger` will show which variables will be imputed in which order and which variables will be used for imputation.

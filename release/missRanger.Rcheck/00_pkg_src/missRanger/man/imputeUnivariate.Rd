@@ -4,15 +4,17 @@
 \alias{imputeUnivariate}
 \title{Univariate Imputation}
 \usage{
-imputeUnivariate(x, seed = NULL)
+imputeUnivariate(x, v = NULL, seed = NULL)
 }
 \arguments{
 \item{x}{A vector, matrix or data frame.}
 
+\item{v}{A character vector of column names to impute (only relevant if \code{x} is a data frame). The default \code{NULL} imputes all columns.}
+
 \item{seed}{An integer seed.}
 }
 \value{
-\code{x} without missing values.
+\code{x} with imputed values.
 }
 \description{
 Fills missing values of a vector, matrix or data frame 
@@ -24,6 +26,8 @@ imputeUnivariate(c(NA, 0, 1, 0, 1))
 imputeUnivariate(c("A", "A", NA))
 imputeUnivariate(as.factor(c("A", "A", NA)))
 head(imputeUnivariate(generateNA(iris)))
+head(imputeUnivariate(generateNA(iris), v = "Species"))
+head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
 }
 \author{
 Michael Mayer

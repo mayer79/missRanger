@@ -9,7 +9,7 @@ generateNA(x, p = 0.1, seed = NULL)
 \arguments{
 \item{x}{A vector, matrix or \code{data.frame}.}
 
-\item{p}{Proportion of missing values to add to \code{x}. If \code{x} is a \code{data.frame}, each column will receive the same amount of missing values. Use a vector valued \code{p} to apply different proportions of missing values to each column.}
+\item{p}{Proportion of missing values to add to \code{x}. In case \code{x} is a \code{data.frame}, \code{p} can also be a vector of probabilities per column or a named vector (see examples).}
 
 \item{seed}{An integer seed.}
 }
@@ -20,9 +20,14 @@ generateNA(x, p = 0.1, seed = NULL)
 Takes a vector, matrix or data frame and replaces some values by NA.
 }
 \examples{
+generateNA(1:10, p = 0.5, seed = 3345)
+generateNA(rep(Sys.Date(), 10))
+generateNA(cbind(1:10, 10:1), p = 0.2)
+head(generateNA(iris))
 head(generateNA(iris, p = 0.2))
 head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
-generateNA(1:10, p = 0.5, seed = 3345)
+head(generateNA(iris, p = c(Sepal.Length = 1)))
+head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
 }
 \author{
 Michael Mayer
