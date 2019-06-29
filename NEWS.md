@@ -13,7 +13,7 @@ This is a summary of all changes since version 1.x.x.
   
   - `. ~ . - ID`: Use all variables except `ID` to impute all missing values.
   
-  - `Species ~ Sepal.Width`: Use `Sepal.Width` to impute `Species`. Only works if `Sepal.Width` does not contain missing values.
+  - `Species ~ Sepal.Width`: Use `Sepal.Width` to impute `Species`. Only works if `Sepal.Width` does not contain missing values. (Add it to the right hand side if it does.)
   
   - `Species + Sepal.Length ~ Species + Petal.Length`: Use `Species` and `Petal.Length` to impute `Species` and `Sepal.Length`. Only works if `Petal.Length` does not contain missing values because it does not appear on the left hand side and is therefore not imputed itself.
   
