@@ -19,10 +19,11 @@ LazyData: true
 Type: Package
 Date: 2019-06-30
 Imports: stats, FNN (>= 1.1), ranger (>= 0.10)
-Suggests: mice (>= 3.0)
+Suggests: mice, dplyr, survival, ggplot2, knitr, rmarkdown
+VignetteBuilder: knitr
 Author: Michael Mayer [aut, cre, cph]
 Maintainer: Michael Mayer <mayermichael79@gmail.com>
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2019-06-30 14:40:10 UTC; Michael
-Built: R 3.6.0; ; 2019-06-30 14:40:12 UTC; windows
+Packaged: 2019-06-30 17:25:01 UTC; Michael
+Built: R 3.6.0; ; 2019-06-30 17:25:04 UTC; windows

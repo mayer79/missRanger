@@ -29,7 +29,8 @@ create(
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
     Depends = "R (>= 3.5.0)",
     Imports = list("stats", "FNN (>= 1.1)", "ranger (>= 0.10)"),
-    Suggests = list("mice (>= 3.0)"),
+    Suggests = list("mice", "dplyr", "survival", "ggplot2", "knitr", "rmarkdown"),
+    VignetteBuilder = "knitr",
     License = "GPL(>= 2)",
     Author = "Michael Mayer [aut, cre, cph]",
     Maintainer = "Michael Mayer <mayermichael79@gmail.com>"), 
@@ -49,6 +50,12 @@ mdfiles <- c("NEWS.md", "README.md")
 stopifnot(file.exists(mdfiles))
 file.copy(mdfiles, pkg)
 
+# vignette
+devtools::use_vignette("my-vignette")
+file.remove(file.path(pkg, "vignettes", "my-vignette.Rmd"))
+file.copy("missRanger.Rmd", to = file.path(pkg, "vignettes"), overwrite = TRUE)
+devtools::build_vignettes(pkg)
+
 # Check
 check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pkg)))
 
@@ -56,8 +63,7 @@ check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pk
 build(pkg, manual = TRUE) # tar
 build(pkg, binary = TRUE) # zip
 
-# vignette
-devtools::use_vignette("my-vignette")
+
 
 # Install the package (locally)
 install(pkg) # tar

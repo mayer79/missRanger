@@ -1,13 +1,8 @@
 # missRanger
 
-This package uses the `ranger` package [1] to do fast missing value imputation by chained random forest, see [2] and [3]. 
-Between the iterative model fitting, it offers the option of using predictive mean matching. This firstly avoids the 
-imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive 
-mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This would allow 
-e.g. to do multiple imputation when repeating the call to missRanger(). Package `mice` utilizes the `randomForest` package with only ten trees as default.
+The `missRanger` package uses `ranger` [1] to do fast missing value imputation by chained random forest. As such, it serves as an alternative implementation of the beautiful 'MissForest' algorithm, introduced by Stekhoven and Buehlmann in [2].
 
-Please check the help `?missRanger` for how to call the function and to see all options. 
-
+`missRanger` offers the option to combine random forest imputation with predictive mean matching. This firstly avoids the generation of values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, this step tends to raise the variance in the resulting conditional distributions to a realistic level, a crucial element to apply multiple imputation frameworks like `mice` [3].
 
 ## Installation
 From CRAN:
@@ -17,13 +12,13 @@ install.packages("missRanger")
 
 Latest version from github:
 ``` r
-library(devtools)
+# library(devtools)
 install_github("mayer79/missRanger/release/missRanger")
 ```
 
 ## Examples
 
-This example first generates a data set with about 10% missing values in each column. 
+We first generate a data set with about 10% missing values in each column. 
 Then those gaps are filled by `missRanger`. In the end, the resulting data frame is displayed.
 
 ``` r

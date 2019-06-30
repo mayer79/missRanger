@@ -1,12 +1,12 @@
 ---
-title: "Using missRanger"
+title: "missRanger"
 author: "Michael Mayer"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using missRanger}
+  %\VignetteIndexEntry{missRanger}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -22,20 +22,19 @@ knitr::opts_chunk$set(
 
 The aim of this vignette is to introduce the R package `missRanger` and to explain how to use it for multiple imputations.
 
-`missRanger` uses the `ranger` package [1] to do fast missing value imputation by chained random forest, see [2] and [3]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. The algorithm iterates multiple times over all variables containing missing variables until the average out-of-bag prediction error of the models start to increase again.
+`missRanger` uses the `ranger` package [1] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to `missForest`, a beautiful algorithm introduced by Stekhoven and Buehlmann in [2]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. `missRanger` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
 
-Why should you consider `missRanger` over other options like `mice` or `missForest`?
+Why should you consider `missRanger`?
 
 - It is fast.
 
-- It is flexible and intuitive: E.g. typing `missRanger(data, . ~ 1)` would impute all variables univariately.
+- It is flexible and intuitive to apply: E.g. calling `missRanger(data, . ~ 1)` would impute all variables univariately, `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
 
-- It can deal with almost all kind of variables, even dates and times etc. are being supported.
+- It can deal with most realistic variable types, even dates and times without destroying original data structure.
 
-- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable.
+- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [3] and [4] for the statistical background.
 
-
-In the examples below, we will use just two functions:
+In the examples below, we will meet two functions from the `missRanger` package:
 
 - `generateNA`: To replace values in a data set by missing values.
 
@@ -72,27 +71,24 @@ head(irisImputed <- missRanger(irisWithNA, num.trees = 100))
 
 ```
 
-`missRanger` worked! Unfortunately, the new values look somewhat unnatural because of additional digits. If we would like to avoid this, we just set the `pmm.k` argument to a positive number. All imputations done during the process are combined with a predictive mean matching step, leading to more natural imputations and distributional properties of the resulting values:
+It worked! Unfortunately, the new values look somewhat unnatural due to different rounding. If we would like to avoid this, we just set the `pmm.k` argument to a positive number. All imputations done during the process are then combined with a predictive mean matching (PMM) step, leading to more natural imputations and improved distributional properties of the resulting values:
 
 ``` {r}
-
 head(irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100))
-
 ```
 
-Note that `missRanger` offers a `...` argument to pass options to `ranger` like `num.trees` or `min.node.size`. How would we use its extra trees variant with 50 trees?
+Note that `missRanger` offers a `...` argument to pass options to `ranger`, e.g. `num.trees` or `min.node.size`. How would we use its "extra trees" variant with 50 trees?
 
 ``` {r}
 head(irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, splitrule = "extratrees", num.trees = 50))
-
 ```
 
 It is as simple!
 
-Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`). Make sure to set `verbose = 0` in order to prevent output.
+Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`). Make sure to set `verbose = 0` in order to prevent messages.
 
-```
-library(dplyr)
+``` {r}
+require(dplyr)
 
 iris %>% 
   generateNA %>% 
@@ -105,7 +101,6 @@ iris %>%
 By default `missRanger` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
 
 ``` {r}
-
 # Impute all variables with all (default behaviour). Note that variables without
 # missing values will be skipped from the left hand side of the formula.
 head(m <- missRanger(irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 10))
@@ -119,7 +114,7 @@ head(m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 10))
 # Impute Sepal.Width by Species 
 head(m <- missRanger(irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 10))
 
-# No success. Why? Species contains missing values and thus can only be used for imputation if it is being imputed as well:
+# No success. Why? Species contains missing values and thus can only be used for imputation if it is being imputed as well
 head(m <- missRanger(irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 10))
 
 # Impute all variables univariatly
@@ -148,7 +143,7 @@ Here are tweaks to make things faster:
 ### Examples evaluated on a normal laptop (not run here)
 
 ``` r
-library(ggplot2) # for diamonds data
+require(ggplot2) # for diamonds data
 dim(diamonds) # 53940    10
 
 diamonds_with_NA <- generateNA(diamonds)
@@ -182,9 +177,7 @@ table(non_miss)
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5))
 
 # Weigthed by number of non-missing values per row. 
-# The third row of Sepal.Length is imputed differently.
-head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5,
-                     case.weights = non_miss))
+head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weights = non_miss))
 
 ```
 
@@ -201,14 +194,13 @@ The following example shows how easy such workflow looks like.
 ``` {r}
 irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
 
-# Generate 20 complete data sets.
-filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
-                    simplify = FALSE)
+# Generate 20 complete data sets
+filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), simplify = FALSE)
                            
-# Run a linear model for each of the completed data sets.                           
+# Run a linear model for each of the completed data sets                          
 models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
 
-# Pool the results by mice.
+# Pool the results by mice
 require(mice)
 summary(pooled_fit <- pool(models))
 
@@ -216,7 +208,7 @@ summary(pooled_fit <- pool(models))
 summary(lm(Sepal.Length ~ ., data = iris))
 
 # Compare with model on first completed data
-summary(lm(Sepal.Length ~ ., data = multiple_data[[1]]))
+summary(lm(Sepal.Length ~ ., data = filled[[1]]))
 
 ```
 
@@ -239,8 +231,8 @@ By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The
 ### Example
 
 ``` {r}
-library(survival)
-library(dplyr)
+require(survival)
+require(dplyr)
 head(veteran)
 
 # For illustration, we use data from a randomized two-arm trial 
@@ -274,7 +266,7 @@ filled <- lapply(filled, function(data) {data$surv <- NULL; data})
 # Run a Cox proportional hazards regression for each of the completed data sets
 models <- lapply(filled, function(x) coxph(Surv(time, status) ~ ., x))
 
-# Pool the results by mice.
+# Pool the results by mice
 require(mice)
 summary(pooled_fit <- pool(models))
 
@@ -290,20 +282,18 @@ Originally, `missRanger` could deal only with factors and numeric variables. Sin
 ### Example
 
 ``` {r}
-library(dplyr)
-
-# Add a date variable to iris
-iris$random_date <- seq.Date(as.Date("1998-12-17"), by = "1 day", length.out = nrow(iris))
-irisWithNA <- generateNA(iris, p = 0.2)
-head(irisWithNA$random_date)
-
-# Convert date to numeric, impute with PMM, convert back to date
-irisImputed <- irisWithNA %>% 
-  missRanger(pmm.k = 5, num.trees = 100)
-
-head(irisImputed$random_date)
+ir <- iris
+ir$s <- iris$Species == "setosa"
+ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
+ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
+ir$ch <- as.character(iris$Species)
+ir$fun <- list(mean)
+ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
+head(m <- missRanger(ir, pmm.k = 4))
 
 ```
+
+Everything was dealt with by `missRanger` except the list column.
 
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 

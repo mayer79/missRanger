@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  30 JUN 2019 16:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6630 64-bit) (preloaded format=pdflatex 2018.5.24)  30 JUN 2019 19:25
 entering extended mode
-**C:/Users/Michael/AppData/Local/Temp/RtmpAN7h2Q/Rd2pdf31203055b05/Rd2.tex
-(C:/Users/Michael/AppData/Local/Temp/RtmpAN7h2Q/Rd2pdf31203055b05/Rd2.tex
+**C:/Users/Michael/AppData/Local/Temp/RtmpGmxFGE/Rd2pdfc6c17ed5495/Rd2.tex
+(C:/Users/Michael/AppData/Local/Temp/RtmpGmxFGE/Rd2pdfc6c17ed5495/Rd2.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 75 language(s) loaded.
 
@@ -787,16 +787,16 @@ LaTeX Font Info:    Try loading font information for TS1+ptm on input line 28.
 ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd"
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-LaTeX Font Info:    Try loading font information for T1+zi4 on input line 38.
+LaTeX Font Info:    Try loading font information for T1+zi4 on input line 39.
 
 (C:\Users\Michael\AppData\Roaming\MiKTeX\2.9\tex\latex\inconsolata\t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 10.0pt on input line 38.
+(Font)              scaled to size 10.0pt on input line 39.
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/ptm/b/n' tried instead on input line 42.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 42.
+(Font)              Font shape `T1/ptm/b/n' tried instead on input line 43.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 43.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
@@ -805,22 +805,22 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 1.
-)
+ [1
+
+
+{C:/Users/Michael/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}])
 \tf@toc=\write5
 \openout5 = `Rd2.toc'.
 
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
-) [1
-
-
-{C:/Users/Michael/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+)
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ) [2]
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 103.
+(Font)              scaled to size 9.0pt on input line 104.
 
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
@@ -828,32 +828,32 @@ File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ("C:\Program Files\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 ) [3] [4]
-Overfull \hbox (22.66647pt too wide) in paragraph at lines 217--219
+Overfull \hbox (22.66647pt too wide) in paragraph at lines 218--220
 \T1/ptm/m/n/10 Di-men-sional Data in C++ and R. Jour-nal of Sta-tis-ti-cal Soft
 -ware, in press. http://arxiv.org/abs/1508.04409. 
  []
 
 
-Overfull \hbox (42.93695pt too wide) in paragraph at lines 220--222
+Overfull \hbox (42.93695pt too wide) in paragraph at lines 221--223
 \T1/ptm/m/n/10 tion for mixed-type data', Bioin-for-mat-ics, 28(1) 2012, 112-11
 8. https://doi.org/10.1093/bioinformatics/btr597. 
  []
 
 
-Overfull \hbox (11.24715pt too wide) in paragraph at lines 236--236
+Overfull \hbox (11.24715pt too wide) in paragraph at lines 237--237
  []\T1/zi4/m/n/9 irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees 
 = 100, splitrule = "extratrees")[] 
  []
 
-LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 239.
+LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 240.
 
 (C:\Users\Michael\AppData\Roaming\MiKTeX\2.9\tex\latex\inconsolata\ts1zi4.fd
 File: ts1zi4.fd 2018/01/14 TS1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `TS1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 239.
+(Font)              scaled to size 9.0pt on input line 240.
 
-Overfull \hbox (0.75328pt too wide) in paragraph at lines 247--247
+Overfull \hbox (0.75328pt too wide) in paragraph at lines 248--248
  []\T1/zi4/m/n/9 head(irisImputed <- missRanger(irisWithNA, Species + Petal.Len
 gth ~ Species + Petal.Length,[] 
  []
@@ -871,14 +871,14 @@ File: utf8.def 2017/01/28 v1.1t UTF-8 support for inputenc
 
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 388.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 388.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 389.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 389.
  (Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 388.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 388.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 389.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 389.
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: 0D23FBD3E6657CE8B86FE62571762D28;388.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 388.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 389.
  ) 
 Here is how much of TeX's memory you used:
  6689 strings out of 493305
@@ -897,7 +897,7 @@ rogram Files/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKT
 eX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
 1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmri
 8a.pfb>
-Output written on Rd2.pdf (9 pages, 114451 bytes).
+Output written on Rd2.pdf (9 pages, 114790 bytes).
 PDF statistics:
  187 PDF objects out of 1000 (max. 8388607)
  69 named destinations out of 1000 (max. 500000)
