@@ -1,5 +1,5 @@
 ---
-title: "missRanger"
+title: "Using missRanger"
 author: "Michael Mayer"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The aim of this vignette is to introduce the R package `missRanger` and to explain how to use it for multiple imputations.
+The aim of this vignette is to introduce the R package `missRanger` for imputation of missing values and to explain how to use it for multiple imputation.
 
 `missRanger` uses the `ranger` package [1] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to `missForest`, a beautiful algorithm introduced by Stekhoven and Buehlmann in [2]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. `missRanger` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
 
@@ -30,9 +30,9 @@ Why should you consider `missRanger`?
 
 - It is flexible and intuitive to apply: E.g. calling `missRanger(data, . ~ 1)` would impute all variables univariately, `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
 
-- It can deal with most realistic variable types, even dates and times without destroying original data structure.
+- It can deal with most realistic variable types, even dates and times without destroying the original data structure.
 
-- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [3] and [4] for the statistical background.
+- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [4] for the statistical background.
 
 In the examples below, we will meet two functions from the `missRanger` package:
 
@@ -55,16 +55,16 @@ install_github("mayer79/missRanger/release/missRanger")
 
 ## Examples
 
-We first generate a data set with about 15% missing values per column and fill them again by `missRanger`.
+We first generate a data set with about 20% missing values per column and fill them again by `missRanger`.
 
 ``` {r}
 library(missRanger)
-set.seed(845)
+set.seed(84553)
 
 head(iris)
 
 # Generate data with missing values in all columns
-head(irisWithNA <- generateNA(iris, p = 0.15))
+head(irisWithNA <- generateNA(iris, p = 0.2))
  
 # Impute missing values with missRanger
 head(irisImputed <- missRanger(irisWithNA, num.trees = 100))
@@ -176,7 +176,7 @@ table(non_miss)
 # No weighting
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5))
 
-# Weigthed by number of non-missing values per row. 
+# Weighted by number of non-missing values per row. 
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weights = non_miss))
 
 ```
@@ -187,7 +187,7 @@ For machine learning tasks, imputation is typically seen as a fixed data prepara
 
 For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [4]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
 
-The package `mice` takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
+The package `mice` [3] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
 
 The following example shows how easy such workflow looks like.
 
@@ -207,12 +207,9 @@ summary(pooled_fit <- pool(models))
 # Compare with model on original data
 summary(lm(Sepal.Length ~ ., data = iris))
 
-# Compare with model on first completed data
-summary(lm(Sepal.Length ~ ., data = filled[[1]]))
-
 ```
 
-The standard errors and p values of the multiple imputation are larger than of the original data set. This reflects the additional uncertainty introduced by the presence of missing values in a realistic way. In contrast, a linear model on just one imputed data set leads to as small standard errors as the original filled data set, even if 10% of the values were generated by the others. 
+The standard errors and p values of the multiple imputation are larger than of the original data set. This reflects the additional uncertainty introduced by the presence of missing values in a realistic way.
 
 ## How to deal with censored variables?
 
@@ -234,6 +231,7 @@ By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The
 require(survival)
 require(dplyr)
 head(veteran)
+set.seed(653)
 
 # For illustration, we use data from a randomized two-arm trial 
 # about lung cancer. The aim is to estimate the treatment effect
@@ -259,7 +257,7 @@ veteran_with_NA <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime =
 
 # Generate 20 complete data sets and remove "surv"
 filled <- replicate(20, missRanger(veteran_with_NA, . ~ . - time - status, 
-  verbose = 0, pmm.k = 3, num.trees = 100), simplify = FALSE)
+  verbose = 0, pmm.k = 3, num.trees = 50), simplify = FALSE)
 
 filled <- lapply(filled, function(data) {data$surv <- NULL; data})
 
@@ -287,13 +285,10 @@ ir$s <- iris$Species == "setosa"
 ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
 ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
 ir$ch <- as.character(iris$Species)
-ir$fun <- list(mean)
-ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
+head(ir <- generateNA(ir, c(rep(0.2, 7), 0, 0)))
 head(m <- missRanger(ir, pmm.k = 4))
 
 ```
-
-Everything was dealt with by `missRanger` except the list column.
 
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 

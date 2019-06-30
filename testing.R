@@ -84,7 +84,25 @@ ir$fun <- list(mean)
 ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
 head(m <- missRanger(ir, pmm.k = 4))
 
+# Only one column, but fully missing
+ir <- iris
+ir$s <- NA
 
+head(missRanger(ir))
+ir$Sepal.Length[1] <- NA
+missRanger(ir[1:2, ])
+
+di <- ggplot2::diamonds
+head(missRanger(di))
+head(missRanger(di["color"]))
+di <- generateNA(ggplot2::diamonds, p = c(color = 0.2))
+head(missRanger(di, num.trees = 10, pmm.k = 5))
+
+head(missRanger(CO2))
+head(missRanger(generateNA(CO2)), pmm.k = 1)
+head(missRanger(generateNA(CO2, p = c(Type = 0.2))), pmm.k = 1)
+head(missRanger(generateNA(CO2, p = c(uptake = 0.7))), pmm.k = 1)
+           
 #=====================================================================================
 #  generateNA
 #=====================================================================================

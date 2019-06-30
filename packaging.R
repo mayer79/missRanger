@@ -53,7 +53,7 @@ file.copy(mdfiles, pkg)
 # vignette
 devtools::use_vignette("my-vignette")
 file.remove(file.path(pkg, "vignettes", "my-vignette.Rmd"))
-file.copy("missRanger.Rmd", to = file.path(pkg, "vignettes"), overwrite = TRUE)
+file.copy("vignette_missRanger.Rmd", to = file.path(pkg, "vignettes"), overwrite = TRUE)
 devtools::build_vignettes(pkg)
 
 # Check
@@ -62,8 +62,6 @@ check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pk
 # tar and zip file plus check
 build(pkg, manual = TRUE) # tar
 build(pkg, binary = TRUE) # zip
-
-
 
 # Install the package (locally)
 install(pkg) # tar
@@ -74,7 +72,7 @@ check_rhub(pkg)
 
 setwd(file.path("C:/projects/missRanger", pkg))
 
-devtools::release()
+devtools::release(pkg)
 
 
 # RESTART RSTUDIO

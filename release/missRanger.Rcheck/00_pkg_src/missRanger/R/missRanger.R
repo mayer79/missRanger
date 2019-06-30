@@ -266,6 +266,11 @@ typeof2 <- function(object) {
 convert <- function(X, check = FALSE) {
   stopifnot(is.data.frame(X))
   
+  if (!ncol(X)) {
+    return(list(X = X, bad = character(0), vars = character(0), 
+                types = character(0), classes = character(0)))
+  }
+  
   types <- vapply(X, typeof2, FUN.VALUE = "")
   bad <- types == "" | if (check) mapply(function(a, b) 
     isFALSE(all.equal(a, b)), X, revert(convert(X))) else FALSE

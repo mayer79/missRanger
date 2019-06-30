@@ -8,12 +8,12 @@ knitr::opts_chunk$set(
 
 ## ------------------------------------------------------------------------
 library(missRanger)
-set.seed(845)
+set.seed(84553)
 
 head(iris)
 
 # Generate data with missing values in all columns
-head(irisWithNA <- generateNA(iris, p = 0.15))
+head(irisWithNA <- generateNA(iris, p = 0.2))
  
 # Impute missing values with missRanger
 head(irisImputed <- missRanger(irisWithNA, num.trees = 100))
@@ -64,7 +64,7 @@ table(non_miss)
 # No weighting
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5))
 
-# Weigthed by number of non-missing values per row. 
+# Weighted by number of non-missing values per row. 
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weights = non_miss))
 
 
@@ -84,14 +84,12 @@ summary(pooled_fit <- pool(models))
 # Compare with model on original data
 summary(lm(Sepal.Length ~ ., data = iris))
 
-# Compare with model on first completed data
-summary(lm(Sepal.Length ~ ., data = filled[[1]]))
-
 
 ## ------------------------------------------------------------------------
 require(survival)
 require(dplyr)
 head(veteran)
+set.seed(653)
 
 # For illustration, we use data from a randomized two-arm trial 
 # about lung cancer. The aim is to estimate the treatment effect
@@ -117,7 +115,7 @@ veteran_with_NA <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime =
 
 # Generate 20 complete data sets and remove "surv"
 filled <- replicate(20, missRanger(veteran_with_NA, . ~ . - time - status, 
-  verbose = 0, pmm.k = 3, num.trees = 100), simplify = FALSE)
+  verbose = 0, pmm.k = 3, num.trees = 50), simplify = FALSE)
 
 filled <- lapply(filled, function(data) {data$surv <- NULL; data})
 
@@ -138,8 +136,7 @@ ir$s <- iris$Species == "setosa"
 ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
 ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
 ir$ch <- as.character(iris$Species)
-ir$fun <- list(mean)
-ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
+head(ir <- generateNA(ir, c(rep(0.2, 7), 0, 0)))
 head(m <- missRanger(ir, pmm.k = 4))
 
 
