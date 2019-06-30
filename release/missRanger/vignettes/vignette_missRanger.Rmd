@@ -293,10 +293,10 @@ head(m <- missRanger(ir, pmm.k = 4))
 ## References
 [1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
  
-[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1), 112-118, doi: 10.1093/bioinformatics/btr597
+[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1), 112-118.
 
 [3]  Van Buuren, S. and Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 
 [4] Rubin, D.B. (1987). *Multiple Imputation for Nonresponse in Surveys.* New York: John Wiley and Sons.
 
-[5] White IR and Royston P. (2009). Imputing missing covariate values for the Cox model. Statistics in medicine, 28(15), 1982-1998. doi:10.1002/sim.3618
+[5] White IR and Royston P. (2009). Imputing missing covariate values for the Cox model. Statistics in medicine, 28(15), 1982-1998.

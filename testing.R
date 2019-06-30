@@ -80,8 +80,7 @@ ir$s <- iris$Species == "setosa"
 ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
 ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
 ir$ch <- as.character(iris$Species)
-ir$fun <- list(mean)
-ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
+ir <- generateNA(ir, c(rep(0.2, 7), 0, 0))
 head(m <- missRanger(ir, pmm.k = 4))
 
 # Only one column, but fully missing
