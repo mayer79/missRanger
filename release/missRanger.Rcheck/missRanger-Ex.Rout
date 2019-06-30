@@ -51,8 +51,8 @@ Type 'q()' to quit R.
 > generateNA(1:10, p = 0.5, seed = 3345)
  [1] NA NA  3 NA  5 NA  7 NA  9 10
 > generateNA(rep(Sys.Date(), 10))
- [1] "2019-06-29" "2019-06-29" "2019-06-29" "2019-06-29" "2019-06-29"
- [6] "2019-06-29" NA           "2019-06-29" "2019-06-29" "2019-06-29"
+ [1] "2019-06-30" "2019-06-30" "2019-06-30" "2019-06-30" "2019-06-30"
+ [6] "2019-06-30" NA           "2019-06-30" "2019-06-30" "2019-06-30"
 > generateNA(cbind(1:10, 10:1), p = 0.2)
       [,1] [,2]
  [1,]    1   10
@@ -177,8 +177,8 @@ Levels: A
 
 Missing value imputation by random forests
 
-  Variables to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
-  Variables used to impute: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
+  Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
+  Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species
 iter 1:	.....
 iter 2:	.....
 iter 3:	.....
@@ -283,7 +283,7 @@ iter 4:	.....
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.46 0.2 1.71 NA NA 
+Time elapsed:  1.41 0.14 1.41 NA NA 
 > grDevices::dev.off()
 null device 
           1 

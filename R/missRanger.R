@@ -22,7 +22,6 @@
 #' Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be usedful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.
 #' @param case.weights Vector with non-negative case weights.
-#' @param imputeSpecial Logical flag. If TRUE, non-numeric columns of mode "numeric" (e.g. Dates, POSIXct etc.) will be imputed as well. 
 #' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
 #' The following arguments are e.g. incompatible with \code{ranger}: \code{mtry}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
@@ -94,13 +93,13 @@
 #' head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
 #' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
-                       verbose = 1, returnOOB = FALSE, case.weights = NULL, 
-                       imputeSpecial = FALSE, ...) {
+                       verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
   
-  # Some initial checks
+  # 1) INITIAL CHECKS
+  
   stopifnot(is.data.frame(data), dim(data) >= 1L, 
             inherits(formula, "formula"), 
             length(formula <- as.character(formula)) == 3L,
@@ -117,30 +116,26 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     set.seed(seed)
   }  
   
-  # Select variables to be imputed. We will visit them from few to many missings.
+  # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
+  
+  # Extract lhs and rhs from formula
   relevantVars <- lapply(formula[2:3], function(z) attr(terms.formula(
     reformulate(z), data = data[1, ]), "term.labels"))
-
-  ok <- vapply(data[, relevantVars[[1]], drop = FALSE], FUN.VALUE = TRUE,
-               function(z) !(typeof2(z) %in% c("", if (!imputeSpecial) "special")) && 
-                 anyNA(z) && !all(is.na(z)))
-  dataNA <- is.na(data[, relevantVars[[1]][ok], drop = FALSE])
-  visitSeq <- names(sort(colSums(dataNA)))
+  
+  # Pick variables from lhs with some but not all missings
+  toImpute <- relevantVars[[1]][vapply(data[, relevantVars[[1]], drop = FALSE], 
+                FUN.VALUE = TRUE, function(z) anyNA(z) && !all(is.na(z)))]
+  
+  # Try to convert special variables to numeric/factor in order to be safely predicted by ranger
+  converted <- convert(data[, toImpute, drop = FALSE], check = TRUE)
+  data[, toImpute] <- converted$X
+  
+  # Remove variables that cannot be safely converted
+  visitSeq <- setdiff(toImpute, converted$bad)
   
   if (verbose) {
-    cat("\n  Variables to impute: ")
+    cat("\n  Variables to impute:\t\t")
     cat(visitSeq, sep = ", ")
-  }
-  
-  # Select inital ("completed") and final ("imputeBy") covariables for the random forests.
-  ok <- relevantVars[[2]] %in% visitSeq |
-    !vapply(data[, relevantVars[[2]], drop = FALSE], anyNA, TRUE)
-  imputeBy <- relevantVars[[2]][ok]
-  completed <- setdiff(imputeBy, visitSeq)
-  
-  if (verbose) {
-    cat("\n  Variables used to impute: ")
-    cat(imputeBy, sep = ", ")
   }
   
   if (!length(visitSeq)) {
@@ -150,14 +145,23 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     return(data)
   }
   
-  # Conversion of non-factor/non-numeric variables
-  types <- vapply(data[, visitSeq, drop = FALSE], typeof2, "")
-  types <- types[!(types %in% c("numeric", "factor"))]
-  if (length(convert <- names(types))) {
-    classes <- lapply(data[, convert, drop = FALSE], class)
-    data[, convert] <- lapply(data[, convert, drop = FALSE], function(v)
-      if (is.character(v) || is.logical(v)) as.factor(v) else as.numeric(v))
+  # Get missing indicators and order variables by number of missings
+  dataNA <- is.na(data[, visitSeq, drop = FALSE])
+  visitSeq <- names(sort(colSums(dataNA)))
+  
+  # 3) SELECT VARIABLES USED TO IMPUTE
+  
+  # Variables on the rhs should either appear in "visitSeq" or do not contain any missings
+  imputeBy <- relevantVars[[2]][relevantVars[[2]] %in% visitSeq | 
+     !vapply(data[, relevantVars[[2]], drop = FALSE], anyNA, TRUE)]
+  completed <- setdiff(imputeBy, visitSeq)
+  
+  if (verbose) {
+    cat("\n  Variables used to impute:\t")
+    cat(imputeBy, sep = ", ")
   }
+
+  # 4) IMPUTATION
   
   # Initialization  
   j <- 1L             # iterator
@@ -227,16 +231,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
     attr(dataLast, "oob") <- predErrorLast 
   }
   
-  # Undo the conversions
-  if (length(convert)) {
-    f <- function(v, ty, cl) {
-      switch(ty, logical = as.logical(v), character = as.character(v),
-             special = {class(v) <- cl; v}, v)
-    }
-    dataLast[, convert] <- Map(f, dataLast[, convert, drop = FALSE], types, classes)
-  }
-  
-  dataLast
+  # Revert the conversions
+  revert(converted, X = dataLast)
 }
 
 #' A version of \code{typeof} internally used by \code{missRanger}.
@@ -256,3 +252,55 @@ typeof2 <- function(object) {
         if (is.logical(object)) "logical" else
           if (mode(object) == "numeric") "special" else ""
 }  
+
+#' Conversion of non-factor/non-numeric variables.
+#'
+#' @description Converts non-factor/non-numeric variables in a data frame to factor/numeric. Stores information to revert back.
+#' 
+#' @author Michael Mayer
+#' 
+#' @param X A data frame.
+#' @param check If \code{TRUE}, the function checks if the converted columns can be reverted without changes.
+#'
+#' @return A list with the following elements: \code{X} is the converted data frame, \code{vars}, \code{types}, \code{classes} are the names, types and classes of the converted variables. Finally, \code{bad} names variables in \code{X} that should have been converted but could not. 
+convert <- function(X, check = FALSE) {
+  stopifnot(is.data.frame(X))
+  
+  types <- vapply(X, typeof2, FUN.VALUE = "")
+  bad <- types == "" | if (check) mapply(function(a, b) 
+    isFALSE(all.equal(a, b)), X, revert(convert(X))) else FALSE
+  types <- types[!(types %in% c("numeric", "factor") | bad)]
+  vars <- names(types)
+  classes <- lapply(X[, vars, drop = FALSE], class)
+  
+  X[, vars] <- lapply(X[, vars, drop = FALSE], function(v) 
+    if (is.character(v) || is.logical(v)) as.factor(v) else as.numeric(v))
+  
+  list(X = X, bad = names(X)[bad], vars = vars, types = types, classes = classes)
+}
+
+#' Revert conversion.
+#'
+#' @description Reverts conversions done by \code{convert}.
+#' 
+#' @author Michael Mayer
+#' 
+#' @param con A list returned by \code{convert}.
+#' @param X A data frame with some columns to be converted back according to the information stored in \code{converted}.
+#'
+#' @return A data frame.
+revert <- function(con, X = con$X) {
+  stopifnot(c("vars", "types", "classes") %in% names(con), is.data.frame(X))
+  
+  if (!length(con$vars)) {
+    return(X)
+  }
+  
+  f <- function(v, ty, cl) {
+    switch(ty, logical = as.logical(v), character = as.character(v),
+           special = {class(v) <- cl; v}, v)
+  }
+  X[, con$vars] <- Map(f, X[, con$vars, drop = FALSE], con$types, con$classes)
+  X
+}
+

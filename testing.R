@@ -80,9 +80,9 @@ ir$s <- iris$Species == "setosa"
 ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
 ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
 ir$ch <- as.character(iris$Species)
-ir <- generateNA(ir, c(rep(0.2, 7), 0, 0))
+ir$fun <- list(mean)
+ir <- generateNA(ir, c(rep(0.2, 7), 0, 0, 0.2))
 head(m <- missRanger(ir, pmm.k = 4))
-head(m <- missRanger(ir, pmm.k = 4, imputeSpecial = TRUE))
 
 
 #=====================================================================================
@@ -186,3 +186,27 @@ summary(lm(Sepal.Length ~ ., data = iris))
 #   Petal.Width       -0.31516    0.15120  -2.084  0.03889 *  
 #   Speciesversicolor -0.72356    0.24017  -3.013  0.00306 ** 
 #   Speciesvirginica  -1.02350    0.33373  -3.067  0.00258 ** 
+
+#=====================================================================================
+#  convert/revert
+#=====================================================================================
+
+revert(convert(head(iris)))
+revert(convert(head(iris), check = TRUE))
+
+ir <- head(iris)
+ir$s <- ir$Species == "setosa"
+ir$dt <- seq(Sys.time(), by = "1 min", length.out = nrow(ir))
+ir$d <- seq(Sys.Date(), by = "1 d", length.out = nrow(ir))
+ir$ch <- as.character(ir$Species)
+ir$fun <- list(mean)
+convert(head(ir))$X
+convert(head(ir), check = TRUE)$X
+str(ir)
+
+# Tibble
+ir <- dplyr::as_tibble(ir)
+convert(head(ir))$X
+convert(head(ir), check = TRUE)$X
+revert(convert(head(ir)))
+revert(convert(head(ir), check = TRUE))

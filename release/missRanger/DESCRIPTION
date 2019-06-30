@@ -17,9 +17,13 @@ License: GPL(>= 2)
 Encoding: UTF-8
 LazyData: true
 Type: Package
-Date: 2019-06-29
+Date: 2019-06-30
 Imports: stats, FNN (>= 1.1), ranger (>= 0.10)
-Suggests: mice (>= 3.0)
+Suggests: 
+    mice (>= 3.0),
+    knitr,
+    rmarkdown
 Author: Michael Mayer [aut, cre, cph]
 Maintainer: Michael Mayer <mayermichael79@gmail.com>
 RoxygenNote: 6.1.1
+VignetteBuilder: knitr

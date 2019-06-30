@@ -3,9 +3,7 @@
 This is a summary of all changes since version 1.x.x.
 
 ## Major changes
-* `missRanger` now also imputes and uses logical variables and character variables.
-
-* Set `imputeSpecial` to `TRUE` to also impute variables of mode numeric but with special classes like time, dates etc. These variables are converted to numeric first, then imputed and in the end set back to their original classes. Currently, the default is `FALSE`. But this might change in later releases.
+* `missRanger` now also imputes and uses logical variables, character variables and further variables of mode numeric like dates and times.
 
 * Added formula interface to specify which variables to impute (those on the left hand side) and those used to do so (those on the right hand side). Here some (pseudo) examples:
 

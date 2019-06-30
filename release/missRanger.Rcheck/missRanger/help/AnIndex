@@ -1,5 +1,7 @@
+convert	convert
 generateNA	generateNA
 imputeUnivariate	imputeUnivariate
 missRanger	missRanger
 pmm	pmm
+revert	revert
 typeof2	typeof2

@@ -56,6 +56,9 @@ check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pk
 build(pkg, manual = TRUE) # tar
 build(pkg, binary = TRUE) # zip
 
+# vignette
+devtools::use_vignette("my-vignette")
+
 # Install the package (locally)
 install(pkg) # tar
 

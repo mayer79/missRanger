@@ -6,7 +6,7 @@
 \usage{
 missRanger(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL,
-  imputeSpecial = FALSE, ...)
+  ...)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
@@ -27,8 +27,6 @@ Furthermore, if \code{verbose} is positive, the variables used for imputation ar
 \item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.}
 
 \item{case.weights}{Vector with non-negative case weights.}
-
-\item{imputeSpecial}{Logical flag. If TRUE, non-numeric columns of mode "numeric" (e.g. Dates, POSIXct etc.) will be imputed as well.}
 
 \item{...}{Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
 The following arguments are e.g. incompatible with \code{ranger}: \code{mtry}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}.}

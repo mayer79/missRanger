@@ -3,9 +3,7 @@
 This is a summary of all changes since version 1.x.x.
 
 ## Major changes
-* `missRanger` now also imputes and uses logical variables and character variables.
-
-* Set `imputeSpecial` to `TRUE` to also impute variables of mode numeric but with special classes like time, dates etc. These variables are converted to numeric first, then imputed and in the end set back to their original classes. Currently, the default is `FALSE`. But this might change in later releases.
+* `missRanger` now also imputes and uses logical variables, character variables and further variables of mode numeric like dates and times.
 
 * Added formula interface to specify which variables to impute (those on the left hand side) and those used to do so (those on the right hand side). Here some (pseudo) examples:
 
@@ -13,7 +11,7 @@ This is a summary of all changes since version 1.x.x.
   
   - `. ~ . - ID`: Use all variables except `ID` to impute all missing values.
   
-  - `Species ~ Sepal.Width`: Use `Sepal.Width` to impute `Species`. Only works if `Sepal.Width` does not contain missing values.
+  - `Species ~ Sepal.Width`: Use `Sepal.Width` to impute `Species`. Only works if `Sepal.Width` does not contain missing values. (Add it to the right hand side if it does.)
   
   - `Species + Sepal.Length ~ Species + Petal.Length`: Use `Species` and `Petal.Length` to impute `Species` and `Sepal.Length`. Only works if `Petal.Length` does not contain missing values because it does not appear on the left hand side and is therefore not imputed itself.
   
