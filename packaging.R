@@ -1,16 +1,23 @@
 #=====================================================================================
-# BUILD THE PACKAGE "missRanger"
+# BUILD THE PACKAGE
 #=====================================================================================
 
+if (FALSE) {
+  library(ranger)
+  library(FNN)
+  lapply(list.files("R", full.names = TRUE), source)
+}
+
+library(usethis)
 library(devtools)
 
-stopifnot(basename(getwd()) == "missRanger")
+# Create a new package
+dir.create(file.path("release"))
+pkg <- file.path("release", "missRanger")
 
-pkg <- "release/missRanger"
-unlink(pkg, force = TRUE, recursive = TRUE)
-create(
-  pkg, 
-  descr = list(
+create_package(
+  pkg,
+  fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
     Version = "2.1.0",
@@ -25,65 +32,63 @@ create(
     distributions to a realistic level. This would allow e.g. to do multiple imputation when 
     repeating the call to missRanger(). 
     A formula interface allows to control which variables should be imputed by which.",
-    
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
+    URL = "https://github.com/mayer79/missRanger",
+    BugReports = "https://github.com/mayer79/missRanger/issues",
     Depends = "R (>= 3.5.0)",
-    Imports = list("stats", "FNN (>= 1.1)", "ranger (>= 0.10)"),
-    Suggests = list("mice", "dplyr", "survival", "ggplot2", "knitr", "rmarkdown"),
     VignetteBuilder = "knitr",
     License = "GPL(>= 2)",
-    Author = "Michael Mayer [aut, cre, cph]",
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"), 
-  rstudio = FALSE)
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"))
 
-# Add R files
-Rfiles <- c("generateNA.R", "imputeUnivariate.R", "missRanger.R", "pmm.R")
-stopifnot(file.exists(fp <- file.path("R", Rfiles)))
-file.copy(fp, file.path(pkg, "R"))
+file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
+# Use package has no option to look for pkg, so we first copy description from pkg, modify it and move back
+use_package("stats", "Imports")
+use_package("FNN", "imports")
+use_package("ranger", "Imports")
+use_package("dplyr", "Suggests")
+use_package("survival", "Suggests")
+use_package("mice", "Suggests")
+use_package("knitr", "Suggests")
 
-# Create Rd files
-document(pkg)
+# Set up other files -------------------------------------------------
+# use_readme_md()
+# use_news_md()
+# use_cran_comments()
 
-# Add further files
-devtools::use_cran_comments(pkg)
-mdfiles <- c("NEWS.md", "README.md")
-stopifnot(file.exists(mdfiles))
-file.copy(mdfiles, pkg)
+# Copy readme etc.
+file.copy(c(".Rbuildignore", "NEWS.md", "README.md", "cran-comments.md", "DESCRIPTION"), pkg, overwrite = TRUE)
 
-# vignette
-devtools::use_vignette("vignette_missRanger")
-file.copy("vignette_missRanger.Rmd", to = file.path(pkg, "vignettes"), overwrite = TRUE)
+# Copy R scripts and document them
+file.copy(list.files("R", full.names = TRUE), file.path(pkg, "R"), overwrite = TRUE)
+devtools::document(pkg)
+
+# Copy vignette
+# use_vignette(name = "missRanger", title = "missRanger")
+dir.create(file.path(pkg, "vignettes"))
+dir.create(file.path(pkg, "doc"))
+dir.create(file.path(pkg, "Meta"))
+file.copy(list.files("vignettes", full.names = TRUE),
+          file.path(pkg, "vignettes"), overwrite = TRUE)
+
 devtools::build_vignettes(pkg)
 
 # Check
-check(pkg, document = FALSE, manual = TRUE, check_dir = dirname(normalizePath(pkg)))
+check(pkg, manual = TRUE)
 
-# tar and zip file plus check
-build(pkg, manual = TRUE) # tar
-build(pkg, binary = TRUE) # zip
+# Create
+build(pkg)
+build(pkg, binary = TRUE)
 
-# Install the package (locally)
+# Install
+install(pkg)
 
-install(pkg) # tar
-
-spell_check(pkg)
+# modify .Rbuildignore in build project to ignore the proj file.
 
 check_win_devel(pkg)
 
 check_rhub(pkg)
 
-setwd(file.path("D:/missRanger", pkg))
+devtools::release(pkg)
 
-devtools::release()
-
-
-# RESTART RSTUDIO
-if (FALSE) {
-  library(missRanger)
-  
-  irisWithNA <- generateNA(iris)
-  irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 1)
-  head(irisImputed)
-  head(irisWithNA)
-  head(iris)
-}
+usethis::use_pkgdown()
+pkgdown::build_site(pkg)

@@ -50,7 +50,7 @@ install.packages("missRanger")
 Latest version from github:
 ```
 library(devtools)
-install_github("mayer79/missRanger/release/missRanger")
+install_github("mayer79/missRanger")
 ```
 
 ## Examples
@@ -59,6 +59,10 @@ We first generate a data set with about 20% missing values per column and fill t
 
 ``` {r}
 library(missRanger)
+library(survival)
+library(dplyr)
+library(mice)
+
 set.seed(84553)
 
 head(iris)
@@ -88,13 +92,10 @@ It is as simple!
 Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`). Make sure to set `verbose = 0` in order to prevent messages.
 
 ``` {r}
-require(dplyr)
-
 iris %>% 
-  generateNA %>% 
-  as_tibble %>% 
+  generateNA() %>% 
   missRanger(verbose = 0) %>% 
-  head
+  head()
   
 ```
 
@@ -143,7 +144,7 @@ Here are tweaks to make things faster:
 ### Examples evaluated on a normal laptop (not run here)
 
 ``` r
-require(ggplot2) # for diamonds data
+library(ggplot2) # for diamonds data
 dim(diamonds) # 53940    10
 
 diamonds_with_NA <- generateNA(diamonds)
@@ -201,7 +202,6 @@ filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm
 models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
 
 # Pool the results by mice
-require(mice)
 summary(pooled_fit <- pool(models))
 
 # Compare with model on original data
@@ -228,8 +228,6 @@ By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The
 ### Example
 
 ``` {r}
-require(survival)
-require(dplyr)
 head(veteran)
 set.seed(653)
 
@@ -246,7 +244,7 @@ set.seed(653)
 # Add the Nelson-Aalen survival probabilities "surv" to the data set
 veteran2 <- summary(survfit(Surv(time, status) ~ 1, data = veteran), 
                 times = veteran$time)[c("time", "surv")] %>% 
-            as_tibble %>% 
+            as_tibble() %>% 
             right_join(veteran, by = "time")
 
 # Add missing values to some columns. We do not add missing values
@@ -265,7 +263,6 @@ filled <- lapply(filled, function(data) {data$surv <- NULL; data})
 models <- lapply(filled, function(x) coxph(Surv(time, status) ~ ., x))
 
 # Pool the results by mice
-require(mice)
 summary(pooled_fit <- pool(models))
 
 # On the original

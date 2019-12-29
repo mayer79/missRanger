@@ -13,7 +13,7 @@ install.packages("missRanger")
 Latest version from github:
 ``` r
 # library(devtools)
-install_github("mayer79/missRanger/release/missRanger")
+install_github("mayer79/missRanger")
 ```
 
 ## Examples
@@ -42,10 +42,9 @@ irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, splitrule = "extratrees", nu
 library(dplyr)
 
 iris %>% 
-  generateNA %>% 
-  as_tibble %>% 
+  generateNA() %>% 
   missRanger(verbose = 0) %>% 
-  head
+  head()
   
 ```
 

@@ -1,9 +1,0 @@
-convert                 Conversion of non-factor/non-numeric variables.
-generateNA              Adds Missing Values to a Vector, Matrix or Data
-                        Frame
-imputeUnivariate        Univariate Imputation
-missRanger              missRanger
-pmm                     missRanger pmm
-revert                  Revert conversion.
-typeof2                 A version of 'typeof' internally used by
-                        'missRanger'.

@@ -4,9 +4,17 @@
 \alias{missRanger}
 \title{missRanger}
 \usage{
-missRanger(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
-  seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL,
-  ...)
+missRanger(
+  data,
+  formula = . ~ .,
+  pmm.k = 0L,
+  maxiter = 10L,
+  seed = NULL,
+  verbose = 1,
+  returnOOB = FALSE,
+  case.weights = NULL,
+  ...
+)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
