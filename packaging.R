@@ -24,7 +24,7 @@ create_package(
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
-    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
+    Buehlmann, P. (2012) <doi.org/10.1093/bioinformatics/btr597>. Under the hood, it uses the 
     lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
     we offer the option of using predictive mean matching. This firstly avoids imputation 
     with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 

@@ -2,6 +2,8 @@
 title: "Using missRanger"
 author: "Michael Mayer"
 date: "`r Sys.Date()`"
+bibliography: "biblio.bib"
+link-citations: true
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{missRanger}
@@ -22,7 +24,7 @@ knitr::opts_chunk$set(
 
 The aim of this vignette is to introduce the R package `missRanger` for imputation of missing values and to explain how to use it for multiple imputation.
 
-`missRanger` uses the `ranger` package [1] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to `missForest`, a beautiful algorithm introduced by Stekhoven and Buehlmann in [2]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. `missRanger` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
+`missRanger` uses the `ranger` package [@wright] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to `missForest`, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. `missRanger` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
 
 Why should you consider `missRanger`?
 
@@ -32,7 +34,7 @@ Why should you consider `missRanger`?
 
 - It can deal with most realistic variable types, even dates and times without destroying the original data structure.
 
-- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [4] for the statistical background.
+- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [@rubin] for the statistical background.
 
 In the examples below, we will meet two functions from the `missRanger` package:
 
@@ -186,9 +188,9 @@ head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weigh
 
 For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
 
-For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [4]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
+For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [@rubin]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
 
-The package `mice` [3] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
+The package `mice` [@buuren] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
 
 The following example shows how easy such workflow looks like.
 
@@ -215,7 +217,7 @@ The standard errors and p values of the multiple imputation are larger than of t
 
 There is no obvious way of how to deal with survival variables as covariables in imputation models. 
 
-Options discussed in White [5] include:
+Options discussed in [@white] include:
 
 - Use both status variable s and (censored) time variable t
 
@@ -239,7 +241,7 @@ set.seed(653)
 # It is recommended to use the model response in the imputation models - 
 # even if it sounds wrong. In case of a censored survival response
 # (i.e. consisting of a time/status pair), an elegant 
-# possibility is to represent it by the estimated Nelson-Aalen estimates [5].
+# possibility is to represent it by the estimated Nelson-Aalen estimates.
 
 # Add the Nelson-Aalen survival probabilities "surv" to the data set
 veteran2 <- summary(survfit(Surv(time, status) ~ 1, data = veteran), 
@@ -286,14 +288,3 @@ head(ir <- generateNA(ir, c(rep(0.2, 7), 0, 0)))
 head(m <- missRanger(ir, pmm.k = 4))
 
 ```
-
-## References
-[1]  Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. http://arxiv.org/abs/1508.04409. 
- 
-[2]  Stekhoven, D.J. and Buehlmann, P. (2012). MissForest - nonparametric missing value imputation for mixed-type data. Bioinformatics, 28(1), 112-118.
-
-[3]  Van Buuren, S. and Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
-
-[4] Rubin, D.B. (1987). *Multiple Imputation for Nonresponse in Surveys.* New York: John Wiley and Sons.
-
-[5] White IR and Royston P. (2009). Imputing missing covariate values for the Cox model. Statistics in medicine, 28(15), 1982-1998.
