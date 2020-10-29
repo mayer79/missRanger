@@ -12,8 +12,8 @@ install.packages("missRanger")
 
 Latest version from github:
 ``` r
-# library(devtools)
-install_github("mayer79/missRanger")
+library(devtools)
+install_github("mayer79/missRanger", subdir = "release/missRanger")
 ```
 
 ## Examples
