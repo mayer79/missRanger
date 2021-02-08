@@ -1,5 +1,7 @@
 # missRanger
 
+[![CRAN version](http://www.r-pkg.org/badges/version/missRanger)](https://cran.r-project.org/package=missRanger) [![](https://cranlogs.r-pkg.org/badges/missRanger)](https://cran.r-project.org/package=missRanger) [![](https://cranlogs.r-pkg.org/badges/grand-total/missRanger?color=orange)](https://cran.r-project.org/package=missRanger)
+
 The `missRanger` package uses the `ranger` package to do fast missing value imputation by chained random forest. As such, it serves as an alternative implementation of the beautiful 'MissForest' algorithm, see vignette.
 
 `missRanger` offers the option to combine random forest imputation with predictive mean matching. This firstly avoids the generation of values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, this step tends to raise the variance in the resulting conditional distributions to a realistic level, a crucial element to apply multiple imputation frameworks.
