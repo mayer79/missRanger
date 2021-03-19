@@ -1,101 +1,98 @@
 context("missRanger")
 
-test_that("it works for numeric vectors with specific result", {
-  expected <- c(NA, NA, 3L, NA, 5L, NA, 7L, NA, 9L, 10L)
-  expect_equal(generateNA(1:10, p = 0.5, seed = 3345), expected)
+irisWithNA <- generateNA(iris, seed = 1, p = 0.3)
+irisWithNA2 <- irisWithNA[c(1:2, 50:51, 100:101), ]
+
+test_that("results are reproducible", {
+  imp <- missRanger(irisWithNA, pmm.k = 3, verbose = 0, seed = 1, num.trees = 50)
+  expect_true(!anyNA(imp))
+  
+  expected <- structure(list(
+    Sepal.Length = c(5.1, 5.5, 4.7, 4.6, 5, 5), 
+    Sepal.Width = c(3.1, 3, 3.2, 3.1, 3.6, 3.9), 
+    Petal.Length = c(1.9, 3.5, 1.3, 1.5, 1.4, 1.7), 
+    Petal.Width = c(0.4, 1, 0.2, 0.2, 0.2, 0.4), 
+    Species = structure(c(1L, 1L, 1L, 1L, 1L, 1L), 
+                        .Label = c("setosa", "versicolor", "virginica"), class = "factor")), 
+    row.names = c(NA, 6L), class = "data.frame")
+  expect_equal(imp[1:6, ], expected)
 })
 
+test_that("messages are suppressed with verbose=0", {
+  expect_silent(missRanger(irisWithNA2, maxiter = 3, num.trees = 1, verbose = 0))
+})
 
-ir <- iris
-ir$Species <- as.character(ir$Species)
-ir$Species[1:3] <- NA
-ir$s <- ir$Species == "setosa"
-ir$Sepal.Length[1:3] <- NA
+test_that("seed works", {
+  imp1 <- missRanger(irisWithNA2, maxiter = 3, num.trees = 1, verbose = 0, seed = 1)
+  imp2 <- missRanger(irisWithNA2, maxiter = 3, num.trees = 1, verbose = 0, seed = 1)
+  expect_equal(imp1, imp2)
+})
 
-head(missRanger(ir)) 
+test_that("returnOOB works", {
+  imp1 <- missRanger(irisWithNA2, maxiter = 3, num.trees = 1, 
+                     verbose = 0, returnOOB = TRUE)
+  expect_true(length(attributes(imp1)$oob) == 5L)
+})
 
-# Check order of imputation
-ir <- iris
-for (i in 1:ncol(ir)) {
-  ir[1:i, ncol(ir) + 1 - i] <- NA
-}
-head(ir)
-head(missRanger(ir))
-
-ir$Species <- NA
-head(missRanger(ir, pmm.k = 5))
-
-ir$Species <- iris$Species
-head(missRanger(ir, pmm.k = 3))
-
-n <- 100
+n <- 20
 X <- data.frame(x1 = seq_len(n), 
                 x2 = log(seq_len(n)), 
-                x3 = sample(LETTERS[1:3], n, replace = TRUE),
-                x4 = factor(sample(LETTERS[1:3], n, replace = TRUE)),
-                x5 = seq_len(n) > 50)
-head(X)
-X_NA <- generateNA(X, p = seq(0, 0.8, by = .2))
-head(X_NA)
+                x3 = rep(LETTERS[1:4], n %/% 4),
+                x4 = factor(rep(LETTERS[1:2], n %/% 2)),
+                x5 = seq_len(n) > n %/% 3)
+X_NA <- generateNA(X, p = seq(0.2, 0.8, length.out = ncol(X)), seed = 13)
 
-head(X_imp <- missRanger(X_NA))
-head(X_imp <- missRanger(X_NA, pmm = 3))
-head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 0))
-head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 2, returnOOB = TRUE))
-attr(X_imp, "oob")
+test_that("variable type is respected (integer might get double)", {
+  imp <- missRanger(X_NA, maxiter = 3, num.trees = 20, verbose = 0)
+  expect_true(!anyNA(imp))
+  expect_equal(sapply(imp[-1], class), sapply(X_NA[-1], class))
+  expect_true(class(imp[, 1]) %in% c("integer", "numeric"))
+})
 
-# The formula interface
-head(X_imp <- missRanger(X_NA, x2 ~ x2 + x3, pmm = 3)) # Does not use x3 because it contains NAs
-head(X_imp <- missRanger(X_NA, x2 + x3 ~ x2 + x3, pmm = 3)) # If added to the lhs, x3 is used on the rhs.
-head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
+test_that("pmm.k works regarding value range in double columns", {
+  imp <- missRanger(X_NA, maxiter = 3, num.trees = 20, verbose = 0, pmm.k = 3)
+  expect_true(all(imp$x2 %in% X$x2))
+  
+  imp <- missRanger(X_NA, maxiter = 3, num.trees = 20, verbose = 0, pmm.k = 0)
+  expect_false(all(imp$x2 %in% X$x2))
+})
 
-irisWithNA <- generateNA(iris)
-irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
+test_that("pmm.k works regarding value range in integer columns", {
+  imp <- missRanger(X_NA, maxiter = 3, num.trees = 20, verbose = 0, pmm.k = 3)
+  expect_true(all(imp$x1 %in% X$x1))
+  
+  imp <- missRanger(X_NA, maxiter = 3, num.trees = 20, verbose = 0, pmm.k = 0)
+  expect_false(all(imp$x1 %in% X$x1))
+})
 
-# With extra trees algorithm
-irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, 
-                             splitrule = "extratrees")
-head(irisImputed_et)
+test_that("formula interface works with specified left and right side", {
+  imp <- missRanger(X_NA, x2 ~ x2 + x3, pmm = 3, num.trees = 20, verbose = 0)
+  na_per_col <- colSums(is.na(imp))
+  
+  expect_equal(na_per_col[[2]], 0L)
+  expect_true(all(na_per_col[-2] >= 1L))
+})
 
-# With one single tree
-head(missRanger(irisWithNA, pmm.k = 3, num.trees = 1))
+test_that("formula interface works with unspecified right side", {
+  imp <- missRanger(X_NA, x2 ~ ., pmm = 3, num.trees = 20, verbose = 0)
+  na_per_col <- colSums(is.na(imp))
+  
+  expect_equal(na_per_col[[2]], 0L)
+  expect_true(all(na_per_col[-2] >= 1L))
+})
 
-# Do not impute Species. Note: Since this variable contains missings, it cannot be used
-# to impute the other variables.
-head(irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100))
+test_that("formula interface works with unspecified left side", {
+  imp <- missRanger(X_NA, . ~ x1, pmm = 3, num.trees = 20, verbose = 0)
+  expect_true(!anyNA(imp))
+})
 
-# Impute univariately only.
-head(irisImputed <- missRanger(irisWithNA, . ~ 1, verbose = 2))
-
-# Use Species and Petal.Length to impute Species and Petal.Length.
-head(irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length,
-                               pmm.k = 3, num.trees = 100))
-
-ir <- iris
-ir$s <- iris$Species == "setosa"
-ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
-ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
-ir$ch <- as.character(iris$Species)
-ir <- generateNA(ir, c(rep(0.2, 7), 0, 0))
-head(m <- missRanger(ir, pmm.k = 4))
-
-# Only one column, but fully missing
-ir <- iris
-ir$s <- NA
-
-head(missRanger(ir))
-ir$Sepal.Length[1] <- NA
-missRanger(ir[1:2, ])
-
-di <- ggplot2::diamonds
-head(missRanger(di))
-head(missRanger(di["color"]))
-di <- generateNA(ggplot2::diamonds, p = c(color = 0.2))
-head(missRanger(di, num.trees = 10, pmm.k = 5))
-
-head(missRanger(CO2))
-head(missRanger(generateNA(CO2)), pmm.k = 1)
-head(missRanger(generateNA(CO2, p = c(Type = 0.2))), pmm.k = 1)
-head(missRanger(generateNA(CO2, p = c(uptake = 0.7))), pmm.k = 1)
-
-# CONVERT/REVERT
+test_that("date and datetime columns work", {
+  n <- 20
+  Xd <- data.frame(time = seq(Sys.time(), by = "1 min", length.out = n),
+                  date = seq(Sys.Date(), by = "1 d", length.out = n))
+  Xd_NA <- generateNA(Xd, p = 0.3, seed = 13)
+  
+  imp <- missRanger(Xd_NA, maxiter = 3, num.trees = 20, verbose = 0, pmm.k = 0)
+  expect_true(expect_true(!anyNA(imp)))
+  expect_equal(sapply(imp, class), sapply(Xd_NA, class))
+})
