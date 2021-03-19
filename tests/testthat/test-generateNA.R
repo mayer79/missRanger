@@ -5,6 +5,11 @@ test_that("it works for numeric vectors with specific result", {
   expect_equal(generateNA(1:10, p = 0.5, seed = 3345), expected)
 })
 
+test_that("it works for character vectors", {
+  x <- LETTERS[1:10]
+  expect_true(anyNA(generateNA(x, p = 0.5)))
+})
+
 test_that("it works for factors", {
   x <- factor(LETTERS[1:10])
   expect_true(anyNA(generateNA(x, p = 0.5)))
@@ -18,6 +23,13 @@ test_that("it works for datetime vectors", {
 test_that("it works for matrix object", {
   x <- cbind(1:3, 3:1)
   expect_true(anyNA(generateNA(x, p = 0.2)))
+})
+
+test_that("p has an effect", {
+  x <- 1:100
+  high <- generateNA(x, p = 0.5, seed = 1)
+  low <- generateNA(x, p = 0.2, seed = 1)
+  expect_true(sum(is.na(high)) > sum(is.na(low)))
 })
 
 test_that("it works for data.frame", {
