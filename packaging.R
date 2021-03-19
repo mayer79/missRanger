@@ -20,11 +20,11 @@ create_package(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.0",
+    Version = "2.1.1",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
-    Buehlmann, P. (2012) <doi.org/10.1093/bioinformatics/btr597>. Under the hood, it uses the 
+    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
     lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
     we offer the option of using predictive mean matching. This firstly avoids imputation 
     with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
@@ -38,7 +38,8 @@ create_package(
     Depends = "R (>= 3.5.0)",
     VignetteBuilder = "knitr",
     License = "GPL(>= 2)",
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"))
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
+  open = FALSE)
 
 file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
 # Use package has no option to look for pkg, so we first copy description from pkg, modify it and move back
@@ -48,47 +49,57 @@ use_package("ranger", "Imports")
 use_package("dplyr", "Suggests")
 use_package("survival", "Suggests")
 use_package("mice", "Suggests")
+use_package("rmarkdown", "Suggests")
 use_package("knitr", "Suggests")
+use_package("testthat", "Suggests")
 
 # Set up other files -------------------------------------------------
 # use_readme_md()
 # use_news_md()
 # use_cran_comments()
+# use_testthat()
 
 # Copy readme etc.
-file.copy(c(".Rbuildignore", "NEWS.md", "README.md", "cran-comments.md", "DESCRIPTION"), pkg, overwrite = TRUE)
+file.copy(c(".Rbuildignore", "NEWS.md", "README.md", "cran-comments.md", "DESCRIPTION"), 
+          pkg, overwrite = TRUE)
 
 # Copy R scripts and document them
+if (!dir.exists(file.path(pkg, "R"))) {
+  dir.create(file.path(pkg, "R"))
+}
 file.copy(list.files("R", full.names = TRUE), file.path(pkg, "R"), overwrite = TRUE)
 devtools::document(pkg)
 
-# Copy vignette
-# use_vignette(name = "missRanger", title = "missRanger")
-dir.create(file.path(pkg, "vignettes"))
-dir.create(file.path(pkg, "doc"))
-dir.create(file.path(pkg, "Meta"))
-file.copy(list.files("vignettes", full.names = TRUE),
-          file.path(pkg, "vignettes"), overwrite = TRUE)
+# Tests
+if (!dir.exists(file.path(pkg, "tests"))) {
+  dir.create(file.path(pkg, "tests"))
+}
+file.copy("tests", pkg, recursive = TRUE)
+test(pkg)
 
-devtools::build_vignettes(pkg)
+if (TRUE) {
+  # Copy vignette
+  # use_vignette(name = "missRanger", title = "missRanger")
+  dir.create(file.path(pkg, "vignettes"))
+  dir.create(file.path(pkg, "doc"))
+  dir.create(file.path(pkg, "Meta"))
+  file.copy(list.files("vignettes", full.names = TRUE),
+            file.path(pkg, "vignettes"), overwrite = TRUE)
+  
+  devtools::build_vignettes(pkg)
+}
 
 # Check
 check(pkg, manual = TRUE)
 
 # Create
 build(pkg)
-build(pkg, binary = TRUE)
 
 # Install
 install(pkg)
-
-# modify .Rbuildignore in build project to ignore the proj file.
 
 check_win_devel(pkg)
 
 check_rhub(pkg)
 
 devtools::release(pkg)
-
-usethis::use_pkgdown()
-pkgdown::build_site(pkg)

@@ -17,9 +17,7 @@ imputeUnivariate(x, v = NULL, seed = NULL)
 \code{x} with imputed values.
 }
 \description{
-Fills missing values of a vector, matrix or data frame 
-by sampling with replacement from the non-missing values. For data frames, 
-this sampling is done within column.
+Fills missing values of a vector, matrix or data frame by sampling with replacement from the non-missing values. For data frames, this sampling is done within column.
 }
 \examples{
 imputeUnivariate(c(NA, 0, 1, 0, 1))
@@ -28,7 +26,4 @@ imputeUnivariate(as.factor(c("A", "A", NA)))
 head(imputeUnivariate(generateNA(iris)))
 head(imputeUnivariate(generateNA(iris), v = "Species"))
 head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
-}
-\author{
-Michael Mayer
 }

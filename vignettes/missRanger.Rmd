@@ -6,7 +6,7 @@ bibliography: "biblio.bib"
 link-citations: true
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{missRanger}
+  %\VignetteIndexEntry{Using missRanger}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -52,7 +52,7 @@ install.packages("missRanger")
 Latest version from github:
 ```
 library(devtools)
-install_github("mayer79/missRanger")
+install_github("mayer79/missRanger", subdir = "release/missRanger")
 ```
 
 ## Examples

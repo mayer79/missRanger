@@ -1,14 +1,9 @@
 #' Predictive Mean Matching
+#'
+#' For each value in the prediction vector \code{xtest}, one of the closest \code{k} values in the prediction vector \code{xtrain} is randomly chosen and its observed value in \code{ytrain} is returned. 
 #' 
 #' @importFrom stats rmultinom
 #' @importFrom FNN knnx.index
-#'
-#' @description For each value in the prediction vector \code{xtest}, 
-#' one of the closest \code{k} values in the prediction vector \code{xtrain} 
-#' is randomly chosen and its observed value in \code{ytrain} is returned. 
-#' 
-#' @title missRanger pmm
-#' @author Michael Mayer
 #' 
 #' @param xtrain Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.
 #' @param xtest Vector as \code{xtrain} with predicted values in the test data. Missing values are not allowed.
