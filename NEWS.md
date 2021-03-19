@@ -1,3 +1,9 @@
+# missRanger 2.1.1
+
+* Added unit tests.
+
+* Improved docu.
+
 # missRanger 2.1.0
 
 This is a summary of all changes since version 1.x.x.

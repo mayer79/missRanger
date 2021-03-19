@@ -17,7 +17,7 @@ generateNA(x, p = 0.1, seed = NULL)
 \code{x} with missing values.
 }
 \description{
-Takes a vector, matrix or data frame and replaces some values by NA.
+Takes a vector, matrix or \code{data.frame} and replaces some values by \code{NA}.
 }
 \examples{
 generateNA(1:10, p = 0.5, seed = 3345)
@@ -28,7 +28,4 @@ head(generateNA(iris, p = 0.2))
 head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
 head(generateNA(iris, p = c(Sepal.Length = 1)))
 head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
-}
-\author{
-Michael Mayer
 }

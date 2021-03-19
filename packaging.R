@@ -20,11 +20,11 @@ create_package(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.0",
+    Version = "2.1.1",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
-    Buehlmann, P. (2012) <doi.org/10.1093/bioinformatics/btr597>. Under the hood, it uses the 
+    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
     lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
     we offer the option of using predictive mean matching. This firstly avoids imputation 
     with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
@@ -49,6 +49,7 @@ use_package("ranger", "Imports")
 use_package("dplyr", "Suggests")
 use_package("survival", "Suggests")
 use_package("mice", "Suggests")
+use_package("rmarkdown", "Suggests")
 use_package("knitr", "Suggests")
 use_package("testthat", "Suggests")
 
@@ -96,8 +97,6 @@ build(pkg)
 
 # Install
 install(pkg)
-
-# modify .Rbuildignore in build project to ignore the proj file.
 
 check_win_devel(pkg)
 
