@@ -1,8 +1,17 @@
 # missRanger 2.1.1
 
-* Added unit tests.
+## Minor changes
 
-* Improved docu.
+- Allow the use of "mtry" as suggested by Thomas Lumley. Recommended values are NULL (default), 1 or a function of the number of covariables m, e.g. `mtry = function(m) max(1, m %/% 3)`. Keep in mind that `missRanger()` might use a growing set of covariables in the first iteration of the process, so passing `mtry = 2` might result in an error.
+
+## Documentation
+
+- Improved help pages.
+- Splitted long vignette into three shorter ones.
+
+## Other
+
+- Added unit tests.
 
 # missRanger 2.1.0
 

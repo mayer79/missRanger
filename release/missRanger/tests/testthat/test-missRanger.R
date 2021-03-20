@@ -96,3 +96,16 @@ test_that("date and datetime columns work", {
   expect_true(expect_true(!anyNA(imp)))
   expect_equal(sapply(imp, class), sapply(Xd_NA, class))
 })
+
+test_that("a too small mtry causes an error", {
+  expect_error(missRanger(irisWithNA2, num.trees = 20, verbose = 0, mtry = 3))
+})
+
+test_that("mtry works", {
+  imp1 <- missRanger(irisWithNA, num.trees = 3, verbose = 0, seed = 1, maxiter = 3,
+                     mtry = function(m) max(1, m %/% 3))
+  imp2 <- missRanger(irisWithNA, num.trees = 3, verbose = 0, seed = 1, mtry = 1, maxiter = 3)
+  imp3 <- missRanger(irisWithNA, num.trees = 3, verbose = 0, seed = 1, maxiter = 3)
+  expect_equal(imp1, imp2)
+  expect_false(isTRUE(all.equal(imp1, imp3)))
+})
