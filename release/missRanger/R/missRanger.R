@@ -1,12 +1,10 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
 #' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
-#' Between the iterative model fitting, it offers the option of predictive mean matching. 
-#' This firstly avoids imputation with values not present in the original data 
-#' (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean
-#' matching tries to raise the variance in the resulting conditional distributions to 
-#' a realistic level and, as such, allows to do multiple imputation when repeating the call to missRanger(). The iterative chaining stops as soon as \code{maxiter}
-#' is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration, the second last (i.e. best) imputed data is returned.
+#' Between the iterative model fitting, it offers the option of predictive mean matching. This firstly avoids imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This allows to do multiple imputation when repeating the call to missRanger(). 
+#' The iterative chaining stops as soon as \code{maxiter} is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration, the second last (i.e. best) imputed data is returned.
+#' 
+#' A note on `mtry`: Be careful when passing a non-default `mtry` to `ranger()` because the number of available covariables might be growing during the first iteration, depending on the missing pattern. Values \code{NULL} (default) and 1 are safe choices. Additionally, recent versions of `ranger()` allow `mtry` to be a single-argument function of the number of available covariables, e.g. `mtry = function(m) max(1, m %/% 3)`.
 #' 
 #' @importFrom stats var reformulate terms.formula predict setNames
 #' @importFrom ranger ranger
@@ -22,8 +20,8 @@
 #' Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be useful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.
 #' @param case.weights Vector with non-negative case weights.
-#' @param ... Arguments passed to \code{ranger}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
-#' The following arguments are e.g. incompatible with \code{ranger}: \code{mtry}, \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
+#' @param ... Arguments passed to \code{ranger()}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}. 
+#' The following arguments are e.g. incompatible with \code{ranger}: \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}. 
 #'
 #' @return An imputed \code{data.frame}.
 #' 
@@ -45,6 +43,11 @@
 #' # With extra trees algorithm
 #' irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
 #' head(irisImputed_et)
+#' 
+#' # Passing `mtry` as a function of the number of covariables
+# irisImputed_mtry <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, 
+#                                mtry = function(m) max(1, m %/% 3))
+# head(irisImputed_mtry)
 #' 
 #' # Do not impute Species. Note: Since this variable contains missings, it won't be used
 #' # for imputing other variables.
@@ -99,7 +102,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
             length(formula <- as.character(formula)) == 3L,
             is.numeric(pmm.k), length(pmm.k) == 1L, pmm.k >= 0L,
             is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
-            !(c("write.forest", "probability", "split.select.weights", "mtry",  
+            !(c("write.forest", "probability", "split.select.weights",  
                 "dependent.variable.name", "classification") %in% names(list(...))))
   
   if (!is.null(case.weights)) {
@@ -183,8 +186,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
       } else {
         fit <- ranger(formula = reformulate(completed, response = v), 
                       data = data[!v.na, union(v, completed), drop = FALSE],
-                      case.weights = case.weights[!v.na],
-                      ...)
+                      case.weights = case.weights[!v.na], ...)
         pred <- predict(fit, data[v.na, completed, drop = FALSE])$predictions
         data[v.na, v] <- if (pmm.k) pmm(xtrain = fit$predictions, 
                                         xtest = pred, 
