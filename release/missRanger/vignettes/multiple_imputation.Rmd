@@ -1,0 +1,57 @@
+---
+title: "Multiple Imputation"
+author: "Michael Mayer"
+date: "`r Sys.Date()`"
+bibliography: "biblio.bib"
+link-citations: true
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiple Imputation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## How to use `missRanger` for multiple imputation?
+
+For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
+
+For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [@rubin]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
+
+The package `mice` [@buuren] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
+
+The following example shows how easy such workflow looks like.
+
+``` {r}
+library(missRanger)
+library(mice)
+
+set.seed(19)
+
+irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
+
+# Generate 20 complete data sets
+filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 50, pmm.k = 5), simplify = FALSE)
+                           
+# Run a linear model for each of the completed data sets                          
+models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
+
+# Pool the results by mice
+summary(pooled_fit <- pool(models))
+
+# Compare with model on original data
+summary(lm(Sepal.Length ~ ., data = iris))
+
+```
+
+The standard errors and p values of the multiple imputation are larger than of the original data set. This reflects the additional uncertainty introduced by the presence of missing values in a realistic way.
+
+## References

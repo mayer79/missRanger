@@ -61,9 +61,7 @@ We first generate a data set with about 20% missing values per column and fill t
 
 ``` {r}
 library(missRanger)
-library(survival)
 library(dplyr)
-library(mice)
 
 set.seed(84553)
 
@@ -183,108 +181,4 @@ head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5))
 head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weights = non_miss))
 
 ```
-
-## How to use `missRanger` in multiple imputation settings?
-
-For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
-
-For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [@rubin]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
-
-The package `mice` [@buuren] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
-
-The following example shows how easy such workflow looks like.
-
-``` {r}
-irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
-
-# Generate 20 complete data sets
-filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), simplify = FALSE)
-                           
-# Run a linear model for each of the completed data sets                          
-models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
-
-# Pool the results by mice
-summary(pooled_fit <- pool(models))
-
-# Compare with model on original data
-summary(lm(Sepal.Length ~ ., data = iris))
-
-```
-
-The standard errors and p values of the multiple imputation are larger than of the original data set. This reflects the additional uncertainty introduced by the presence of missing values in a realistic way.
-
-## How to deal with censored variables?
-
-There is no obvious way of how to deal with survival variables as covariables in imputation models. 
-
-Options discussed in [@white] include:
-
-- Use both status variable s and (censored) time variable t
-
-- s and log(t)
-
-- surv(t), and, optionally s
-
-By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The third option is the most elegant one as it explicitly deals with censoring information. We provide some additional details on it in the example
-
-### Example
-
-``` {r}
-head(veteran)
-set.seed(653)
-
-# For illustration, we use data from a randomized two-arm trial 
-# about lung cancer. The aim is to estimate the treatment effect
-# of "trt" with reliable inference using Cox regression. Unfortunately, 
-# we generated missing values in the covariables "age" and "karno" (performance
-# status). One approach is to use multiple imputation, see the section above.
-# It is recommended to use the model response in the imputation models - 
-# even if it sounds wrong. In case of a censored survival response
-# (i.e. consisting of a time/status pair), an elegant 
-# possibility is to represent it by the estimated Nelson-Aalen estimates.
-
-# Add the Nelson-Aalen survival probabilities "surv" to the data set
-veteran2 <- summary(survfit(Surv(time, status) ~ 1, data = veteran), 
-                times = veteran$time)[c("time", "surv")] %>% 
-            as_tibble() %>% 
-            right_join(veteran, by = "time")
-
-# Add missing values to some columns. We do not add missing values
-# in the survival information as this is usually the response of the (Cox-) 
-# modelling process following the imputation.
-
-veteran_with_NA <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
-
-# Generate 20 complete data sets and remove "surv"
-filled <- replicate(20, missRanger(veteran_with_NA, . ~ . - time - status, 
-  verbose = 0, pmm.k = 3, num.trees = 50), simplify = FALSE)
-
-filled <- lapply(filled, function(data) {data$surv <- NULL; data})
-
-# Run a Cox proportional hazards regression for each of the completed data sets
-models <- lapply(filled, function(x) coxph(Surv(time, status) ~ ., x))
-
-# Pool the results by mice
-summary(pooled_fit <- pool(models))
-
-# On the original
-summary(coxph(Surv(time, status) ~ ., veteran))
-
-```
-
-## How to deal with date variables etc.?
-
-Originally, `missRanger` could deal only with factors and numeric variables. Since Release 2.1.0, most reasonable types are supported, including dates, date times etc. If there are problems with some special column type, you still have the option to convert it yourself or exclude it by the formula interface explained above.
-
-### Example
-
-``` {r}
-ir <- iris
-ir$s <- iris$Species == "setosa"
-ir$dt <- seq(Sys.time(), by = "1 min", length.out = 150)
-ir$d <- seq(Sys.Date(), by = "1 d", length.out = 150)
-ir$ch <- as.character(iris$Species)
-head(ir <- generateNA(ir, c(rep(0.2, 7), 0, 0)))
-head(m <- missRanger(ir, pmm.k = 4))
-
-```
+## References

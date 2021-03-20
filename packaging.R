@@ -90,7 +90,7 @@ if (TRUE) {
 }
 
 # Check
-check(pkg, manual = TRUE)
+check(pkg, manual = TRUE, cran = TRUE)
 
 # Create
 build(pkg)
