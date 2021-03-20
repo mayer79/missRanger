@@ -2,7 +2,7 @@ Type: Package
 Package: missRanger
 Title: Fast Imputation of Missing Values
 Version: 2.1.1
-Date: 2021-03-19
+Date: 2021-03-20
 Authors@R: 
     person(given = "Michael",
            family = "Mayer",

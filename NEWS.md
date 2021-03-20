@@ -2,7 +2,9 @@
 
 * Added unit tests.
 
-* Improved docu.
+* Improved help.
+
+* Splitted long vignette into three shorter ones.
 
 # missRanger 2.1.0
 

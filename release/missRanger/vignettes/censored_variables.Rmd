@@ -1,0 +1,83 @@
+---
+title: "Censored Variables"
+author: "Michael Mayer"
+date: "`r Sys.Date()`"
+bibliography: "biblio.bib"
+link-citations: true
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Censored Variables}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## How to deal with censored variables?
+
+There is no obvious way of how to deal with survival variables as covariables in imputation models. 
+
+Options discussed in [@white] include:
+
+- Use both status variable s and (censored) time variable t
+
+- s and log(t)
+
+- surv(t), and, optionally s
+
+By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The third option is the most elegant one as it explicitly deals with censoring information. We provide some additional details on it in the example
+
+### Example
+
+For illustration, we use data from a randomized two-arm trial about lung cancer. The aim is to estimate the treatment effect of "trt" with reliable inference using Cox regression. Unfortunately, we have added missing values in the covariables "age", "karno", and "diagtime". 
+
+A reasonable way to estimate the covariable adjusted treatment effect is the following:
+
+1. Add Nelson-Aalen survival estimates "surv" to the dataset.
+2. Use "surv" as well as the covariables to impute missing values in the covariables multiple times.
+3. Perform the intended Cox regression for each of the imputed data sets.
+4. Pool their results by Rubin's rule [@rubin], using package `mice` [@buuren].
+
+``` {r}
+library(missRanger)
+library(survival)
+library(mice)
+set.seed(65)
+
+head(veteran)
+
+# 1. Calculate Nelson-Aalen survival probabilities for each time point
+nelson_aalen <- summary(
+  survfit(Surv(time, status) ~ 1, data = veteran), 
+  times = unique(veteran$time)
+)[c("time", "surv")]
+nelson_aalen <- data.frame(nelson_aalen)
+
+# Add it to the original data set
+veteran2 <- merge(veteran, nelson_aalen, all.x = TRUE)
+
+# Add missing values to make things tricky
+veteran2 <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
+
+# 2. Generate 20 complete data sets, representing "time" and "status" by "surv"
+filled <- replicate(20, missRanger(veteran2, . ~ . - time - status, 
+  verbose = 0, pmm.k = 3, num.trees = 25), simplify = FALSE)
+
+# 3. Run a Cox regression for each of the completed data sets
+models <- lapply(filled, function(x) coxph(Surv(time, status) ~ . - surv, x))
+
+# 4. Pool the results by mice
+summary(pooled_fit <- pool(models))
+
+# On the original
+summary(coxph(Surv(time, status) ~ ., veteran))$coefficients
+
+```
+## References
