@@ -1,3 +1,9 @@
+# missRanger 2.1.1.1
+
+## Maintainance update
+
+- Fixing a failing unit test on Solaris.
+
 # missRanger 2.1.1
 
 ## Minor changes

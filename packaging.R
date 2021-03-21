@@ -20,7 +20,7 @@ create_package(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.1",
+    Version = "2.1.1.1",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
