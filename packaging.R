@@ -20,7 +20,7 @@ create_package(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.1.1",
+    Version = "2.1.2",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
@@ -38,7 +38,8 @@ create_package(
     Depends = "R (>= 3.5.0)",
     VignetteBuilder = "knitr",
     License = "GPL(>= 2)",
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>",
+    LazyData = "false"),
   open = FALSE)
 
 file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
@@ -93,13 +94,13 @@ if (TRUE) {
 check(pkg, manual = TRUE, cran = TRUE)
 
 # Create
-build(pkg)
+# build(pkg)
 
 # Install
-install(pkg)
+# install(pkg)
 
 check_win_devel(pkg)
 
-check_rhub(pkg)
+rhub::check_for_cran(pkg)
 
 devtools::release(pkg)

@@ -1,17 +1,17 @@
 Type: Package
 Package: missRanger
 Title: Fast Imputation of Missing Values
-Version: 2.1.1.1
-Date: 2021-03-21
+Version: 2.1.2
+Date: 2021-03-27
 Authors@R: 
     person(given = "Michael",
            family = "Mayer",
            role = c("aut", "cre", "cph"),
            email = "mayermichael79@gmail.com")
 Maintainer: Michael Mayer <mayermichael79@gmail.com>
-Description: Alternative implementation of the beautiful
-    'MissForest' algorithm used to impute mixed-type data sets by chaining
-    random forests, introduced by Stekhoven, D.J. and Buehlmann, P. (2012)
+Description: Alternative implementation of the beautiful 'MissForest'
+    algorithm used to impute mixed-type data sets by chaining random
+    forests, introduced by Stekhoven, D.J. and Buehlmann, P. (2012)
     <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the
     lightning fast random jungle package 'ranger'. Between the iterative
     model fitting, we offer the option of using predictive mean matching.
@@ -30,16 +30,16 @@ Depends:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    stats,
+    ranger,
     FNN,
-    ranger
+    stats
 Suggests: 
-    dplyr,
     survival,
+    dplyr,
     mice,
     rmarkdown,
     knitr,
