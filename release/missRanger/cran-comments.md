@@ -1,3 +1,7 @@
+## Re-Re-Re-Resubmission
+
+I don't get rid of the note on LazyData. Do I simply need to remove that line in the description file?
+
 ## Re-Re-Resubmission
 
 Note from incoming pre-checks:

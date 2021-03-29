@@ -1,4 +1,4 @@
-# missRanger 2.1.2
+# missRanger 2.1.2 & 2.1.3
 
 ## Maintainance update
 
