@@ -38,8 +38,8 @@ create_package(
     Depends = "R (>= 3.5.0)",
     VignetteBuilder = "knitr",
     License = "GPL(>= 2)",
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>",
-    LazyData = "false"),
+    LazyData = NULL,
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
   open = FALSE)
 
 file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
