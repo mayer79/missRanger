@@ -1,4 +1,4 @@
-# missRanger
+# missRanger <a href='https://github.com/mayer79/missRanger'><img src='man/figures/logo.png' align="right" height="138.5" /></a>
 
 [![CRAN version](http://www.r-pkg.org/badges/version/missRanger)](https://cran.r-project.org/package=missRanger) [![](https://cranlogs.r-pkg.org/badges/missRanger)](https://cran.r-project.org/package=missRanger) [![](https://cranlogs.r-pkg.org/badges/grand-total/missRanger?color=orange)](https://cran.r-project.org/package=missRanger)
 

@@ -71,6 +71,12 @@ if (!dir.exists(file.path(pkg, "R"))) {
 file.copy(list.files("R", full.names = TRUE), file.path(pkg, "R"), overwrite = TRUE)
 devtools::document(pkg)
 
+# Logo
+use_logo("logo.png")
+dir.create(file.path(pkg, "man", "figures"))
+file.copy(file.path("man", "figures", "logo.png"),
+          file.path(pkg, "man", "figures", "logo.png"), overwrite = TRUE)
+
 # Tests
 if (!dir.exists(file.path(pkg, "tests"))) {
   dir.create(file.path(pkg, "tests"))
