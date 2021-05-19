@@ -1,3 +1,9 @@
+# missRanger 2.1.4
+
+## Minor changes
+
+- Now using progress bar instead of "." to show progress (when verbose = 1).
+
 # missRanger 2.1.2 & 2.1.3
 
 ## Maintainance update

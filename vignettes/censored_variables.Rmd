@@ -1,6 +1,5 @@
 ---
 title: "Censored Variables"
-author: "Michael Mayer"
 date: "`r Sys.Date()`"
 bibliography: "biblio.bib"
 link-citations: true
