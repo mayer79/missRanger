@@ -168,6 +168,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   if (verbose) {
     cat("\n  Variables used to impute:\t")
     cat(imputeBy, sep = ", ")
+    cat("\n")
   }
 
   # 4) IMPUTATION
@@ -188,7 +189,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
       if (verbose == 1) {
         i <- 1
         cat("\n")
-        print(paste("iter", j))
+        cat(paste("iter", j))
+        cat("\n")
         pb <- txtProgressBar(0, length(visitSeq), style = 3)
       } else if (verbose >= 2) {
         cat("\niter ", j, ":\t", sep = "")
