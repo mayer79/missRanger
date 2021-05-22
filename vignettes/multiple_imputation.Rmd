@@ -1,6 +1,5 @@
 ---
 title: "Multiple Imputation"
-author: "Michael Mayer"
 date: "`r Sys.Date()`"
 bibliography: "biblio.bib"
 link-citations: true
@@ -39,7 +38,11 @@ set.seed(19)
 irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
 
 # Generate 20 complete data sets
-filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 50, pmm.k = 5), simplify = FALSE)
+filled <- replicate(
+  20, 
+  missRanger(irisWithNA, verbose = 0, num.trees = 50, pmm.k = 5), 
+  simplify = FALSE
+)
                            
 # Run a linear model for each of the completed data sets                          
 models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))

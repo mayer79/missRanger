@@ -1,6 +1,5 @@
 ---
 title: "Using missRanger"
-author: "Michael Mayer"
 date: "`r Sys.Date()`"
 bibliography: "biblio.bib"
 link-citations: true
@@ -68,35 +67,43 @@ set.seed(84553)
 head(iris)
 
 # Generate data with missing values in all columns
-head(irisWithNA <- generateNA(iris, p = 0.2))
+irisWithNA <- generateNA(iris, p = 0.2)
+head(irisWithNA)
  
 # Impute missing values with missRanger
-head(irisImputed <- missRanger(irisWithNA, num.trees = 100))
-
+irisImputed <- missRanger(irisWithNA, num.trees = 100, verbose = 0)
+head(irisImputed)
 ```
 
 It worked! Unfortunately, the new values look somewhat unnatural due to different rounding. If we would like to avoid this, we just set the `pmm.k` argument to a positive number. All imputations done during the process are then combined with a predictive mean matching (PMM) step, leading to more natural imputations and improved distributional properties of the resulting values:
 
 ``` {r}
-head(irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100))
+irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
+head(irisImputed)
 ```
 
 Note that `missRanger` offers a `...` argument to pass options to `ranger`, e.g. `num.trees` or `min.node.size`. How would we use its "extra trees" variant with 50 trees?
 
 ``` {r}
-head(irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, splitrule = "extratrees", num.trees = 50))
+irisImputed_et <- missRanger(
+  irisWithNA, 
+  pmm.k = 3, 
+  splitrule = "extratrees", 
+  num.trees = 50, 
+  verbose = 0
+)
+head(irisImputed_et)
 ```
 
 It is as simple!
 
-Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`). Make sure to set `verbose = 0` in order to prevent messages.
+Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`).
 
 ``` {r}
-iris %>% 
-  generateNA() %>% 
-  missRanger(verbose = 0) %>% 
+iris %>%
+  generateNA() %>%
+  missRanger(verbose = 0) %>%
   head()
-  
 ```
 
 By default `missRanger` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
@@ -104,23 +111,33 @@ By default `missRanger` uses all columns in the data set to impute all columns w
 ``` {r}
 # Impute all variables with all (default behaviour). Note that variables without
 # missing values will be skipped from the left hand side of the formula.
-head(m <- missRanger(irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 10))
+m <- missRanger(irisWithNA, formula = . ~ ., 
+                pmm.k = 3, num.trees = 10, seed = 1, verbose = 0)
+head(m)
 
 # Same
-head(m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 10))
+m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 10, seed = 1, verbose = 0)
+head(m)
 
 # Impute all variables with all except Species
-head(m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 10))
+m <- missRanger(irisWithNA, . ~ . - Species, 
+                pmm.k = 3, num.trees = 10, verbose = 0)
+head(m)
 
 # Impute Sepal.Width by Species 
-head(m <- missRanger(irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 10))
+m <- missRanger(irisWithNA, Sepal.Width ~ Species, 
+                pmm.k = 3, num.trees = 10, verbose = 0)
+head(m)
 
-# No success. Why? Species contains missing values and thus can only be used for imputation if it is being imputed as well
-head(m <- missRanger(irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 10))
+# No success. Why? Species contains missing values and thus can only 
+# be used for imputation if it is being imputed as well
+m <- missRanger(irisWithNA, Sepal.Width + Species ~ Species, 
+                pmm.k = 3, num.trees = 10, verbose = 0)
+head(m)
 
 # Impute all variables univariatly
-head(m <- missRanger(irisWithNA, . ~ 1))
-
+m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
+head(m)
 ```
 
 ## Imputation takes too much time. What can I do?
@@ -150,17 +167,25 @@ dim(diamonds) # 53940    10
 diamonds_with_NA <- generateNA(diamonds)
 
 # Takes 270 seconds (10 * 500 trees per iteration!)
-system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3))
+system.time(
+  m <- missRanger(diamonds_with_NA, pmm.k = 3)
+)
 
 # Takes 19 seconds
-system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50))
+system.time(
+  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50)
+)
 
 # Takes 7 seconds
-system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 1))
+system.time(
+  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 1)
+)
 
 # Takes 9 seconds
-system.time(m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, sample.fraction = 0.1))
-
+system.time(
+  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, 
+    sample.fraction = 0.1)
+)
 ```
 
 ## Trick: Use `case.weights` to weight down contribution of rows with many missings
@@ -175,10 +200,13 @@ non_miss <- rowSums(!is.na(irisWithNA))
 table(non_miss)
 
 # No weighting
-head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5))
+m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0)
+head(m)
 
 # Weighted by number of non-missing values per row. 
-head(m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, case.weights = non_miss))
-
+m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0,
+                case.weights = non_miss)
+head(m)
 ```
+
 ## References

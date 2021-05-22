@@ -20,7 +20,7 @@ create_package(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.3",
+    Version = "2.1.4",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
@@ -44,14 +44,16 @@ create_package(
 
 file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
 # Use package has no option to look for pkg, so we first copy description from pkg, modify it and move back
-use_package("stats", "Imports")
 use_package("FNN", "imports")
 use_package("ranger", "Imports")
+use_package("stats", "Imports")
+use_package("utils", "Imports")
+
 use_package("dplyr", "Suggests")
-use_package("survival", "Suggests")
+use_package("knitr", "Suggests")
 use_package("mice", "Suggests")
 use_package("rmarkdown", "Suggests")
-use_package("knitr", "Suggests")
+use_package("survival", "Suggests")
 use_package("testthat", "Suggests")
 
 # Set up other files -------------------------------------------------
@@ -61,7 +63,8 @@ use_package("testthat", "Suggests")
 # use_testthat()
 
 # Copy readme etc.
-file.copy(c(".Rbuildignore", "NEWS.md", "README.md", "cran-comments.md", "DESCRIPTION"), 
+file.copy(c(".Rbuildignore", "NEWS.md", "README.md", 
+            "cran-comments.md", "DESCRIPTION"), 
           pkg, overwrite = TRUE)
 
 # Copy R scripts and document them

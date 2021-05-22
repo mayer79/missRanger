@@ -29,7 +29,7 @@ with missings must appear in the left hand side if they should be used on the ri
 
 \item{seed}{Integer seed to initialize the random generator.}
 
-\item{verbose}{Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
+\item{verbose}{Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a progress bar per iteration, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
 Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be useful to detect if some variables are unexpectedly skipped.}
 
 \item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.}

@@ -8,7 +8,7 @@
 #' 
 #' @importFrom stats var reformulate terms.formula predict setNames
 #' @importFrom ranger ranger
-#'
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @param data A \code{data.frame} or \code{tibble} with missing values to impute.
 #' @param formula A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). Defaults to . ~ ., i.e. use all variables to impute all variables. 
 #' If e.g. all variables (with missings) should be imputed by all variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for each side of the formula. Further note that variables 
@@ -16,7 +16,7 @@
 #' @param pmm.k Number of candidate non-missing values to sample from in the predictive mean matching steps. 0 to avoid this step.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
-#' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a "." per iteration and variable, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
+#' @param verbose Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a progress bar per iteration, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
 #' Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be useful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.
 #' @param case.weights Vector with non-negative case weights.
@@ -89,24 +89,34 @@
 #' head(X_imp <- missRanger(X_NA, x2 + x3 ~ x2 + x3, pmm = 3))
 #' head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
 #' }
-missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = NULL, 
-                       verbose = 1, returnOOB = FALSE, case.weights = NULL, ...) {
+missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
+                       seed = NULL, verbose = 1, returnOOB = FALSE, 
+                       case.weights = NULL, ...) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
   
   # 1) INITIAL CHECKS
-  
-  stopifnot(is.data.frame(data), dim(data) >= 1L, 
-            inherits(formula, "formula"), 
-            length(formula <- as.character(formula)) == 3L,
-            is.numeric(pmm.k), length(pmm.k) == 1L, pmm.k >= 0L,
-            is.numeric(maxiter), length(maxiter) == 1L, maxiter >= 1L,
-            !(c("write.forest", "probability", "split.select.weights",  
-                "dependent.variable.name", "classification") %in% names(list(...))))
-  
+  bad_args <- c("write.forest", "probability", "split.select.weights",  
+                "dependent.variable.name", "classification")
+  stopifnot(
+    "'data' should be a data.frame!" = is.data.frame(data), 
+    "'data' should have at least one row and column!" = dim(data) >= 1L, 
+    "'formula' should be a formula!" = inherits(formula, "formula"), 
+    length(formula <- as.character(formula)) == 3L,
+    "'pmm.k' must be numeric!" = is.numeric(pmm.k), 
+    "'pmm.k' must be a single number!" = length(pmm.k) == 1L, 
+    "'pmm.k' should not be negative!" = pmm.k >= 0L,
+    "'maxiter' must be numeric!" = is.numeric(maxiter), 
+    "'maxiter' must be a single number!" = length(maxiter) == 1L, 
+    "'maxiter' should not be negative!" = maxiter >= 1L,
+    "incompatible ranger arguments" = !(bad_args  %in% names(list(...)))
+  )
   if (!is.null(case.weights)) {
-    stopifnot(length(case.weights) == nrow(data), !anyNA(case.weights))
+    stopifnot(
+      "Wrong number of 'case.weights'!" = length(case.weights) == nrow(data), 
+      "Missing values in 'case.weights'!" = !anyNA(case.weights)
+    )
   }
   
   if (!is.null(seed)) {
@@ -123,7 +133,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   toImpute <- relevantVars[[1]][vapply(data[, relevantVars[[1]], drop = FALSE], 
                 FUN.VALUE = TRUE, function(z) anyNA(z) && !all(is.na(z)))]
   
-  # Try to convert special variables to numeric/factor in order to be safely predicted by ranger
+  # Try to convert special variables to numeric/factor
+  # in order to be safely predicted by ranger
   converted <- convert(data[, toImpute, drop = FALSE], check = TRUE)
   data[, toImpute] <- converted$X
   
@@ -148,7 +159,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   
   # 3) SELECT VARIABLES USED TO IMPUTE
   
-  # Variables on the rhs should either appear in "visitSeq" or do not contain any missings
+  # Variables on the rhs should either appear in "visitSeq" 
+  # or do not contain any missings
   imputeBy <- relevantVars[[2]][relevantVars[[2]] %in% visitSeq | 
      !vapply(data[, relevantVars[[2]], drop = FALSE], anyNA, TRUE)]
   completed <- setdiff(imputeBy, visitSeq)
@@ -156,14 +168,15 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   if (verbose) {
     cat("\n  Variables used to impute:\t")
     cat(imputeBy, sep = ", ")
+    cat("\n")
   }
 
   # 4) IMPUTATION
   
   # Initialization  
-  j <- 1L             # iterator
-  crit <- TRUE        # criterion on OOB prediction error to keep iterating
-  verboseDigits <- 4L # formatting of OOB prediction errors (if verbose = 2)
+  j <- 1L
+  crit <- TRUE
+  verboseDigits <- 4L
   predError <- setNames(rep(1, length(visitSeq)), visitSeq)
   
   if (verbose >= 2) {
@@ -173,8 +186,17 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
   # Looping over iterations and variables to impute
   while (crit && j <= maxiter) {
     if (verbose) {
-      cat("\niter ", j, ":\t", sep = "")
+      if (verbose == 1) {
+        i <- 1
+        cat("\n")
+        cat(paste("iter", j))
+        cat("\n")
+        pb <- txtProgressBar(0, length(visitSeq), style = 3)
+      } else if (verbose >= 2) {
+        cat("\niter ", j, ":\t", sep = "")
+      }
     }
+    
     dataLast <- data
     predErrorLast <- predError
     
@@ -192,7 +214,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
                                         xtest = pred, 
                                         ytrain = data[[v]][!v.na], 
                                         k = pmm.k) else pred
-        predError[[v]] <- fit$prediction.error / (if (fit$treetype == "Regression") var(data[[v]][!v.na]) else 1)
+        predError[[v]] <- fit$prediction.error / (
+          if (fit$treetype == "Regression") var(data[[v]][!v.na]) else 1
+        )
         
         if (is.nan(predError[[v]])) {
           predError[[v]] <- 0
@@ -203,10 +227,14 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, seed = 
         completed <- union(completed, v)
       }
       
-      if (verbose == 1) {
-        cat(".")
-      } else if (verbose >= 2) {
-        cat(format(round(predError[[v]], verboseDigits), nsmall = verboseDigits), "\t")
+      if (verbose) {
+        if (verbose == 1) {
+          setTxtProgressBar(pb, i)
+          i <- i + 1
+        } else if (verbose >= 2) {
+          cat(format(round(predError[[v]], verboseDigits), 
+                     nsmall = verboseDigits), "\t")  
+        }
       }
     }
 

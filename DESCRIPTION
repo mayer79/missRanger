@@ -1,8 +1,8 @@
 Type: Package
 Package: missRanger
 Title: Fast Imputation of Missing Values
-Version: 2.1.3
-Date: 2021-03-27
+Version: 2.1.4
+Date: 2021-05-19
 Authors@R: 
     person(given = "Michael",
            family = "Mayer",
@@ -30,17 +30,17 @@ Depends:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-LazyData: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     ranger,
     FNN,
-    stats
+    stats,
+    utils
 Suggests: 
-    survival,
+    knitr,
     dplyr,
     mice,
     rmarkdown,
-    knitr,
+    survival,
     testthat
