@@ -101,6 +101,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
                 "dependent.variable.name", "classification")
   stopifnot(
     "'data' should be a data.frame!" = is.data.frame(data), 
+    "'data' should be a tibble or data.frame!" = is_tibble(data), 
     "'data' should have at least one row and column!" = dim(data) >= 1L, 
     "'formula' should be a formula!" = inherits(formula, "formula"), 
     length(formula <- as.character(formula)) == 3L,
