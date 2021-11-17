@@ -17,8 +17,11 @@
 #' head(imputeUnivariate(generateNA(iris), v = "Species"))
 #' head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
 imputeUnivariate <- function(x, v = NULL, seed = NULL) {
-  stopifnot(is.atomic(x) || is.data.frame(x))
-  
+  if(!is.data.frame(x) && !is_tibble(x) && !is.atomic(x)) {
+    stop('x must be atomic, data frame or tibble\n',
+         '  You have provided an object of class: ', class(x)[1])
+  }
+           
   if (!is.null(seed)) {
     set.seed(seed)  
   }
@@ -38,11 +41,11 @@ imputeUnivariate <- function(x, v = NULL, seed = NULL) {
   if (is.atomic(x)) {
     return(imputeVec(x))
   } 
- 
-  # data frame
+  
+  # data frame or tibble
   v <- if (is.null(v)) names(x) else intersect(v, names(x))
   x[, v] <- lapply(x[, v, drop = FALSE], imputeVec)
-
+  
   x
 }
   
