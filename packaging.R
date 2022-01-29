@@ -1,26 +1,21 @@
-#=====================================================================================
-# BUILD THE PACKAGE
-#=====================================================================================
+#=============================================================================
+# Put together the package
+#=============================================================================
 
-if (FALSE) {
-  library(ranger)
-  library(FNN)
-  lapply(list.files("R", full.names = TRUE), source)
-}
+# WORKFLOW: UPDATE EXISTING PACKAGE
+# 1) Modify package content and documentation.
+# 2) Increase package number in "use_description" below.
+# 3) Go through this script and carefully answer "no" if a "use_*" function
+#    asks to overwrite the existing files. Or just skip that function call.
 
 library(usethis)
-library(devtools)
 
-# Create a new package
-dir.create(file.path("release"))
-pkg <- file.path("release", "missRanger")
-
-create_package(
-  pkg,
+# Sketch of description file
+use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "2.1.4",
+    Version = "2.1.5",
     Date = Sys.Date(),
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
@@ -33,87 +28,78 @@ create_package(
     repeating the call to missRanger(). 
     A formula interface allows to control which variables should be imputed by which.",
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
-    URL = "https://github.com/mayer79/missRanger",
-    BugReports = "https://github.com/mayer79/missRanger/issues",
     Depends = "R (>= 3.5.0)",
-    VignetteBuilder = "knitr",
-    License = "GPL(>= 2)",
     LazyData = NULL,
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
-  open = FALSE)
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"
+  ),
+  roxygen = TRUE
+)
 
-file.copy(file.path(pkg, "DESCRIPTION"), to = getwd(), overwrite = TRUE)
-# Use package has no option to look for pkg, so we first copy description from pkg, modify it and move back
+use_gpl_license(2)
+use_github_links() # use this if this project is on github
+
+# Your files that do not belong to the package itself (others are added by "use_* function")
+use_build_ignore(c("^packaging.R$", "[.]Rproj$", "^backlog$",
+                   "^cran-comments.md$", "^logo.png$"), escape = FALSE)
+
+# Required external packages
 use_package("FNN", "imports")
 use_package("ranger", "Imports")
 use_package("stats", "Imports")
 use_package("utils", "Imports")
 
 use_package("dplyr", "Suggests")
-use_package("knitr", "Suggests")
 use_package("mice", "Suggests")
-use_package("rmarkdown", "Suggests")
 use_package("survival", "Suggests")
-use_package("testthat", "Suggests")
 
-# Set up other files -------------------------------------------------
-# use_readme_md()
-# use_news_md()
-# use_cran_comments()
-# use_testthat()
+# If your code uses the pipe operator %>%
+# use_pipe()
 
-# Copy readme etc.
-file.copy(c(".Rbuildignore", "NEWS.md", "README.md", 
-            "cran-comments.md", "DESCRIPTION"), 
-          pkg, overwrite = TRUE)
+# If your package contains data. Google how to document
+# use_data()
 
-# Copy R scripts and document them
-if (!dir.exists(file.path(pkg, "R"))) {
-  dir.create(file.path(pkg, "R"))
-}
-file.copy(list.files("R", full.names = TRUE), file.path(pkg, "R"), overwrite = TRUE)
-devtools::document(pkg)
+# Add short docu in Markdown (without running R code)
+use_readme_md()
 
-# Logo
+# Longer docu in RMarkdown (with running R code). Often quite similar to readme.
+use_vignette("missRanger")
+use_vignette("multiple_imputation")
+use_vignette("working_with_censoring")
+
+# If you want to add unit tests
+use_testthat()
+# use_test("test-missRanger.R")
+
+# On top of NEWS.md, describe changes made to the package
+use_news_md()
+
+# Add logo
 use_logo("logo.png")
-dir.create(file.path(pkg, "man", "figures"))
-file.copy(file.path("man", "figures", "logo.png"),
-          file.path(pkg, "man", "figures", "logo.png"), overwrite = TRUE)
 
-# Tests
-if (!dir.exists(file.path(pkg, "tests"))) {
-  dir.create(file.path(pkg, "tests"))
+# If package goes to CRAN: infos (check results etc.) for CRAN
+use_cran_comments()
+
+
+#=============================================================================
+# Finish package building (can use fresh session)
+#=============================================================================
+
+library(devtools)
+
+document()
+test()
+build_vignettes()
+check(manual = TRUE, cran = TRUE)
+build()
+# build(binary = TRUE)
+install()
+
+# Run only if package is public(!) and should go to CRAN
+if (FALSE) {
+  check_win_devel()
+  check_rhub()
+
+  # Wait until above checks are passed without relevant notes/warnings
+  # then submit to CRAN
+  release()
 }
-file.copy("tests", pkg, recursive = TRUE)
-test(pkg)
-
-if (TRUE) {
-  # Copy vignette
-  # use_vignette(name = "missRanger", title = "missRanger")
-  dir.create(file.path(pkg, "vignettes"))
-  dir.create(file.path(pkg, "doc"))
-  dir.create(file.path(pkg, "Meta"))
-  file.copy(list.files("vignettes", full.names = TRUE),
-            file.path(pkg, "vignettes"), overwrite = TRUE)
-  
-  devtools::build_vignettes(pkg)
-}
-
-# Check
-check(pkg, manual = TRUE, cran = TRUE)
-
-# Create
-# build(pkg)
-
-# Install
-# install(pkg)
-
-check_win_devel(pkg)
-
-rhub::check_for_cran(pkg)
-rhub::check_on_windows(pkg)
-rhub::check_on_linux(pkg)
-rhub::check_on_macos(pkg)
-rhub::check_on_solaris(pkg)
-
-devtools::release(pkg)

@@ -1,5 +1,3 @@
-context("imputeUnivariate")
-
 test_that("it works for numeric vectors", {
   x <- c(NA, 1:10, NA)
   filled <- imputeUnivariate(x)

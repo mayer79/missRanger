@@ -1,5 +1,11 @@
-^.*\.Rproj$
-^\.Rproj\.user$
+^LICENSE\.md$
+^packaging.R$
+[.]Rproj$
+^backlog$
+^cran-comments.md$
+^logo.png$
 ^cran-comments\.md$
 ^doc$
 ^Meta$
+^.*\.Rproj$
+^\.Rproj\.user$
