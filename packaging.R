@@ -30,7 +30,8 @@ use_description(
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
     Depends = "R (>= 3.5.0)",
     LazyData = NULL,
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"
+  ),
   roxygen = TRUE
 )
 

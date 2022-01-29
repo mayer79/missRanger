@@ -12,6 +12,9 @@ checking for unstated dependencies in examples ... OK
 
 ## Online check results seem okay (2 notes below)
 
+- check_win_devel()
+- check_rhub()
+
 Found the following (possibly) invalid DOIs:
   DOI: 10.1093/bioinformatics/btr597
     From: DESCRIPTION
