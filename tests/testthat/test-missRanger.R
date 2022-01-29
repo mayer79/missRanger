@@ -1,5 +1,3 @@
-context("missRanger")
-
 irisWithNA <- generateNA(iris, seed = 1, p = 0.3)
 
 test_that("all missings are filled", {

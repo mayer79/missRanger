@@ -1,5 +1,3 @@
-context("pmm")
-
 test_that("pmm picks the right reference based on numeric values", {
   expect_equal(
     pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)), 

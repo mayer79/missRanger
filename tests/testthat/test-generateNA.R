@@ -1,5 +1,3 @@
-context("generateNA")
-
 test_that("it works for numeric vectors with specific result", {
   expected <- c(NA, NA, 3L, NA, 5L, NA, 7L, NA, 9L, 10L)
   expect_equal(generateNA(1:10, p = 0.5, seed = 3345), expected)

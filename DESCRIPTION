@@ -1,0 +1,46 @@
+Type: Package
+Package: missRanger
+Title: Fast Imputation of Missing Values
+Version: 2.1.5
+Date: 2022-01-29
+Authors@R: 
+    person(given = "Michael",
+           family = "Mayer",
+           role = c("aut", "cre", "cph"),
+           email = "mayermichael79@gmail.com")
+Maintainer: Michael Mayer <mayermichael79@gmail.com>
+Description: Alternative implementation of the beautiful 'MissForest'
+    algorithm used to impute mixed-type data sets by chaining random
+    forests, introduced by Stekhoven, D.J. and Buehlmann, P. (2012)
+    <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the
+    lightning fast random jungle package 'ranger'. Between the iterative
+    model fitting, we offer the option of using predictive mean matching.
+    This firstly avoids imputation with values not already present in the
+    original data (like a value 0.3334 in 0-1 coded variable).  Secondly,
+    predictive mean matching tries to raise the variance in the resulting
+    conditional distributions to a realistic level. This would allow e.g.
+    to do multiple imputation when repeating the call to missRanger().  A
+    formula interface allows to control which variables should be imputed
+    by which.
+License: GPL (>= 2)
+Depends: 
+    R (>= 3.5.0)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+URL: https://github.com/mayer79/missRanger
+BugReports: https://github.com/mayer79/missRanger/issues
+Imports: 
+    ranger,
+    FNN,
+    stats,
+    utils
+Suggests: 
+    mice,
+    dplyr,
+    survival,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3

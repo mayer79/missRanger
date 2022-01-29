@@ -13,16 +13,24 @@ library(usethis)
 # Sketch of description file
 use_description(
   fields = list(
-    Title = "Confidence Intervals",
+    Title = "Fast Imputation of Missing Values",
     Type = "Package",
-    Version = "0.1.2",
+    Version = "2.1.5",
     Date = Sys.Date(),
-    Description = "Calculates classic and/or bootstrap confidence intervals for many parameters such as the population mean, variance, interquartile range (IQR), median absolute deviation (MAD), skewness, kurtosis, Cramer's V, odds ratio, R-squared, quantiles (incl. median), proportions, different types of correlation measures, difference in means, quantiles and medians. Many of the classic confidence intervals are described in Smithson, M. (2003, ISBN: 978-0761924999). Bootstrap confidence intervals are calculated with the R package 'boot'. Both one- and two-sided intervals are supported.",
-    `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre'))",
-    Depends = "R (>= 3.1.0)",
+    Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
+    mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
+    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
+    lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
+    we offer the option of using predictive mean matching. This firstly avoids imputation 
+    with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
+    Secondly, predictive mean matching tries to raise the variance in the resulting conditional 
+    distributions to a realistic level. This would allow e.g. to do multiple imputation when 
+    repeating the call to missRanger(). 
+    A formula interface allows to control which variables should be imputed by which.",
+    `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
+    Depends = "R (>= 3.5.0)",
     LazyData = NULL,
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"
-  ),
+    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"),
   roxygen = TRUE
 )
 
@@ -34,8 +42,14 @@ use_build_ignore(c("^packaging.R$", "[.]Rproj$", "^backlog$",
                    "^cran-comments.md$", "^logo.png$"), escape = FALSE)
 
 # Required external packages
+use_package("FNN", "imports")
+use_package("ranger", "Imports")
 use_package("stats", "Imports")
-use_package("boot", "Imports")
+use_package("utils", "Imports")
+
+use_package("dplyr", "Suggests")
+use_package("mice", "Suggests")
+use_package("survival", "Suggests")
 
 # If your code uses the pipe operator %>%
 # use_pipe()
@@ -47,11 +61,13 @@ use_package("boot", "Imports")
 use_readme_md()
 
 # Longer docu in RMarkdown (with running R code). Often quite similar to readme.
-use_vignette("confintr")
+use_vignette("missRanger")
+use_vignette("multiple_imputation")
+use_vignette("working_with_censoring")
 
 # If you want to add unit tests
 use_testthat()
-# use_test("test-cor.R")
+# use_test("test-missRanger.R")
 
 # On top of NEWS.md, describe changes made to the package
 use_news_md()
