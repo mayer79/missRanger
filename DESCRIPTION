@@ -33,6 +33,11 @@ Imports:
 Suggests: 
     mice,
     dplyr,
-    survival
+    survival,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 URL: https://github.com/mayer79/missRanger
 BugReports: https://github.com/mayer79/missRanger/issues
+VignetteBuilder: knitr
+Config/testthat/edition: 3
