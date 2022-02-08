@@ -14,9 +14,7 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Type = "Package",
-    Version = "2.1.5",
-    Date = Sys.Date(),
+    Version = "2.1.5.9000",
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
     Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
@@ -29,20 +27,11 @@ use_description(
     A formula interface allows to control which variables should be imputed by which.",
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
     Depends = "R (>= 3.5.0)",
-    LazyData = NULL,
-    Maintainer = "Michael Mayer <mayermichael79@gmail.com>"
+    LazyData = NULL
   ),
   roxygen = TRUE
 )
 
-use_gpl_license(2)
-use_github_links() # use this if this project is on github
-
-# Your files that do not belong to the package itself (others are added by "use_* function")
-use_build_ignore(c("^packaging.R$", "[.]Rproj$", "^backlog$",
-                   "^cran-comments.md$", "^logo.png$"), escape = FALSE)
-
-# Required external packages
 use_package("FNN", "imports")
 use_package("ranger", "Imports")
 use_package("stats", "Imports")
@@ -51,6 +40,14 @@ use_package("utils", "Imports")
 use_package("dplyr", "Suggests")
 use_package("mice", "Suggests")
 use_package("survival", "Suggests")
+
+use_gpl_license(2)
+
+use_github_links() # use this if this project is on github
+
+# Your files that do not belong to the package itself (others are added by "use_* function")
+use_build_ignore(c("^packaging.R$", "[.]Rproj$", "^backlog$",
+                   "^cran-comments.md$", "^logo.png$"), escape = FALSE)
 
 # If your code uses the pipe operator %>%
 # use_pipe()
