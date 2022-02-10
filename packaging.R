@@ -6,7 +6,7 @@
 # 1) Modify package content and documentation.
 # 2) Increase package number in "use_description" below.
 # 3) Go through this script and carefully answer "no" if a "use_*" function
-#    asks to overwrite the existing files. Or just skip that function call.
+#    asks to overwrite the existing files. Don't just skip that function call.
 
 library(usethis)
 
