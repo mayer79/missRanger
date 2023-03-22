@@ -25,8 +25,8 @@ test_that("it works for matrix object", {
 
 test_that("p has an effect", {
   x <- 1:100
-  high <- generateNA(x, p = 0.5, seed = 1)
-  low <- generateNA(x, p = 0.2, seed = 1)
+  high <- generateNA(x, p = 0.5, seed = 1L)
+  low <- generateNA(x, p = 0.2, seed = 1L)
   expect_true(sum(is.na(high)) > sum(is.na(low)))
 })
 
@@ -35,16 +35,16 @@ test_that("it works for data.frame", {
   expect_true(anyNA(generateNA(x, p = 0.2)))
   
   holes <- generateNA(x, p = c(0, 1, 0, 0, 0))
-  expect_true(all(is.na(holes[2])))
-  expect_true(!anyNA(holes[-2]))
+  expect_true(all(is.na(holes[2L])))
+  expect_true(!anyNA(holes[-2L]))
   
   holes <- generateNA(x, p = c(Sepal.Length = 1))
-  expect_true(all(is.na(holes[1])))
-  expect_true(!anyNA(holes[-1]))
+  expect_true(all(is.na(holes[1L])))
+  expect_true(!anyNA(holes[-1L]))
 })
 
 test_that("it works for data.frame with one row", {
-  x <- iris[1, ]
+  x <- iris[1L, ]
   expect_true(!anyNA(generateNA(x, p = 0.5)))
   expect_true(all(is.na(generateNA(x, p = 0.55))))
 })
