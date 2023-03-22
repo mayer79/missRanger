@@ -7,6 +7,7 @@
 # 2) Increase package number in "use_description" below.
 # 3) Go through this script and carefully answer "no" if a "use_*" function
 #    asks to overwrite the existing files. Don't just skip that function call.
+# devtools::load_all()
 
 library(usethis)
 
@@ -75,6 +76,15 @@ use_logo("logo.png")
 
 # If package goes to CRAN: infos (check results etc.) for CRAN
 use_cran_comments()
+
+
+# Build website
+use_pkgdown()
+# Github actions
+use_github_action("document")
+use_github_action("check-standard")
+use_github_action("test-coverage")
+use_github_action("pkgdown")
 
 
 #=============================================================================
