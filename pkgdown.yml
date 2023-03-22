@@ -1,0 +1,9 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  missRanger: missRanger.html
+  multiple_imputation: multiple_imputation.html
+  working_with_censoring: working_with_censoring.html
+last_built: 2023-03-22T18:50Z
+
