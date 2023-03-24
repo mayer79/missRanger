@@ -1,13 +1,20 @@
 #' Predictive Mean Matching
 #'
-#' For each value in the prediction vector \code{xtest}, one of the closest \code{k} values in the prediction vector \code{xtrain} is randomly chosen and its observed value in \code{ytrain} is returned. 
+#' For each value in the prediction vector \code{xtest}, one of the closest \code{k} 
+#' values in the prediction vector \code{xtrain} is randomly chosen and its observed 
+#' value in \code{ytrain} is returned. 
 #' 
 #' @importFrom stats rmultinom
 #' @importFrom FNN knnx.index
 #' 
-#' @param xtrain Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.
-#' @param xtest Vector as \code{xtrain} with predicted values in the test data. Missing values are not allowed.
-#' @param ytrain Vector of the observed values in the training data. Must be of same length as \code{xtrain}. Missing values in either of \code{xtrain} or \code{ytrain} will be dropped in a pairwise manner.
+#' @param xtrain Vector with predicted values in the training data. 
+#' Can be of type logical, numeric, character, or factor.
+#' @param xtest Vector as \code{xtrain} with predicted values in the test data. 
+#' Missing values are not allowed.
+#' @param ytrain Vector of the observed values in the training data. 
+#' Must be of same length as \code{xtrain}. 
+#' Missing values in either of \code{xtrain} or \code{ytrain} will be dropped 
+#' in a pairwise manner.
 #' @param k Number of nearest neighbours to sample from.
 #' @param seed Integer random seed.
 #'

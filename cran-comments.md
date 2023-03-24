@@ -12,4 +12,11 @@
 ??? checking for future file timestamps ... NOTE
   unable to verify current time
 
-## 
+## RHub
+
+Found the following files/directories:
+
+  'lastMiKTeXException'
+  
+## Winbuilder
+
