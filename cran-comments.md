@@ -1,22 +1,22 @@
 # missRanger 2.2.0
 
 - removed suggested dependencies dplyr, mice, survival
-- improved docu
+- improved documentation
 
 ## R CMD check
 
-??? checking for unstated dependencies in examples ... OK
-   WARNING
+checking for unstated dependencies in examples ... OK
+
+WARNING
   'qpdf' is needed for checks on size reduction of PDFs
 
-??? checking for future file timestamps ... NOTE
+checking for future file timestamps ... NOTE
   unable to verify current time
 
-## RHub
+## RHub 
 
-Found the following files/directories:
+Note: Found the following files/directories:
 
   'lastMiKTeXException'
   
-## Winbuilder
 
