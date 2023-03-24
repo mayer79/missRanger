@@ -15,18 +15,11 @@ checking for future file timestamps ... NOTE
 
 ## RHub 
 
-Note: Found the following files/directories:
-
-  'lastMiKTeXException'
+Note: lastMiKTeXException
   
 ## Reverse dependency check of 7 packages
 
-??? hdImpute 0.1.1                         ?????? E: 0     | W: 0     | N: 0                          
-??? marginaleffects 0.11.0                 ?????? E: 0     | W: 0     | N: 0                                      
-??? mlim 0.3.0                             ?????? E: 0     | W: 0     | N: 0                                      
-??? NADIA 0.4.2                            ?????? E: 0     | W: 0     | N: 1                                      
-??? outForest 0.1.2                        ?????? E: 0     | W: 0     | N: 0                                      
-??? wiseR 1.0.1                            ?????? E: 0     | W: 0     | N: 3                                      
-??? worcs 0.1.10                           ?????? E: 0     | W: 0     | N: 0                                      
+- hdImpute 0.1.1                         -- E: 0     | W: 0     | N: 0                       - marginaleffects 0.11.0                 -- E: 0     | W: 0     | N: 0                       - mlim 0.3.0                             -- E: 0     | W: 0     | N: 0                       - NADIA 0.4.2                            -- E: 0     | W: 0     | N: 1                       - outForest 0.1.2                        -- E: 0     | W: 0     | N: 0                       - wiseR 1.0.1                            -- E: 0     | W: 0     | N: 3              
+- worcs 0.1.10                           -- E: 0     | W: 0     | N: 0                                      
 OK: 7                                                                                                       
 BROKEN: 0
