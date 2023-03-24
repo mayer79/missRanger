@@ -103,7 +103,7 @@ if (FALSE) {
   check_rhub()
   
   # Takes long
-  revdepcheck::revdep_check()
+  revdepcheck::revdep_check(num_workers = 4)
 
   # Wait until above checks are passed without relevant notes/warnings
   # then submit to CRAN
