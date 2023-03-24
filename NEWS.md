@@ -1,4 +1,17 @@
-# missRanger 2.1.5
+# missRanger 2.2.0
+
+## Less dependencies
+
+- Removed {mice} from "suggested" packages.
+- Removed {dplyr} from "suggested" packages.
+- Removed {survival} from "suggested" packages.
+
+## Maintenance
+
+- Adding Github pages.
+- Introduction of Github actions.
+
+# missRanger 2.1.5 (not on CRAN)
 
 Maintenance release,
 
@@ -6,7 +19,7 @@ Maintenance release,
 - changing the package structure, and
 - bringing vignettes into right order.
 
-# missRanger 2.1.4
+# missRanger 2.1.4 (not on CRAN)
 
 ## Minor changes
 

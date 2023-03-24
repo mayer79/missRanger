@@ -54,6 +54,3 @@ test_that("pmm works with NA in xtrain and NA in ytrain", {
 test_that("pmm gives error when xtest contains NA", {
   expect_error(pmm(c(1, 1, 2), NA, ytrain = c(0, 1, 2)))
 })
-
-
-

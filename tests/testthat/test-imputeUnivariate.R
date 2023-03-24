@@ -57,5 +57,3 @@ test_that("it fails when all values in a column are missing", {
   x <- rep(NA, 10L)
   expect_error(imputeUnivariate(x))
 })
-
-

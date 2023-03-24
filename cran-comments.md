@@ -1,25 +1,15 @@
-This is a maintenance release, switching to 
+# missRanger 2.2.0
 
-- testthat 3,
-- modifying vignette order,
-- improving the way how the package is being updated/generated.
+- removed suggested dependencies dplyr, mice, survival
+- improved docu
 
-## R CMD check results seem okay
+## R CMD check
 
-checking for unstated dependencies in examples ... OK
+??? checking for unstated dependencies in examples ... OK
    WARNING
   'qpdf' is needed for checks on size reduction of PDFs
 
-## Online check results seem okay (2 notes below)
+??? checking for future file timestamps ... NOTE
+  unable to verify current time
 
-- check_win_devel()
-- check_rhub()
-
-Found the following (possibly) invalid DOIs:
-  DOI: 10.1093/bioinformatics/btr597
-    From: DESCRIPTION
-    Status: Forbidden
-    Message: 403
-* checking for detritus in the temp directory ... NOTE
-Found the following files/directories:
-  'lastMiKTeXException'
+## 

@@ -48,4 +48,3 @@ test_that("it works for data.frame with one row", {
   expect_true(!anyNA(generateNA(x, p = 0.5)))
   expect_true(all(is.na(generateNA(x, p = 0.55))))
 })
-

@@ -19,13 +19,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+## Overview
 
-The aim of this vignette is to introduce the R package `missRanger` for imputation of missing values and to explain how to use it for multiple imputation.
+The aim of this vignette is to introduce {missRanger} for imputation of missing values and to explain how to use it for multiple imputation.
 
-`missRanger` uses the `ranger` package [@wright] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to `missForest`, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. `missRanger` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
+{missRanger} uses the {ranger} package [@wright] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to {missForest}, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. The main function `missRanger()` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
 
-Why should you consider `missRanger`?
+Why should you consider {missRanger}?
 
 - It is fast.
 
@@ -33,34 +33,30 @@ Why should you consider `missRanger`?
 
 - It can deal with most realistic variable types, even dates and times without destroying the original data structure.
 
-- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger` can be used for realistic multiple imputation scenarios, see e.g. [@rubin] for the statistical background.
+- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger()` can be used for realistic multiple imputation scenarios, see e.g. [@rubin] for the statistical background.
 
-In the examples below, we will meet two functions from the `missRanger` package:
+In the examples below, we will meet two functions from {missRanger}:
 
-- `generateNA`: To replace values in a data set by missing values.
+- `generateNA()`: To replace values in a data set by missing values.
 
-- `missRanger`: To impute missing values in a data frame.
+- `missRanger()`: To impute missing values in a data frame.
 
 ## Installation
 
-From CRAN:
-```
+```r
+# From CRAN
 install.packages("missRanger")
+
+# Development version
+devtools::install_github("mayer79/missRanger")
 ```
 
-Latest version from github:
-```
-library(devtools)
-install_github("mayer79/missRanger")
-```
-
-## Examples
+## Usage
 
 We first generate a data set with about 20% missing values per column and fill them again by `missRanger`.
 
 ``` {r}
 library(missRanger)
-library(dplyr)
 
 set.seed(84553)
 
@@ -82,7 +78,7 @@ irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
 head(irisImputed)
 ```
 
-Note that `missRanger` offers a `...` argument to pass options to `ranger`, e.g. `num.trees` or `min.node.size`. How would we use its "extra trees" variant with 50 trees?
+Note that `missRanger()` offers a `...` argument to pass options to `ranger()`, e.g. `num.trees` or `min.node.size`. How would we use its "extremely randomized trees" variant with 50 trees?
 
 ``` {r}
 irisImputed_et <- missRanger(
@@ -97,22 +93,23 @@ head(irisImputed_et)
 
 It is as simple!
 
-Further note that `missRanger` does not rely on `tidyverse` but you can embed it into a `dplyr` pipeline (without `group_by`).
+{missRanger} also plays well together with the pipe:
 
-``` {r}
-iris %>%
-  generateNA() %>%
-  missRanger(verbose = 0) %>%
+```r
+iris |>
+  generateNA() |>
+  missRanger(verbose = 0) |>
   head()
 ```
 
-By default `missRanger` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
+By default `missRanger()` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
 
 ``` {r}
 # Impute all variables with all (default behaviour). Note that variables without
 # missing values will be skipped from the left hand side of the formula.
-m <- missRanger(irisWithNA, formula = . ~ ., 
-                pmm.k = 3, num.trees = 10, seed = 1, verbose = 0)
+m <- missRanger(
+  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 10, seed = 1, verbose = 0
+)
 head(m)
 
 # Same
@@ -120,19 +117,20 @@ m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 10, seed = 1, verbose = 0)
 head(m)
 
 # Impute all variables with all except Species
-m <- missRanger(irisWithNA, . ~ . - Species, 
-                pmm.k = 3, num.trees = 10, verbose = 0)
+m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 10, verbose = 0)
 head(m)
 
 # Impute Sepal.Width by Species 
-m <- missRanger(irisWithNA, Sepal.Width ~ Species, 
-                pmm.k = 3, num.trees = 10, verbose = 0)
+m <- missRanger(
+  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 10, verbose = 0
+)
 head(m)
 
 # No success. Why? Species contains missing values and thus can only 
 # be used for imputation if it is being imputed as well
-m <- missRanger(irisWithNA, Sepal.Width + Species ~ Species, 
-                pmm.k = 3, num.trees = 10, verbose = 0)
+m <- missRanger(
+  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 10, verbose = 0
+)
 head(m)
 
 # Impute all variables univariatly
@@ -142,7 +140,7 @@ head(m)
 
 ## Imputation takes too much time. What can I do?
 
-`missRanger` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forest implementation `ranger` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
+`missRanger()` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forest implementation `ranger()` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
 
 Here are tweaks to make things faster:
 
@@ -160,7 +158,7 @@ Here are tweaks to make things faster:
 
 ### Examples evaluated on a normal laptop (not run here)
 
-``` r
+```r
 library(ggplot2) # for diamonds data
 dim(diamonds) # 53940    10
 
@@ -183,8 +181,7 @@ system.time(
 
 # Takes 9 seconds
 system.time(
-  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, 
-    sample.fraction = 0.1)
+  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, sample.fraction = 0.1)
 )
 ```
 
@@ -204,8 +201,9 @@ m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0)
 head(m)
 
 # Weighted by number of non-missing values per row. 
-m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0,
-                case.weights = non_miss)
+m <- missRanger(
+  irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0, case.weights = non_miss
+)
 head(m)
 ```
 
