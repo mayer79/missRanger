@@ -11,3 +11,4 @@
 ^\.Rproj\.user$
 ^\.github$
 ^revdep$
+^CRAN-SUBMISSION$
