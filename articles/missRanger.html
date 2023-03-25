@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.5.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using missRanger</h1>
             
-            <h4 data-toc-skip class="date">2023-03-22</h4>
+            <h4 data-toc-skip class="date">2023-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/missRanger.Rmd" class="external-link"><code>vignettes/missRanger.Rmd</code></a></small>
       <div class="hidden name"><code>missRanger.Rmd</code></div>
@@ -103,20 +103,21 @@
     
     
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The aim of this vignette is to introduce the R package
-<code>missRanger</code> for imputation of missing values and to explain
-how to use it for multiple imputation.</p>
-<p><code>missRanger</code> uses the <code>ranger</code> package <span class="citation">(<a href="#ref-wright" role="doc-biblioref">Wright and
-Ziegler 2017</a>)</span> to do fast missing value imputation by chained
-random forest. As such, it can be used as an alternative to
-<code>missForest</code>, a beautiful algorithm introduced in <span class="citation">(<a href="#ref-stekhoven" role="doc-biblioref">Stekhoven and Buehlmann 2011</a>)</span>.
-Basically, each variable is imputed by predictions from a random forest
-using all other variables as covariables. <code>missRanger</code>
-iterates multiple times over all variables until the average out-of-bag
-prediction error of the models stops to improve.</p>
-<p>Why should you consider <code>missRanger</code>?</p>
+<p>The aim of this vignette is to introduce {missRanger} for imputation
+of missing values and to explain how to use it for multiple
+imputation.</p>
+<p>{missRanger} uses the {ranger} package <span class="citation">(<a href="#ref-wright" role="doc-biblioref">Wright and Ziegler
+2017</a>)</span> to do fast missing value imputation by chained random
+forest. As such, it can be used as an alternative to {missForest}, a
+beautiful algorithm introduced in <span class="citation">(<a href="#ref-stekhoven" role="doc-biblioref">Stekhoven and Buehlmann
+2011</a>)</span>. Basically, each variable is imputed by predictions
+from a random forest using all other variables as covariables. The main
+function <code><a href="../reference/missRanger.html">missRanger()</a></code> iterates multiple times over all
+variables until the average out-of-bag prediction error of the models
+stops to improve.</p>
+<p>Why should you consider {missRanger}?</p>
 <ul>
 <li><p>It is fast.</p></li>
 <li><p>It is flexible and intuitive to apply: E.g. calling
@@ -127,36 +128,37 @@ use <code>Sepal.Width</code> to impute <code>Species</code>.</p></li>
 times without destroying the original data structure.</p></li>
 <li><p>It combines random forest imputation with predictive mean
 matching. This generates realistic variability and avoids “new” values
-like 0.3334 in a 0-1 coded variable. Like this, <code>missRanger</code>
-can be used for realistic multiple imputation scenarios, see e.g. <span class="citation">(<a href="#ref-rubin" role="doc-biblioref">Rubin
-1987</a>)</span> for the statistical background.</p></li>
+like 0.3334 in a 0-1 coded variable. Like this,
+<code><a href="../reference/missRanger.html">missRanger()</a></code> can be used for realistic multiple imputation
+scenarios, see e.g. <span class="citation">(<a href="#ref-rubin" role="doc-biblioref">Rubin 1987</a>)</span> for the statistical
+background.</p></li>
 </ul>
-<p>In the examples below, we will meet two functions from the
-<code>missRanger</code> package:</p>
+<p>In the examples below, we will meet two functions from
+{missRanger}:</p>
 <ul>
-<li><p><code>generateNA</code>: To replace values in a data set by
+<li><p><code><a href="../reference/generateNA.html">generateNA()</a></code>: To replace values in a data set by
 missing values.</p></li>
-<li><p><code>missRanger</code>: To impute missing values in a data
+<li><p><code><a href="../reference/missRanger.html">missRanger()</a></code>: To impute missing values in a data
 frame.</p></li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>From CRAN:</p>
-<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"missRanger"</span><span class="op">)</span></span></code></pre>
-<p>Latest version from github:</p>
-<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
-<span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mayer79/missRanger"</span><span class="op">)</span></span></code></pre>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From CRAN</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"missRanger"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Development version</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mayer79/missRanger"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p>We first generate a data set with about 20% missing values per column
 and fill them again by <code>missRanger</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mayer79/missRanger" class="external-link">missRanger</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">84553</span><span class="op">)</span></span>
 <span></span>
@@ -196,7 +198,7 @@ to different rounding. If we would like to avoid this, we just set the
 during the process are then combined with a predictive mean matching
 (PMM) step, leading to more natural imputations and improved
 distributional properties of the resulting values:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">irisImputed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">irisImputed</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
@@ -206,11 +208,11 @@ distributional properties of the resulting values:</p>
 <span><span class="co">#&gt; 4          5.8         3.1          1.5         0.2  setosa</span></span>
 <span><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.4         0.4  setosa</span></span></code></pre></div>
-<p>Note that <code>missRanger</code> offers a <code>...</code> argument
-to pass options to <code>ranger</code>, e.g. <code>num.trees</code> or
-<code>min.node.size</code>. How would we use its “extra trees” variant
-with 50 trees?</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Note that <code><a href="../reference/missRanger.html">missRanger()</a></code> offers a <code>...</code>
+argument to pass options to <code>ranger()</code>,
+e.g. <code>num.trees</code> or <code>min.node.size</code>. How would we
+use its “extremely randomized trees” variant with 50 trees?</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">irisImputed_et</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
 <span>  <span class="va">irisWithNA</span>, </span>
 <span>  pmm.k <span class="op">=</span> <span class="fl">3</span>, </span>
@@ -227,31 +229,23 @@ with 50 trees?</p>
 <span><span class="co">#&gt; 5          5.0         3.6          1.4         0.4  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.3         0.4  setosa</span></span></code></pre></div>
 <p>It is as simple!</p>
-<p>Further note that <code>missRanger</code> does not rely on
-<code>tidyverse</code> but you can embed it into a <code>dplyr</code>
-pipeline (without <code>group_by</code>).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">iris</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
-<span><span class="co">#&gt; 1     5.100000    3.500000     1.400000   0.3102322  setosa</span></span>
-<span><span class="co">#&gt; 2     4.900000    3.038516     1.400000   0.2000000  setosa</span></span>
-<span><span class="co">#&gt; 3     4.700000    3.200000     1.300000   0.2000000  setosa</span></span>
-<span><span class="co">#&gt; 4     4.600000    3.100000     1.500000   0.2000000  setosa</span></span>
-<span><span class="co">#&gt; 5     5.000000    3.211776     1.484725   0.2000000  setosa</span></span>
-<span><span class="co">#&gt; 6     6.691223    3.900000     3.082777   0.4000000  setosa</span></span></code></pre></div>
-<p>By default <code>missRanger</code> uses all columns in the data set
+<p>{missRanger} also plays well together with the pipe:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iris</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>By default <code><a href="../reference/missRanger.html">missRanger()</a></code> uses all columns in the data set
 to impute all columns with missings. To override this behaviour, you can
 use an intuitive formula interface: The left hand side specifies the
 variables to be imputed (variable names separated by a <code>+</code>),
 while the right hand side lists the variables used for imputation.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Impute all variables with all (default behaviour). Note that variables without</span></span>
 <span><span class="co"># missing values will be skipped from the left hand side of the formula.</span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, formula <span class="op">=</span> <span class="va">.</span> <span class="op">~</span> <span class="va">.</span>, </span>
-<span>                pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>  <span class="va">irisWithNA</span>, formula <span class="op">=</span> <span class="va">.</span> <span class="op">~</span> <span class="va">.</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          1.6         0.2  setosa</span></span>
@@ -273,8 +267,7 @@ while the right hand side lists the variables used for imputation.</p>
 <span><span class="co">#&gt; 6          5.4         3.9          1.4         0.4  setosa</span></span>
 <span></span>
 <span><span class="co"># Impute all variables with all except Species</span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">Species</span>, </span>
-<span>                pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">Species</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          3.5         0.2  setosa</span></span>
@@ -285,8 +278,9 @@ while the right hand side lists the variables used for imputation.</p>
 <span><span class="co">#&gt; 6          5.4         3.9          1.4         0.4  setosa</span></span>
 <span></span>
 <span><span class="co"># Impute Sepal.Width by Species </span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, <span class="va">Sepal.Width</span> <span class="op">~</span> <span class="va">Species</span>, </span>
-<span>                pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>  <span class="va">irisWithNA</span>, <span class="va">Sepal.Width</span> <span class="op">~</span> <span class="va">Species</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5           NA         0.2  setosa</span></span>
@@ -298,8 +292,9 @@ while the right hand side lists the variables used for imputation.</p>
 <span></span>
 <span><span class="co"># No success. Why? Species contains missing values and thus can only </span></span>
 <span><span class="co"># be used for imputation if it is being imputed as well</span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, <span class="va">Sepal.Width</span> <span class="op">+</span> <span class="va">Species</span> <span class="op">~</span> <span class="va">Species</span>, </span>
-<span>                pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>  <span class="va">irisWithNA</span>, <span class="va">Sepal.Width</span> <span class="op">+</span> <span class="va">Species</span> <span class="op">~</span> <span class="va">Species</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5           NA         0.2  setosa</span></span>
@@ -323,9 +318,9 @@ while the right hand side lists the variables used for imputation.</p>
 <div class="section level2">
 <h2 id="imputation-takes-too-much-time--what-can-i-do">Imputation takes too much time. What can I do?<a class="anchor" aria-label="anchor" href="#imputation-takes-too-much-time--what-can-i-do"></a>
 </h2>
-<p><code>missRanger</code> is based on iteratively fitting random
+<p><code><a href="../reference/missRanger.html">missRanger()</a></code> is based on iteratively fitting random
 forests for each variable with missing values. Since the underlying
-random forest implementation <code>ranger</code> uses 500 trees per
+random forest implementation <code>ranger()</code> uses 500 trees per
 default, a huge number of trees might be calculated. For larger data
 sets, the overall process can take very long.</p>
 <p>Here are tweaks to make things faster:</p>
@@ -345,7 +340,7 @@ e.g. <code>min.node.size = 10000</code>.</p></li>
 <div class="section level3">
 <h3 id="examples-evaluated-on-a-normal-laptop-not-run-here">Examples evaluated on a normal laptop (not run here)<a class="anchor" aria-label="anchor" href="#examples-evaluated-on-a-normal-laptop-not-run-here"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co"># for diamonds data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">diamonds</span><span class="op">)</span> <span class="co"># 53940    10</span></span>
 <span></span>
@@ -368,8 +363,7 @@ e.g. <code>min.node.size = 10000</code>.</p></li>
 <span></span>
 <span><span class="co"># Takes 9 seconds</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
-<span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">diamonds_with_NA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, </span>
-<span>    sample.fraction <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">diamonds_with_NA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, sample.fraction <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -383,7 +377,7 @@ down the contribution of rows with many missings.</p>
 <div class="section level3">
 <h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Count the number of non-missing values per row</span></span>
 <span><span class="va">non_miss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">irisWithNA</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">non_miss</span><span class="op">)</span></span>
@@ -403,8 +397,9 @@ down the contribution of rows with many missings.</p>
 <span><span class="co">#&gt; 6          5.4         3.9          1.5         0.4  setosa</span></span>
 <span></span>
 <span><span class="co"># Weighted by number of non-missing values per row. </span></span>
-<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, num.trees <span class="op">=</span> <span class="fl">20</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">5</span>, verbose <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>                case.weights <span class="op">=</span> <span class="va">non_miss</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>  <span class="va">irisWithNA</span>, num.trees <span class="op">=</span> <span class="fl">20</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">5</span>, verbose <span class="op">=</span> <span class="fl">0</span>, case.weights <span class="op">=</span> <span class="va">non_miss</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          1.3         0.2  setosa</span></span>

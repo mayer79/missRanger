@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.5.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Multiple Imputation</h1>
             
-            <h4 data-toc-skip class="date">2023-03-22</h4>
+            <h4 data-toc-skip class="date">2023-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/multiple_imputation.Rmd" class="external-link"><code>vignettes/multiple_imputation.Rmd</code></a></small>
       <div class="hidden name"><code>multiple_imputation.Rmd</code></div>
@@ -103,7 +103,7 @@
     
     
 <div class="section level2">
-<h2 id="how-to-use-missranger-for-multiple-imputation">How to use <code>missRanger</code> for multiple imputation?<a class="anchor" aria-label="anchor" href="#how-to-use-missranger-for-multiple-imputation"></a>
+<h2 id="how-to-use-missranger-for-multiple-imputation">How to use {missRanger} for multiple imputation?<a class="anchor" aria-label="anchor" href="#how-to-use-missranger-for-multiple-imputation"></a>
 </h2>
 <p>For machine learning tasks, imputation is typically seen as a fixed
 data preparation step like dummy coding. There, multiple imputation is
@@ -123,12 +123,12 @@ averages are taken. Their variance is basically a combination of the
 average squared standard errors plus the variance of the parameter
 estimates across the imputed data sets, leading to inflated standard
 errors and thus larger p values and wider confidence intervals.</p>
-<p>The package <code>mice</code> <span class="citation">(<a href="#ref-buuren" role="doc-biblioref">Buuren and Groothuis-Oudshoorn
-2011</a>)</span> takes case of this pooling step. The creation of
-multiple complete data sets can be done by <code>mice</code> or also by
-<code>missRanger</code>. In the latter case, in order to keep the
-variance of imputed values at a realistic level, we suggest to use
-predictive mean matching on top of the random forest imputations.</p>
+<p>The package {mice} <span class="citation">(<a href="#ref-buuren" role="doc-biblioref">Buuren and Groothuis-Oudshoorn 2011</a>)</span>
+takes care of this pooling step. The creation of multiple complete data
+sets can be done by {mice} or also by {missRanger}. In the latter case,
+in order to keep the variance of imputed values at a realistic level, we
+suggest to use predictive mean matching on top of the random forest
+imputation.</p>
 <p>The following example shows how easy such workflow looks like.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mayer79/missRanger" class="external-link">missRanger</a></span><span class="op">)</span></span>
@@ -150,38 +150,32 @@ predictive mean matching on top of the random forest imputations.</p>
 <span></span>
 <span><span class="co"># Pool the results by mice</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/pool.html" class="external-link">pool</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                term   estimate std.error  statistic       df      p.value</span></span>
-<span><span class="co">#&gt; 1       (Intercept)  2.5366092 0.3575478  7.0944612 74.48225 6.365362e-10</span></span>
-<span><span class="co">#&gt; 2       Sepal.Width  0.4262516 0.1104055  3.8607804 81.52526 2.253823e-04</span></span>
-<span><span class="co">#&gt; 3      Petal.Length  0.7311306 0.0895942  8.1604670 60.04758 2.595957e-11</span></span>
-<span><span class="co">#&gt; 4       Petal.Width -0.1840820 0.1856190 -0.9917193 68.08826 3.248458e-01</span></span>
-<span><span class="co">#&gt; 5 Speciesversicolor -0.6755016 0.2907406 -2.3233824 82.80105 2.261132e-02</span></span>
-<span><span class="co">#&gt; 6  Speciesvirginica -0.8584752 0.3970706 -2.1620217 81.93105 3.353349e-02</span></span>
+<span></span>
+<span><span class="co">#                term   estimate std.error  statistic       df      p.value</span></span>
+<span><span class="co"># 1       (Intercept)  2.5366092 0.3575478  7.0944612 74.48225 6.365362e-10</span></span>
+<span><span class="co"># 2       Sepal.Width  0.4262516 0.1104055  3.8607804 81.52526 2.253823e-04</span></span>
+<span><span class="co"># 3      Petal.Length  0.7311306 0.0895942  8.1604670 60.04758 2.595957e-11</span></span>
+<span><span class="co"># 4       Petal.Width -0.1840820 0.1856190 -0.9917193 68.08826 3.248458e-01</span></span>
+<span><span class="co"># 5 Speciesversicolor -0.6755016 0.2907406 -2.3233824 82.80105 2.261132e-02</span></span>
+<span><span class="co"># 6  Speciesvirginica -0.8584752 0.3970706 -2.1620217 81.93105 3.353349e-02</span></span>
 <span></span>
 <span><span class="co"># Compare with model on original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; lm(formula = Sepal.Length ~ ., data = iris)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residuals:</span></span>
-<span><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">#&gt; -0.79424 -0.21874  0.00899  0.20255  0.73103 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Coefficients:</span></span>
-<span><span class="co">#&gt;                   Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; (Intercept)        2.17127    0.27979   7.760 1.43e-12 ***</span></span>
-<span><span class="co">#&gt; Sepal.Width        0.49589    0.08607   5.761 4.87e-08 ***</span></span>
-<span><span class="co">#&gt; Petal.Length       0.82924    0.06853  12.101  &lt; 2e-16 ***</span></span>
-<span><span class="co">#&gt; Petal.Width       -0.31516    0.15120  -2.084  0.03889 *  </span></span>
-<span><span class="co">#&gt; Speciesversicolor -0.72356    0.24017  -3.013  0.00306 ** </span></span>
-<span><span class="co">#&gt; Speciesvirginica  -1.02350    0.33373  -3.067  0.00258 ** </span></span>
-<span><span class="co">#&gt; ---</span></span>
-<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 0.3068 on 144 degrees of freedom</span></span>
-<span><span class="co">#&gt; Multiple R-squared:  0.8673, Adjusted R-squared:  0.8627 </span></span>
-<span><span class="co">#&gt; F-statistic: 188.3 on 5 and 144 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#                   Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept)        2.17127    0.27979   7.760 1.43e-12 ***</span></span>
+<span><span class="co"># Sepal.Width        0.49589    0.08607   5.761 4.87e-08 ***</span></span>
+<span><span class="co"># Petal.Length       0.82924    0.06853  12.101  &lt; 2e-16 ***</span></span>
+<span><span class="co"># Petal.Width       -0.31516    0.15120  -2.084  0.03889 *  </span></span>
+<span><span class="co"># Speciesversicolor -0.72356    0.24017  -3.013  0.00306 ** </span></span>
+<span><span class="co"># Speciesvirginica  -1.02350    0.33373  -3.067  0.00258 ** </span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.3068 on 144 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.8673,  Adjusted R-squared:  0.8627 </span></span>
+<span><span class="co"># F-statistic: 188.3 on 5 and 144 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
 <p>The standard errors and p values of the multiple imputation are
 larger than of the original data set. This reflects the additional
 uncertainty introduced by the presence of missing values in a realistic

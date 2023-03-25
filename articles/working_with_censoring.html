@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.5.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Censored Variables</h1>
             
-            <h4 data-toc-skip class="date">2023-03-22</h4>
+            <h4 data-toc-skip class="date">2023-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/working_with_censoring.Rmd" class="external-link"><code>vignettes/working_with_censoring.Rmd</code></a></small>
       <div class="hidden name"><code>working_with_censoring.Rmd</code></div>
@@ -109,15 +109,16 @@
 covariables in imputation models.</p>
 <p>Options discussed in <span class="citation">(<a href="#ref-white" role="doc-biblioref">White and Royston 2009</a>)</span> include:</p>
 <ul>
-<li><p>Use both status variable s and (censored) time variable
-t</p></li>
-<li><p>s and log(t)</p></li>
-<li><p>surv(t), and, optionally s</p></li>
+<li><p>Use both status variable <span class="math inline">\(s\)</span>
+and (censored) time variable <span class="math inline">\(t\)</span></p></li>
+<li><p><span class="math inline">\(s\)</span> and <span class="math inline">\(\log(t)\)</span></p></li>
+<li><p><span class="math inline">\(\text{surv}(t)\)</span>, and,
+optionally <span class="math inline">\(s\)</span></p></li>
 </ul>
-<p>By surv(t), we denote the Nelson-Aalen survival estimate at each
-value of t. The third option is the most elegant one as it explicitly
-deals with censoring information. We provide some additional details on
-it in the example</p>
+<p>By <span class="math inline">\(\text{surv}(t)\)</span>, we denote the
+Nelson-Aalen survival estimate at each value of <span class="math inline">\(t\)</span>. The third option is the most elegant
+one as it explicitly deals with censoring information. We provide some
+additional details on it in the example.</p>
 <div class="section level3">
 <h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h3>
@@ -134,23 +135,25 @@ the covariables multiple times.</li>
 <li>Perform the intended Cox regression for each of the imputed data
 sets.</li>
 <li>Pool their results by Rubin’s rule <span class="citation">(<a href="#ref-rubin" role="doc-biblioref">Rubin 1987</a>)</span>, using
-package <code>mice</code> <span class="citation">(<a href="#ref-buuren" role="doc-biblioref">Buuren and Groothuis-Oudshoorn
+package {mice} <span class="citation">(<a href="#ref-buuren" role="doc-biblioref">Buuren and Groothuis-Oudshoorn
 2011</a>)</span>.</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mayer79/missRanger" class="external-link">missRanger</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/amices/mice" class="external-link">mice</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">65</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   trt celltype time status karno diagtime age prior</span></span>
-<span><span class="co">#&gt; 1   1 squamous   72      1    60        7  69     0</span></span>
-<span><span class="co">#&gt; 2   1 squamous  411      1    70        5  64    10</span></span>
-<span><span class="co">#&gt; 3   1 squamous  228      1    60        3  38     0</span></span>
-<span><span class="co">#&gt; 4   1 squamous  126      1    60        9  63    10</span></span>
-<span><span class="co">#&gt; 5   1 squamous  118      1    70       11  65    10</span></span>
-<span><span class="co">#&gt; 6   1 squamous   10      1    20        5  49     0</span></span>
+<span></span>
+<span><span class="co">#   trt celltype time status karno diagtime age prior</span></span>
+<span><span class="co"># 1   1 squamous   72      1    60        7  69     0</span></span>
+<span><span class="co"># 2   1 squamous  411      1    70        5  64    10</span></span>
+<span><span class="co"># 3   1 squamous  228      1    60        3  38     0</span></span>
+<span><span class="co"># 4   1 squamous  126      1    60        9  63    10</span></span>
+<span><span class="co"># 5   1 squamous  118      1    70       11  65    10</span></span>
+<span><span class="co"># 6   1 squamous   10      1    20        5  49     0</span></span>
 <span></span>
 <span><span class="co"># 1. Calculate Nelson-Aalen survival probabilities for each time point</span></span>
 <span><span class="va">nelson_aalen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
@@ -166,35 +169,45 @@ package <code>mice</code> <span class="citation">(<a href="#ref-buuren" role="do
 <span><span class="va">veteran2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="va">veteran2</span>, p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fl">0.1</span>, karno <span class="op">=</span> <span class="fl">0.1</span>, diagtime <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 2. Generate 20 complete data sets, representing "time" and "status" by "surv"</span></span>
-<span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">veteran2</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">time</span> <span class="op">-</span> <span class="va">status</span>, </span>
-<span>  verbose <span class="op">=</span> <span class="fl">0</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">25</span><span class="op">)</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span></span>
+<span>  <span class="fl">20</span>, </span>
+<span>  <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>    <span class="va">veteran2</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">time</span> <span class="op">-</span> <span class="va">status</span>, </span>
+<span>    verbose <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>    pmm.k <span class="op">=</span> <span class="fl">3</span>, </span>
+<span>    num.trees <span class="op">=</span> <span class="fl">25</span></span>
+<span>  <span class="op">)</span>, </span>
+<span>  simplify <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 3. Run a Cox regression for each of the completed data sets</span></span>
 <span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">filled</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">surv</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 4. Pool the results by mice</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/pool.html" class="external-link">pool</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                term     estimate   std.error  statistic        df      p.value</span></span>
-<span><span class="co">#&gt; 1               trt  0.238408881 0.213416156  1.1171079 108.30303 2.664203e-01</span></span>
-<span><span class="co">#&gt; 2 celltypesmallcell  0.801088770 0.286383107  2.7972626 112.17712 6.066665e-03</span></span>
-<span><span class="co">#&gt; 3     celltypeadeno  1.134351839 0.308977998  3.6713030 110.65791 3.731780e-04</span></span>
-<span><span class="co">#&gt; 4     celltypelarge  0.327092592 0.291069423  1.1237614 109.29555 2.635765e-01</span></span>
-<span><span class="co">#&gt; 5             karno -0.031250557 0.005786704 -5.4004073  99.60711 4.529695e-07</span></span>
-<span><span class="co">#&gt; 6          diagtime  0.002889092 0.009020319  0.3202872 106.17585 7.493801e-01</span></span>
-<span><span class="co">#&gt; 7               age -0.007620985 0.009632902 -0.7911411  97.27459 4.307864e-01</span></span>
-<span><span class="co">#&gt; 8             prior  0.003954604 0.023537476  0.1680131 111.98360 8.668760e-01</span></span>
 <span></span>
-<span><span class="co"># On the original</span></span>
+<span><span class="co">#                term     estimate   std.error  statistic        df      p.value</span></span>
+<span><span class="co"># 1               trt  0.238408881 0.213416156  1.1171079 108.30303 2.664203e-01</span></span>
+<span><span class="co"># 2 celltypesmallcell  0.801088770 0.286383107  2.7972626 112.17712 6.066665e-03</span></span>
+<span><span class="co"># 3     celltypeadeno  1.134351839 0.308977998  3.6713030 110.65791 3.731780e-04</span></span>
+<span><span class="co"># 4     celltypelarge  0.327092592 0.291069423  1.1237614 109.29555 2.635765e-01</span></span>
+<span><span class="co"># 5             karno -0.031250557 0.005786704 -5.4004073  99.60711 4.529695e-07</span></span>
+<span><span class="co"># 6          diagtime  0.002889092 0.009020319  0.3202872 106.17585 7.493801e-01</span></span>
+<span><span class="co"># 7               age -0.007620985 0.009632902 -0.7911411  97.27459 4.307864e-01</span></span>
+<span><span class="co"># 8             prior  0.003954604 0.023537476  0.1680131 111.98360 8.668760e-01</span></span>
+<span></span>
+<span><span class="co"># Compare with the results on the original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">veteran</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></span>
-<span><span class="co">#&gt;                            coef exp(coef)    se(coef)            z     Pr(&gt;|z|)</span></span>
-<span><span class="co">#&gt; trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01</span></span>
-<span><span class="co">#&gt; celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03</span></span>
-<span><span class="co">#&gt; celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05</span></span>
-<span><span class="co">#&gt; celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01</span></span>
-<span><span class="co">#&gt; karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09</span></span>
-<span><span class="co">#&gt; diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01</span></span>
-<span><span class="co">#&gt; age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01</span></span>
-<span><span class="co">#&gt; prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01</span></span></code></pre></div>
+<span></span>
+<span><span class="co">#                            coef exp(coef)    se(coef)            z     Pr(&gt;|z|)</span></span>
+<span><span class="co"># trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01</span></span>
+<span><span class="co"># celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03</span></span>
+<span><span class="co"># celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05</span></span>
+<span><span class="co"># celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01</span></span>
+<span><span class="co"># karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09</span></span>
+<span><span class="co"># diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01</span></span>
+<span><span class="co"># age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01</span></span>
+<span><span class="co"># prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">

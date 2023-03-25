@@ -52,7 +52,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.5.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -113,7 +113,7 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The {missRanger} package uses the {ranger} package to do fast missing value imputation by chained random forest. As such, it serves as an alternative implementation of the beautiful ‘MissForest’ algorithm, see vignette.</p>
+<p>{missRanger} uses the {ranger} package to do fast missing value imputation by chained random forest. As such, it serves as an alternative implementation of the beautiful ‘MissForest’ algorithm, see vignette.</p>
 <p>The main function <code><a href="reference/missRanger.html">missRanger()</a></code> offers the option to combine random forest imputation with predictive mean matching. This firstly avoids the generation of values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, this step tends to raise the variance in the resulting conditional distributions to a realistic level, a crucial element to apply multiple imputation frameworks.</p>
 </div>
 <div class="section level2">
@@ -136,7 +136,7 @@
 <span><span class="co"># Generate data with missing values in all columns</span></span>
 <span><span class="va">irisWithNA</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="va">iris</span>, seed <span class="op">=</span> <span class="fl">347</span><span class="op">)</span></span>
 <span> </span>
-<span><span class="co"># Impute missing values with missRanger</span></span>
+<span><span class="co"># Impute missing values</span></span>
 <span><span class="va">irisImputed</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span> </span>
 <span><span class="co"># Check results</span></span>
@@ -144,7 +144,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">irisWithNA</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># With extra trees algorithm</span></span>
+<span><span class="co"># Replace random forest by extremely randomized trees</span></span>
 <span><span class="va">irisImputed_et</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
 <span>  <span class="va">irisWithNA</span>, </span>
 <span>  pmm.k <span class="op">=</span> <span class="fl">3</span>, </span>
@@ -152,12 +152,10 @@
 <span>  num.trees <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># With "dplyr" syntax</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">iris</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="reference/missRanger.html">missRanger</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="fl">0</span>, pmm.k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span><span class="co"># Using the pipe...</span></span>
+<span><span class="va">iris</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/generateNA.html">generateNA</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/missRanger.html">missRanger</a></span><span class="op">(</span>pmm.k <span class="op">=</span> <span class="fl">5</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Check out the vignettes for more info.</p>
 </div>
