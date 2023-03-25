@@ -3,7 +3,9 @@
 #' Takes a vector, matrix or \code{data.frame} and replaces some values by \code{NA}. 
 #' 
 #' @param x A vector, matrix or \code{data.frame}.
-#' @param p Proportion of missing values to add to \code{x}. In case \code{x} is a \code{data.frame}, \code{p} can also be a vector of probabilities per column or a named vector (see examples).
+#' @param p Proportion of missing values to add to \code{x}. 
+#' In case \code{x} is a \code{data.frame}, \code{p} can also be a vector of 
+#' probabilities per column or a named vector (see examples).
 #' @param seed An integer seed.
 #'
 #' @return \code{x} with missing values.

@@ -25,13 +25,13 @@ There is no obvious way of how to deal with survival variables as covariables in
 
 Options discussed in [@white] include:
 
-- Use both status variable s and (censored) time variable t
+- Use both status variable $s$ and (censored) time variable $t$
 
-- s and log(t)
+- $s$ and $\log(t)$
 
-- surv(t), and, optionally s
+- $\text{surv}(t)$, and, optionally $s$
 
-By surv(t), we denote the Nelson-Aalen survival estimate at each value of t. The third option is the most elegant one as it explicitly deals with censoring information. We provide some additional details on it in the example
+By $\text{surv}(t)$, we denote the Nelson-Aalen survival estimate at each value of $t$. The third option is the most elegant one as it explicitly deals with censoring information. We provide some additional details on it in the example.
 
 ### Example
 
@@ -42,15 +42,24 @@ A reasonable way to estimate the covariable adjusted treatment effect is the fol
 1. Add Nelson-Aalen survival estimates "surv" to the dataset.
 2. Use "surv" as well as the covariables to impute missing values in the covariables multiple times.
 3. Perform the intended Cox regression for each of the imputed data sets.
-4. Pool their results by Rubin's rule [@rubin], using package `mice` [@buuren].
+4. Pool their results by Rubin's rule [@rubin], using package {mice} [@buuren].
 
-``` {r}
+```r
 library(missRanger)
 library(survival)
 library(mice)
+
 set.seed(65)
 
 head(veteran)
+
+#   trt celltype time status karno diagtime age prior
+# 1   1 squamous   72      1    60        7  69     0
+# 2   1 squamous  411      1    70        5  64    10
+# 3   1 squamous  228      1    60        3  38     0
+# 4   1 squamous  126      1    60        9  63    10
+# 5   1 squamous  118      1    70       11  65    10
+# 6   1 squamous   10      1    20        5  49     0
 
 # 1. Calculate Nelson-Aalen survival probabilities for each time point
 nelson_aalen <- summary(
@@ -66,8 +75,16 @@ veteran2 <- merge(veteran, nelson_aalen, all.x = TRUE)
 veteran2 <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
 
 # 2. Generate 20 complete data sets, representing "time" and "status" by "surv"
-filled <- replicate(20, missRanger(veteran2, . ~ . - time - status, 
-  verbose = 0, pmm.k = 3, num.trees = 25), simplify = FALSE)
+filled <- replicate(
+  20, 
+  missRanger(
+    veteran2, . ~ . - time - status, 
+    verbose = 0, 
+    pmm.k = 3, 
+    num.trees = 25
+  ), 
+  simplify = FALSE
+)
 
 # 3. Run a Cox regression for each of the completed data sets
 models <- lapply(filled, function(x) coxph(Surv(time, status) ~ . - surv, x))
@@ -75,8 +92,28 @@ models <- lapply(filled, function(x) coxph(Surv(time, status) ~ . - surv, x))
 # 4. Pool the results by mice
 summary(pooled_fit <- pool(models))
 
-# On the original
+#                term     estimate   std.error  statistic        df      p.value
+# 1               trt  0.238408881 0.213416156  1.1171079 108.30303 2.664203e-01
+# 2 celltypesmallcell  0.801088770 0.286383107  2.7972626 112.17712 6.066665e-03
+# 3     celltypeadeno  1.134351839 0.308977998  3.6713030 110.65791 3.731780e-04
+# 4     celltypelarge  0.327092592 0.291069423  1.1237614 109.29555 2.635765e-01
+# 5             karno -0.031250557 0.005786704 -5.4004073  99.60711 4.529695e-07
+# 6          diagtime  0.002889092 0.009020319  0.3202872 106.17585 7.493801e-01
+# 7               age -0.007620985 0.009632902 -0.7911411  97.27459 4.307864e-01
+# 8             prior  0.003954604 0.023537476  0.1680131 111.98360 8.668760e-01
+
+# Compare with the results on the original data
 summary(coxph(Surv(time, status) ~ ., veteran))$coefficients
 
+#                            coef exp(coef)    se(coef)            z     Pr(>|z|)
+# trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01
+# celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03
+# celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05
+# celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01
+# karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09
+# diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01
+# age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01
+# prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01
 ```
+
 ## References

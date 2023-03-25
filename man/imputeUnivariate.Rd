@@ -9,7 +9,8 @@ imputeUnivariate(x, v = NULL, seed = NULL)
 \arguments{
 \item{x}{A vector, matrix or data frame.}
 
-\item{v}{A character vector of column names to impute (only relevant if \code{x} is a data frame). The default \code{NULL} imputes all columns.}
+\item{v}{A character vector of column names to impute (only relevant if \code{x}
+is a data frame). The default \code{NULL} imputes all columns.}
 
 \item{seed}{An integer seed.}
 }
@@ -17,7 +18,8 @@ imputeUnivariate(x, v = NULL, seed = NULL)
 \code{x} with imputed values.
 }
 \description{
-Fills missing values of a vector, matrix or data frame by sampling with replacement from the non-missing values. For data frames, this sampling is done within column.
+Fills missing values of a vector, matrix or data frame by sampling with replacement
+from the non-missing values. For data frames, this sampling is done within column.
 }
 \examples{
 imputeUnivariate(c(NA, 0, 1, 0, 1))

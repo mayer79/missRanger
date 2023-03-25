@@ -1,6 +1,6 @@
 Package: missRanger
 Title: Fast Imputation of Missing Values
-Version: 2.1.5.9000
+Version: 2.2.0
 Authors@R: 
     person(given = "Michael",
            family = "Mayer",
@@ -31,9 +31,6 @@ Imports:
     stats,
     utils
 Suggests: 
-    mice,
-    dplyr,
-    survival,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

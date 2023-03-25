@@ -15,7 +15,7 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Version = "2.1.5.9000",
+    Version = "2.2.0",
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
     Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
@@ -37,10 +37,6 @@ use_package("FNN", "imports")
 use_package("ranger", "Imports")
 use_package("stats", "Imports")
 use_package("utils", "Imports")
-
-use_package("dplyr", "Suggests")
-use_package("mice", "Suggests")
-use_package("survival", "Suggests")
 
 use_gpl_license(2)
 
@@ -77,15 +73,15 @@ use_logo("logo.png")
 # If package goes to CRAN: infos (check results etc.) for CRAN
 use_cran_comments()
 
-
-# Build website
-use_pkgdown()
 # Github actions
 use_github_action("document")
 use_github_action("check-standard")
 use_github_action("test-coverage")
 use_github_action("pkgdown")
 
+# Revdep
+
+use_revdep()
 
 #=============================================================================
 # Finish package building (can use fresh session)
@@ -95,7 +91,7 @@ library(devtools)
 
 document()
 test()
-build_vignettes()
+# build_vignettes()
 check(manual = TRUE, cran = TRUE)
 build()
 # build(binary = TRUE)
@@ -105,6 +101,9 @@ install()
 if (FALSE) {
   check_win_devel()
   check_rhub()
+  
+  # Takes long
+  revdepcheck::revdep_check(num_workers = 4)
 
   # Wait until above checks are passed without relevant notes/warnings
   # then submit to CRAN

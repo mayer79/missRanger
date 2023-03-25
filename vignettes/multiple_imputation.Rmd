@@ -19,17 +19,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-## How to use `missRanger` for multiple imputation?
+## How to use {missRanger} for multiple imputation?
 
 For machine learning tasks, imputation is typically seen as a fixed data preparation step like dummy coding. There, multiple imputation is rarely applied as it adds another level of complexity to the analysis. This might be fine since a good validation schema will account for variation introduced by imputation. 
 
 For tasks with focus on statistical inference (p values, standard errors, confidence intervals, estimation of effects), the extra variability introduced by imputation has to be accounted for except if only very few missing values appear. One of the standard approaches is to impute the data set multiple times, generating e.g. 10 or 100 versions of a complete data set. Then, the intended analysis (t-test, linear model etc.) is applied independently to each of the complete data sets. Their results are combined afterward in a pooling step, usually by Rubin's rule [@rubin]. For parameter estimates, averages are taken. Their variance is basically a combination of the average squared standard errors plus the variance of the parameter estimates across the imputed data sets, leading to inflated standard errors and thus larger p values and wider confidence intervals. 
 
-The package `mice` [@buuren] takes case of this pooling step. The creation of multiple complete data sets can be done by `mice` or also by `missRanger`. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputations. 
+The package {mice} [@buuren] takes care of this pooling step. The creation of multiple complete data sets can be done by {mice} or also by {missRanger}. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching on top of the random forest imputation. 
 
 The following example shows how easy such workflow looks like.
 
-``` {r}
+```r
 library(missRanger)
 library(mice)
 
@@ -50,8 +50,31 @@ models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
 # Pool the results by mice
 summary(pooled_fit <- pool(models))
 
+#                term   estimate std.error  statistic       df      p.value
+# 1       (Intercept)  2.5366092 0.3575478  7.0944612 74.48225 6.365362e-10
+# 2       Sepal.Width  0.4262516 0.1104055  3.8607804 81.52526 2.253823e-04
+# 3      Petal.Length  0.7311306 0.0895942  8.1604670 60.04758 2.595957e-11
+# 4       Petal.Width -0.1840820 0.1856190 -0.9917193 68.08826 3.248458e-01
+# 5 Speciesversicolor -0.6755016 0.2907406 -2.3233824 82.80105 2.261132e-02
+# 6  Speciesvirginica -0.8584752 0.3970706 -2.1620217 81.93105 3.353349e-02
+
 # Compare with model on original data
 summary(lm(Sepal.Length ~ ., data = iris))
+
+# Coefficients:
+#                   Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)        2.17127    0.27979   7.760 1.43e-12 ***
+# Sepal.Width        0.49589    0.08607   5.761 4.87e-08 ***
+# Petal.Length       0.82924    0.06853  12.101  < 2e-16 ***
+# Petal.Width       -0.31516    0.15120  -2.084  0.03889 *  
+# Speciesversicolor -0.72356    0.24017  -3.013  0.00306 ** 
+# Speciesvirginica  -1.02350    0.33373  -3.067  0.00258 ** 
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+# 
+# Residual standard error: 0.3068 on 144 degrees of freedom
+# Multiple R-squared:  0.8673,	Adjusted R-squared:  0.8627 
+# F-statistic: 188.3 on 5 and 144 DF,  p-value: < 2.2e-16
 
 ```
 

@@ -19,90 +19,73 @@ missRanger(
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble} with missing values to impute.}
 
-\item{formula}{A two-sided formula specifying variables to be imputed (left hand side) and variables used to impute (right hand side). Defaults to . ~ ., i.e. use all variables to impute all variables.
-If e.g. all variables (with missings) should be imputed by all variables except variable "ID", use . ~ . - ID. Note that a "." is evaluated separately for each side of the formula. Further note that variables
-with missings must appear in the left hand side if they should be used on the right hand side.}
+\item{formula}{A two-sided formula specifying variables to be imputed
+(left hand side) and variables used to impute (right hand side).
+Defaults to \code{. ~ .}, i.e. use all variables to impute all variables.
+If e.g. all variables (with missings) should be imputed by all variables
+except variable "ID", use \code{. ~ . - ID}. Note that a "." is evaluated
+separately for each side of the formula. Further note that variables with missings
+must appear in the left hand side if they should be used on the right hand side.}
 
-\item{pmm.k}{Number of candidate non-missing values to sample from in the predictive mean matching steps. 0 to avoid this step.}
+\item{pmm.k}{Number of candidate non-missing values to sample from in the
+predictive mean matching steps. 0 to avoid this step.}
 
 \item{maxiter}{Maximum number of chaining iterations.}
 
 \item{seed}{Integer seed to initialize the random generator.}
 
-\item{verbose}{Controls how much info is printed to screen. 0 to print nothing. 1 (default) to print a progress bar per iteration, 2 to print the OOB prediction error per iteration and variable (1 minus R-squared for regression).
-Furthermore, if \code{verbose} is positive, the variables used for imputation are listed as well as the variables to be imputed (in the imputation order). This will be useful to detect if some variables are unexpectedly skipped.}
+\item{verbose}{Controls how much info is printed to screen.
+0 to print nothing. 1 (default) to print a progress bar per iteration,
+2 to print the OOB prediction error per iteration and variable
+(1 minus R-squared for regression).
+Furthermore, if \code{verbose} is positive, the variables used for imputation are
+listed as well as the variables to be imputed (in the imputation order).
+This will be useful to detect if some variables are unexpectedly skipped.}
 
-\item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error is added to the output as attribute "oob". This does not work in the special case when the variables are imputed univariately.}
+\item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error
+is added to the output as attribute "oob". This does not work in the special case
+when the variables are imputed univariately.}
 
 \item{case.weights}{Vector with non-negative case weights.}
 
-\item{...}{Arguments passed to \code{ranger()}. If the data set is large, better use less trees (e.g. \code{num.trees = 20}) and/or a low value of \code{sample.fraction}.
-The following arguments are e.g. incompatible with \code{ranger}: \code{write.forest}, \code{probability}, \code{split.select.weights}, \code{dependent.variable.name}, and \code{classification}.}
+\item{...}{Arguments passed to \code{ranger()}. If the data set is large,
+better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
+\code{sample.fraction}.
+The following arguments are e.g. incompatible:
+\code{write.forest}, \code{probability}, \code{split.select.weights},
+\code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
 An imputed \code{data.frame}.
 }
 \description{
-Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
-Between the iterative model fitting, it offers the option of predictive mean matching. This firstly avoids imputation with values not present in the original data (like a value 0.3334 in a 0-1 coded variable). Secondly, predictive mean matching tries to raise the variance in the resulting conditional distributions to a realistic level. This allows to do multiple imputation when repeating the call to missRanger().
-The iterative chaining stops as soon as \code{maxiter} is reached or if the average out-of-bag estimate of performance stops improving. In the latter case, except for the first iteration, the second last (i.e. best) imputed data is returned.
+Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by
+chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
+Between the iterative model fitting, it offers the option of predictive mean matching.
+This firstly avoids imputation with values not present in the original data
+(like a value 0.3334 in a 0-1 coded variable).
+Secondly, predictive mean matching tries to raise the variance in the resulting
+conditional distributions to a realistic level. This allows to do multiple imputation
+when repeating the call to \code{missRanger()}.
+The iterative chaining stops as soon as \code{maxiter} is reached or if the average
+out-of-bag estimate of performance stops improving.
+In the latter case, except for the first iteration, the second last (i.e. best)
+imputed data is returned.
 }
 \details{
-A note on \code{mtry}: Be careful when passing a non-default \code{mtry} to \code{ranger()} because the number of available covariables might be growing during the first iteration, depending on the missing pattern. Values \code{NULL} (default) and 1 are safe choices. Additionally, recent versions of \code{ranger()} allow \code{mtry} to be a single-argument function of the number of available covariables, e.g. \code{mtry = function(m) max(1, m \%/\% 3)}.
+A note on \code{mtry}: Be careful when passing a non-default \code{mtry} to
+\code{ranger()} because the number of available covariates might be growing during
+the first iteration, depending on the missing pattern.
+Values \code{NULL} (default) and 1 are safe choices.
+Additionally, recent versions of \code{ranger()} allow \code{mtry} to be a
+single-argument function of the number of available covariables,
+e.g. \code{mtry = function(m) max(1, m \%/\% 3)}.
 }
 \examples{
 irisWithNA <- generateNA(iris, seed = 34)
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
-
-\dontrun{
-# With extra trees algorithm
-irisImputed_et <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, splitrule = "extratrees")
-head(irisImputed_et)
-
-# Passing `mtry` as a function of the number of covariables
-
-# Do not impute Species. Note: Since this variable contains missings, it won't be used
-# for imputing other variables.
-head(irisImputed <- missRanger(irisWithNA, . - Species ~ ., pmm.k = 3, num.trees = 100))
-
-# Impute univariately only.
-head(irisImputed <- missRanger(irisWithNA, . ~ 1))
-
-# Use Species and Petal.Length to impute Species and Petal.Length.
-head(irisImputed <- missRanger(irisWithNA, Species + Petal.Length ~ Species + Petal.Length, 
-                               pmm.k = 3, num.trees = 100))
-                               
-# Multiple imputation: Fill data 20 times, run 20 analyses and pool their results.
-require(mice)
-filled <- replicate(20, missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 5), 
-                    simplify = FALSE)
-models <- lapply(filled, function(x) lm(Sepal.Length ~ ., x))
-summary(pooled_fit <- pool(models)) # Realistically inflated standard errors and p values
-
-# A data set with logicals, numerics, characters and factors.
-n <- 100
-X <- data.frame(x1 = seq_len(n), 
-                x2 = log(seq_len(n)), 
-                x3 = sample(LETTERS[1:3], n, replace = TRUE),
-                x4 = factor(sample(LETTERS[1:3], n, replace = TRUE)),
-                x5 = seq_len(n) > 50)
-head(X)
-X_NA <- generateNA(X, p = seq(0, 0.8, by = .2))
-head(X_NA)
-
-head(X_imp <- missRanger(X_NA))
-head(X_imp <- missRanger(X_NA, pmm = 3))
-head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 0))
-head(X_imp <- missRanger(X_NA, pmm = 3, verbose = 2, returnOOB = TRUE))
-attr(X_imp, "oob") # OOB prediction errors per column.
-
-# The formula interface
-head(X_imp <- missRanger(X_NA, x2 ~ x2 + x3, pmm = 3)) # Does not use x3 because of NAs
-head(X_imp <- missRanger(X_NA, x2 + x3 ~ x2 + x3, pmm = 3))
-head(X_imp <- missRanger(X_NA, x2 + x3 ~ 1, pmm = 3)) # Univariate imputation
-}
 }
 \references{
 \enumerate{

@@ -7,11 +7,16 @@
 pmm(xtrain, xtest, ytrain, k = 1L, seed = NULL)
 }
 \arguments{
-\item{xtrain}{Vector with predicted values in the training data. Can be of type logical, numeric, character, or factor.}
+\item{xtrain}{Vector with predicted values in the training data.
+Can be of type logical, numeric, character, or factor.}
 
-\item{xtest}{Vector as \code{xtrain} with predicted values in the test data. Missing values are not allowed.}
+\item{xtest}{Vector as \code{xtrain} with predicted values in the test data.
+Missing values are not allowed.}
 
-\item{ytrain}{Vector of the observed values in the training data. Must be of same length as \code{xtrain}. Missing values in either of \code{xtrain} or \code{ytrain} will be dropped in a pairwise manner.}
+\item{ytrain}{Vector of the observed values in the training data.
+Must be of same length as \code{xtrain}.
+Missing values in either of \code{xtrain} or \code{ytrain} will be dropped
+in a pairwise manner.}
 
 \item{k}{Number of nearest neighbours to sample from.}
 
@@ -21,7 +26,9 @@ pmm(xtrain, xtest, ytrain, k = 1L, seed = NULL)
 Vector of the same length as \code{xtest} with values from \code{xtrain}.
 }
 \description{
-For each value in the prediction vector \code{xtest}, one of the closest \code{k} values in the prediction vector \code{xtrain} is randomly chosen and its observed value in \code{ytrain} is returned.
+For each value in the prediction vector \code{xtest}, one of the closest \code{k}
+values in the prediction vector \code{xtrain} is randomly chosen and its observed
+value in \code{ytrain} is returned.
 }
 \examples{
 pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
