@@ -21,8 +21,8 @@ missRanger(
 
 \item{formula}{A two-sided formula specifying variables to be imputed
 (left hand side) and variables used to impute (right hand side).
-Defaults to \code{. ~ .}, i.e. use all variables to impute all variables.
-If e.g. all variables (with missings) should be imputed by all variables
+Defaults to \code{. ~ .}, i.e., use all variables to impute all variables.
+For instance, if all variables (with missings) should be imputed by all variables
 except variable "ID", use \code{. ~ . - ID}. Note that a "." is evaluated
 separately for each side of the formula. Further note that variables with missings
 must appear in the left hand side if they should be used on the right hand side.}
@@ -48,10 +48,10 @@ when the variables are imputed univariately.}
 
 \item{case.weights}{Vector with non-negative case weights.}
 
-\item{...}{Arguments passed to \code{ranger()}. If the data set is large,
+\item{...}{Arguments passed to \code{ranger::ranger()}. If the data set is large,
 better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
 \code{sample.fraction}.
-The following arguments are e.g. incompatible:
+The following arguments are incompatible, amongst others:
 \code{write.forest}, \code{probability}, \code{split.select.weights},
 \code{dependent.variable.name}, and \code{classification}.}
 }
@@ -59,7 +59,7 @@ The following arguments are e.g. incompatible:
 An imputed \code{data.frame}.
 }
 \description{
-Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by
+Uses the {ranger} package (Wright & Ziegler) to do fast missing value imputation by
 chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
 Between the iterative model fitting, it offers the option of predictive mean matching.
 This firstly avoids imputation with values not present in the original data

@@ -7,16 +7,14 @@
 revert(con, X = con$X)
 }
 \arguments{
-\item{con}{A list returned by \code{convert}.}
+\item{con}{A list returned by \code{convert()}.}
 
-\item{X}{A data frame with some columns to be converted back according to the information stored in \code{converted}.}
+\item{X}{A data frame with some columns to be converted back according to the
+information stored in \code{converted}.}
 }
 \value{
 A data frame.
 }
 \description{
-Reverts conversions done by \code{convert}.
-}
-\author{
-Michael Mayer
+Reverts conversions done by \code{convert()}.
 }

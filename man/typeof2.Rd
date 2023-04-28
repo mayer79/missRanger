@@ -2,7 +2,7 @@
 % Please edit documentation in R/missRanger.R
 \name{typeof2}
 \alias{typeof2}
-\title{A version of \code{typeof} internally used by \code{missRanger}.}
+\title{A version of \code{typeof()} internally used by \code{missRanger()}.}
 \usage{
 typeof2(object)
 }
@@ -13,9 +13,8 @@ typeof2(object)
 A string.
 }
 \description{
-Returns either "numeric" (double or integer), "factor", "character", "logical", "special" (mode numeric, but neither double nor integer) or "" (otherwise).
-\code{missRanger} requires this information to deal with response types not natively supported by \code{ranger}.
-}
-\author{
-Michael Mayer
+Returns either "numeric" (double or integer), "factor", "character", "logical",
+"special" (mode numeric, but neither double nor integer) or "" (otherwise).
+\code{missRanger} requires this information to deal with response types not natively
+supported by \code{ranger::ranger()}.
 }

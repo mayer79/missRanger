@@ -53,7 +53,7 @@ devtools::install_github("mayer79/missRanger")
 
 ## Usage
 
-We first generate a data set with about 20% missing values per column and fill them again by `missRanger`.
+We first generate a data set with about 20% missing values per column and fill them again by `missRanger()`.
 
 ``` {r}
 library(missRanger)
@@ -187,7 +187,7 @@ system.time(
 
 ## Trick: Use `case.weights` to weight down contribution of rows with many missings
 
-Using the `case.weights` argument, you can pass case weights to the imputation models. This might be e.g. useful to weight down the contribution of rows with many missings.
+Using the `case.weights` argument, you can pass case weights to the imputation models. This might be useful to weight down the contribution of rows with many missings.
 
 ### Example
 
