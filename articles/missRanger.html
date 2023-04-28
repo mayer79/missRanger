@@ -156,7 +156,7 @@ frame.</p></li>
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <p>We first generate a data set with about 20% missing values per column
-and fill them again by <code>missRanger</code>.</p>
+and fill them again by <code><a href="../reference/missRanger.html">missRanger()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mayer79/missRanger" class="external-link">missRanger</a></span><span class="op">)</span></span>
 <span></span>
@@ -372,8 +372,8 @@ e.g. <code>min.node.size = 10000</code>.</p></li>
 rows with many missings<a class="anchor" aria-label="anchor" href="#trick-use-case-weights-to-weight-down-contribution-of-rows-with-many-missings"></a>
 </h2>
 <p>Using the <code>case.weights</code> argument, you can pass case
-weights to the imputation models. This might be e.g. useful to weight
-down the contribution of rows with many missings.</p>
+weights to the imputation models. This might be useful to weight down
+the contribution of rows with many missings.</p>
 <div class="section level3">
 <h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h3>
