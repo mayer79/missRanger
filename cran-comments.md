@@ -18,5 +18,10 @@ Note: lastMiKTeXException
 ## Winbuilder
 
 Status: OK
+
+## REVDEP
+
+- OK: 7                                                                 
+- BROKEN: 0
   
 ## Reverse dependency check of 7 packages
