@@ -1,6 +1,6 @@
 Package: missRanger
 Title: Fast Imputation of Missing Values
-Version: 2.2.0
+Version: 2.2.1
 Authors@R: 
     person(given = "Michael",
            family = "Mayer",

@@ -1,3 +1,7 @@
+# missRanger 2.2.1
+
+- Maintenance: Remove "documentation" workflow
+
 # missRanger 2.2.0
 
 ## Less dependencies
