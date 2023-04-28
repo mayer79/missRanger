@@ -15,7 +15,7 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Version = "2.2.0",
+    Version = "2.2.1",
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
     Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
@@ -74,7 +74,6 @@ use_logo("logo.png")
 use_cran_comments()
 
 # Github actions
-use_github_action("document")
 use_github_action("check-standard")
 use_github_action("test-coverage")
 use_github_action("pkgdown")
