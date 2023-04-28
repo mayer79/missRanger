@@ -4,9 +4,6 @@
 #' values in the prediction vector \code{xtrain} is randomly chosen and its observed 
 #' value in \code{ytrain} is returned. 
 #' 
-#' @importFrom stats rmultinom
-#' @importFrom FNN knnx.index
-#' 
 #' @param xtrain Vector with predicted values in the training data. 
 #' Can be of type logical, numeric, character, or factor.
 #' @param xtest Vector as \code{xtrain} with predicted values in the test data. 
@@ -70,7 +67,7 @@ pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
   
   # STEP 2: PMM based on k-nearest neightbour.
   k <- min(k, length(xtrain))
-  nn <- knnx.index(xtrain, xtest, k)
-  take <- t(rmultinom(nt, 1L, rep(1L, k)))
+  nn <- FNN::knnx.index(xtrain, xtest, k)
+  take <- t(stats::rmultinom(nt, 1L, rep(1L, k)))
   ytrain[rowSums(nn * take)]
 }

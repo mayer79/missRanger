@@ -1,4 +1,4 @@
-# missRanger <a href='https://github.com/mayer79/missRanger'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# {missRanger} <a href='https://github.com/mayer79/missRanger'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 

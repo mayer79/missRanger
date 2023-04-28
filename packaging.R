@@ -101,8 +101,8 @@ if (FALSE) {
   check_win_devel()
   check_rhub()
   
-  # Takes long
-  revdepcheck::revdep_check(num_workers = 4)
+  # Takes long # devtools::install_github("r-lib/revdepcheck")
+  revdepcheck::revdep_check(num_workers = 4L)
 
   # Wait until above checks are passed without relevant notes/warnings
   # then submit to CRAN

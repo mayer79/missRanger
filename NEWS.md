@@ -1,6 +1,7 @@
 # missRanger 2.2.1
 
-- Maintenance: Remove "documentation" workflow
+- Switch from `importFrom` to `::` code style
+- Documentation improved
 
 # missRanger 2.2.0
 

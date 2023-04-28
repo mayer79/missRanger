@@ -9,14 +9,16 @@ convert(X, check = FALSE)
 \arguments{
 \item{X}{A data frame.}
 
-\item{check}{If \code{TRUE}, the function checks if the converted columns can be reverted without changes.}
+\item{check}{If \code{TRUE}, the function checks if the converted columns can be
+reverted without changes.}
 }
 \value{
-A list with the following elements: \code{X} is the converted data frame, \code{vars}, \code{types}, \code{classes} are the names, types and classes of the converted variables. Finally, \code{bad} names variables in \code{X} that should have been converted but could not.
+A list with the following elements: \code{X} is the converted data frame,
+\code{vars}, \code{types}, \code{classes} are the names, types and classes of the
+converted variables. Finally, \code{bad} names variables in \code{X} that should
+have been converted but could not.
 }
 \description{
-Converts non-factor/non-numeric variables in a data frame to factor/numeric. Stores information to revert back.
-}
-\author{
-Michael Mayer
+Converts non-factor/non-numeric variables in a data frame to factor/numeric.
+Stores information to revert back.
 }
