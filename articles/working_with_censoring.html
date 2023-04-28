@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Censored Variables</h1>
             
-            <h4 data-toc-skip class="date">2023-03-25</h4>
+            <h4 data-toc-skip class="date">2023-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/working_with_censoring.Rmd" class="external-link"><code>vignettes/working_with_censoring.Rmd</code></a></small>
       <div class="hidden name"><code>working_with_censoring.Rmd</code></div>
@@ -184,7 +184,7 @@ package {mice} <span class="citation">(<a href="#ref-buuren" role="doc-biblioref
 <span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">filled</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">surv</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 4. Pool the results by mice</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/pool.html" class="external-link">pool</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#                term     estimate   std.error  statistic        df      p.value</span></span>
 <span><span class="co"># 1               trt  0.238408881 0.213416156  1.1171079 108.30303 2.664203e-01</span></span>

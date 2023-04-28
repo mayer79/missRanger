@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Multiple Imputation</h1>
             
-            <h4 data-toc-skip class="date">2023-03-25</h4>
+            <h4 data-toc-skip class="date">2023-04-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/multiple_imputation.Rmd" class="external-link"><code>vignettes/multiple_imputation.Rmd</code></a></small>
       <div class="hidden name"><code>multiple_imputation.Rmd</code></div>
@@ -149,7 +149,7 @@ imputation.</p>
 <span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">filled</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pool the results by mice</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://amices.org/mice/reference/pool.html" class="external-link">pool</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#                term   estimate std.error  statistic       df      p.value</span></span>
 <span><span class="co"># 1       (Intercept)  2.5366092 0.3575478  7.0944612 74.48225 6.365362e-10</span></span>
