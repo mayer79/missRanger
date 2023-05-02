@@ -28,9 +28,6 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/convert.html</loc>
-  </url>
-  <url>
     <loc>/reference/generateNA.html</loc>
   </url>
   <url>
@@ -44,11 +41,5 @@
   </url>
   <url>
     <loc>/reference/pmm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/revert.html</loc>
-  </url>
-  <url>
-    <loc>/reference/typeof2.html</loc>
   </url>
 </urlset>

@@ -28,7 +28,7 @@ imputed data is returned."><meta property="og:image" content="/logo.png"><!-- ma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.2</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@ imputed data is returned.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
-<dd><p>A <code>data.frame</code> or <code>tibble</code> with missing values to impute.</p></dd>
+<dd><p>A <code>data.frame</code> with missing values to impute.</p></dd>
 
 
 <dt>formula</dt>
@@ -156,8 +156,7 @@ when the variables are imputed univariately.</p></dd>
 <dt>...</dt>
 <dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code>. If the data set is large,
 better use less trees (e.g. <code>num.trees = 20</code>) and/or a low value of
-<code>sample.fraction</code>.
-The following arguments are incompatible, amongst others:
+<code>sample.fraction</code>. The following arguments are incompatible, amongst others:
 <code>write.forest</code>, <code>probability</code>, <code>split.select.weights</code>,
 <code>dependent.variable.name</code>, and <code>classification</code>.</p></dd>
 
@@ -171,12 +170,12 @@ The following arguments are incompatible, amongst others:
     <div id="details">
     <h2>Details</h2>
     <p>A note on <code>mtry</code>: Be careful when passing a non-default <code>mtry</code> to
-<code>ranger()</code> because the number of available covariates might be growing during
+<code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code> because the number of available covariates might be growing during
 the first iteration, depending on the missing pattern.
 Values <code>NULL</code> (default) and 1 are safe choices.
-Additionally, recent versions of <code>ranger()</code> allow <code>mtry</code> to be a
+Additionally, recent versions of <code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code> allow <code>mtry</code> to be a
 single-argument function of the number of available covariables,
-e.g. <code>mtry = function(m) max(1, m %/% 3)</code>.</p>
+e.g., <code>mtry = function(m) max(1, m %/% 3)</code>.</p>
     </div>
     <div id="references">
     <h2>References</h2>
