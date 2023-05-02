@@ -1,23 +1,20 @@
 #' Predictive Mean Matching
 #'
-#' For each value in the prediction vector \code{xtest}, one of the closest \code{k} 
-#' values in the prediction vector \code{xtrain} is randomly chosen and its observed 
-#' value in \code{ytrain} is returned. 
+#' For each value in the prediction vector `xtest`, one of the closest `k` 
+#' values in the prediction vector `xtrain` is randomly chosen and its observed 
+#' value in `ytrain` is returned. 
 #' 
 #' @param xtrain Vector with predicted values in the training data. 
-#' Can be of type logical, numeric, character, or factor.
-#' @param xtest Vector as \code{xtrain} with predicted values in the test data. 
-#' Missing values are not allowed.
-#' @param ytrain Vector of the observed values in the training data. 
-#' Must be of same length as \code{xtrain}. 
-#' Missing values in either of \code{xtrain} or \code{ytrain} will be dropped 
-#' in a pairwise manner.
+#'   Can be of type logical, numeric, character, or factor.
+#' @param xtest Vector as `xtrain` with predicted values in the test data. 
+#'   Missing values are not allowed.
+#' @param ytrain Vector of the observed values in the training data. Must be of same 
+#'   length as `xtrain`. Missing values in either of `xtrain` or `ytrain` will 
+#'   be dropped in a pairwise manner.
 #' @param k Number of nearest neighbours to sample from.
 #' @param seed Integer random seed.
-#'
-#' @return Vector of the same length as \code{xtest} with values from \code{xtrain}.
+#' @returns Vector of the same length as `xtest` with values from `xtrain`.
 #' @export
-#'
 #' @examples 
 #' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
 #' pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0

@@ -1,17 +1,14 @@
-#' Adds Missing Values to a Vector, Matrix or Data Frame
+#' Adds Missing Values
 #'
-#' Takes a vector, matrix or \code{data.frame} and replaces some values by \code{NA}. 
+#' Takes a vector, matrix or `data.frame` and replaces some values by `NA`. 
 #' 
-#' @param x A vector, matrix or \code{data.frame}.
-#' @param p Proportion of missing values to add to \code{x}. 
-#' In case \code{x} is a \code{data.frame}, \code{p} can also be a vector of 
-#' probabilities per column or a named vector (see examples).
+#' @param x A vector, matrix or `data.frame`.
+#' @param p Proportion of missing values to add to `x`. In case `x` is a `data.frame`, 
+#'   `p` can also be a vector of probabilities per column or a named vector 
+#'   (see examples).
 #' @param seed An integer seed.
-#'
-#' @return \code{x} with missing values.
-#' 
+#' @returns `x` with missing values.
 #' @export
-#'
 #' @examples 
 #' generateNA(1:10, p = 0.5, seed = 3345)
 #' generateNA(rep(Sys.Date(), 10))
