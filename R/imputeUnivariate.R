@@ -1,16 +1,14 @@
 #' Univariate Imputation
 #'
 #' Fills missing values of a vector, matrix or data frame by sampling with replacement
-#'  from the non-missing values. For data frames, this sampling is done within column.
+#' from the non-missing values. For data frames, this sampling is done within column.
 #' 
 #' @param x A vector, matrix or data frame.
-#' @param v A character vector of column names to impute (only relevant if \code{x} 
-#' is a data frame). The default \code{NULL} imputes all columns.
+#' @param v A character vector of column names to impute (only relevant if `x` 
+#'   is a data frame). The default `NULL` imputes all columns.
 #' @param seed An integer seed.
-#'
-#' @return \code{x} with imputed values.
+#' @returns `x` with imputed values.
 #' @export
-#'
 #' @examples
 #' imputeUnivariate(c(NA, 0, 1, 0, 1))
 #' imputeUnivariate(c("A", "A", NA))

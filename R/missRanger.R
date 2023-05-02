@@ -7,60 +7,54 @@
 #' (like a value 0.3334 in a 0-1 coded variable). 
 #' Secondly, predictive mean matching tries to raise the variance in the resulting 
 #' conditional distributions to a realistic level. This allows to do multiple imputation 
-#' when repeating the call to \code{missRanger()}. 
-#' The iterative chaining stops as soon as \code{maxiter} is reached or if the average 
+#' when repeating the call to [missRanger()]. 
+#' The iterative chaining stops as soon as `maxiter` is reached or if the average 
 #' out-of-bag estimate of performance stops improving. 
 #' In the latter case, except for the first iteration, the second last (i.e. best) 
 #' imputed data is returned.
 #' 
-#' A note on \code{mtry}: Be careful when passing a non-default \code{mtry} to 
-#' \code{ranger()} because the number of available covariates might be growing during 
+#' A note on `mtry`: Be careful when passing a non-default `mtry` to 
+#' [ranger::ranger()] because the number of available covariates might be growing during 
 #' the first iteration, depending on the missing pattern. 
-#' Values \code{NULL} (default) and 1 are safe choices. 
-#' Additionally, recent versions of \code{ranger()} allow \code{mtry} to be a 
+#' Values `NULL` (default) and 1 are safe choices. 
+#' Additionally, recent versions of [ranger::ranger()] allow `mtry` to be a 
 #' single-argument function of the number of available covariables, 
-#' e.g. \code{mtry = function(m) max(1, m %/% 3)}.
+#' e.g., `mtry = function(m) max(1, m %/% 3)`.
 #' 
-#' @param data A \code{data.frame} or \code{tibble} with missing values to impute.
+#' @param data A `data.frame` with missing values to impute.
 #' @param formula A two-sided formula specifying variables to be imputed 
-#' (left hand side) and variables used to impute (right hand side). 
-#' Defaults to \code{. ~ .}, i.e., use all variables to impute all variables. 
-#' For instance, if all variables (with missings) should be imputed by all variables 
-#' except variable "ID", use \code{. ~ . - ID}. Note that a "." is evaluated 
-#' separately for each side of the formula. Further note that variables with missings 
-#' must appear in the left hand side if they should be used on the right hand side.
+#'   (left hand side) and variables used to impute (right hand side). 
+#'   Defaults to `. ~ .`, i.e., use all variables to impute all variables. 
+#'   For instance, if all variables (with missings) should be imputed by all variables 
+#'   except variable "ID", use `. ~ . - ID`. Note that a "." is evaluated 
+#'   separately for each side of the formula. Further note that variables with missings 
+#'   must appear in the left hand side if they should be used on the right hand side.
 #' @param pmm.k Number of candidate non-missing values to sample from in the 
-#' predictive mean matching steps. 0 to avoid this step.
+#'   predictive mean matching steps. 0 to avoid this step.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
 #' @param verbose Controls how much info is printed to screen. 
-#' 0 to print nothing. 1 (default) to print a progress bar per iteration, 
-#' 2 to print the OOB prediction error per iteration and variable 
-#' (1 minus R-squared for regression).
-#' Furthermore, if \code{verbose} is positive, the variables used for imputation are 
-#' listed as well as the variables to be imputed (in the imputation order). 
-#' This will be useful to detect if some variables are unexpectedly skipped.
+#'   0 to print nothing. 1 (default) to print a progress bar per iteration, 
+#'   2 to print the OOB prediction error per iteration and variable 
+#'   (1 minus R-squared for regression).
+#'   Furthermore, if `verbose` is positive, the variables used for imputation are 
+#'   listed as well as the variables to be imputed (in the imputation order). 
+#'   This will be useful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error
-#' is added to the output as attribute "oob". This does not work in the special case 
-#' when the variables are imputed univariately.
+#'   is added to the output as attribute "oob". This does not work in the special case 
+#'   when the variables are imputed univariately.
 #' @param case.weights Vector with non-negative case weights.
-#' @param ... Arguments passed to \code{ranger::ranger()}. If the data set is large, 
-#' better use less trees (e.g. \code{num.trees = 20}) and/or a low value of 
-#' \code{sample.fraction}. 
-#' The following arguments are incompatible, amongst others: 
-#' \code{write.forest}, \code{probability}, \code{split.select.weights}, 
-#' \code{dependent.variable.name}, and \code{classification}. 
-#'
-#' @return An imputed \code{data.frame}.
-#' 
+#' @param ... Arguments passed to [ranger::ranger()]. If the data set is large, 
+#'   better use less trees (e.g. `num.trees = 20`) and/or a low value of 
+#'   `sample.fraction`. The following arguments are incompatible, amongst others: 
+#'   `write.forest`, `probability`, `split.select.weights`, 
+#'   `dependent.variable.name`, and `classification`. 
+#' @returns An imputed `data.frame`.
 #' @references
-#' \enumerate{
-#'   \item Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. <arxiv.org/abs/1508.04409>.
-#'   \item Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
-#'   \item Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
-#' }
+#'   1. Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. <arxiv.org/abs/1508.04409>.
+#'   2. Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
+#'   3. Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
 #' @export
-#'
 #' @examples
 #' irisWithNA <- generateNA(iris, seed = 34)
 #' irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
@@ -243,15 +237,18 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   revert(converted, X = dataLast)
 }
 
-#' A version of \code{typeof()} internally used by \code{missRanger()}.
+# Helper functions
+
+#' A version of [typeof()] internally used by [missRanger()].
 #'
 #' Returns either "numeric" (double or integer), "factor", "character", "logical", 
 #' "special" (mode numeric, but neither double nor integer) or "" (otherwise).
-#' \code{missRanger} requires this information to deal with response types not natively 
-#' supported by \code{ranger::ranger()}.
+#' [missRanger()] requires this information to deal with response types not natively 
+#' supported by [ranger::ranger()].
 #' 
+#' @noRd
 #' @param object Any object.
-#' @return A string.
+#' @returns A string.
 typeof2 <- function(object) {
   if (is.numeric(object)) "numeric" else
     if (is.factor(object)) "factor" else
@@ -265,13 +262,15 @@ typeof2 <- function(object) {
 #' Converts non-factor/non-numeric variables in a data frame to factor/numeric. 
 #' Stores information to revert back.
 #' 
-#' @param X A data frame.
-#' @param check If \code{TRUE}, the function checks if the converted columns can be 
-#' reverted without changes.
-#' @return A list with the following elements: \code{X} is the converted data frame, 
-#' \code{vars}, \code{types}, \code{classes} are the names, types and classes of the 
-#' converted variables. Finally, \code{bad} names variables in \code{X} that should 
-#' have been converted but could not. 
+#' @noRd
+#' @param X A `data.frame`.
+#' @param check If `TRUE`, the function checks if the converted columns can be 
+#'   reverted without changes.
+#' @returns 
+#'   A list with the following elements: `X` is the converted data frame, 
+#'   `vars`, `types`, `classes` are the names, types and classes of the 
+#'   converted variables. Finally, `bad` names variables in `X` that should 
+#'   have been converted but could not. 
 convert <- function(X, check = FALSE) {
   stopifnot(is.data.frame(X))
   
@@ -295,11 +294,13 @@ convert <- function(X, check = FALSE) {
 
 #' Revert conversion.
 #' 
-#' Reverts conversions done by \code{convert()}.
-#' @param con A list returned by \code{convert()}.
+#' Reverts conversions done by [convert()].
+#' 
+#' @noRd
+#' @param con A list returned by [convert()].
 #' @param X A data frame with some columns to be converted back according to the 
-#' information stored in \code{converted}.
-#' @return A data frame.
+#'   information stored in \code{converted}.
+#' @returns A data frame.
 revert <- function(con, X = con$X) {
   stopifnot(c("vars", "types", "classes") %in% names(con), is.data.frame(X))
   
@@ -319,4 +320,3 @@ revert <- function(con, X = con$X) {
   X[, con$vars] <- Map(f, X[, con$vars, drop = FALSE], con$types, con$classes)
   X
 }
-

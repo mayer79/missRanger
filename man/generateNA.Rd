@@ -2,16 +2,16 @@
 % Please edit documentation in R/generateNA.R
 \name{generateNA}
 \alias{generateNA}
-\title{Adds Missing Values to a Vector, Matrix or Data Frame}
+\title{Adds Missing Values}
 \usage{
 generateNA(x, p = 0.1, seed = NULL)
 }
 \arguments{
 \item{x}{A vector, matrix or \code{data.frame}.}
 
-\item{p}{Proportion of missing values to add to \code{x}.
-In case \code{x} is a \code{data.frame}, \code{p} can also be a vector of
-probabilities per column or a named vector (see examples).}
+\item{p}{Proportion of missing values to add to \code{x}. In case \code{x} is a \code{data.frame},
+\code{p} can also be a vector of probabilities per column or a named vector
+(see examples).}
 
 \item{seed}{An integer seed.}
 }
