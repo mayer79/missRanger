@@ -88,8 +88,14 @@ head(irisWithNA)
 }
 \references{
 \enumerate{
-\item Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. Journal of Statistical Software, in press. <arxiv.org/abs/1508.04409>.
-\item Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118. https://doi.org/10.1093/bioinformatics/btr597.
-\item Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67. http://www.jstatsoft.org/v45/i03/
+\item Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of
+Random Forests for High Dimensional Data in C++ and R. Journal of Statistical
+Software, in press. <arxiv.org/abs/1508.04409>.
+\item Stekhoven, D.J. and Buehlmann, P. (2012). 'MissForest - nonparametric missing
+value imputation for mixed-type data', Bioinformatics, 28(1) 2012, 112-118.
+https://doi.org/10.1093/bioinformatics/btr597.
+\item Van Buuren, S., Groothuis-Oudshoorn, K. (2011). mice: Multivariate Imputation
+by Chained Equations in R. Journal of Statistical Software, 45(3), 1-67.
+http://www.jstatsoft.org/v45/i03/
 }
 }
