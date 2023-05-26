@@ -71,6 +71,8 @@ irisImputed <- missRanger(irisWithNA, num.trees = 100, verbose = 0)
 head(irisImputed)
 ```
 
+### Predictive mean matching
+
 It worked! Unfortunately, the new values look somewhat unnatural due to different rounding. If we would like to avoid this, we just set the `pmm.k` argument to a positive number. All imputations done during the process are then combined with a predictive mean matching (PMM) step, leading to more natural imputations and improved distributional properties of the resulting values:
 
 ``` {r}
@@ -78,7 +80,9 @@ irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
 head(irisImputed)
 ```
 
-Note that `missRanger()` offers a `...` argument to pass options to `ranger()`, e.g. `num.trees` or `min.node.size`. How would we use its "extremely randomized trees" variant with 50 trees?
+### Controlling the random forests
+
+`missRanger()` offers a `...` argument to pass options to `ranger()`, e.g. `num.trees` or `min.node.size`. How would we use its "extremely randomized trees" variant with 50 trees?
 
 ``` {r}
 irisImputed_et <- missRanger(
@@ -93,6 +97,8 @@ head(irisImputed_et)
 
 It is as simple!
 
+### Use in Pipe
+
 {missRanger} also plays well together with the pipe:
 
 ```r
@@ -101,6 +107,8 @@ iris |>
   missRanger(verbose = 0) |>
   head()
 ```
+
+### Formula interface
 
 By default `missRanger()` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
 
@@ -138,7 +146,7 @@ m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
 head(m)
 ```
 
-## Imputation takes too much time. What can I do?
+### Imputation takes too much time. What can I do?
 
 `missRanger()` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forest implementation `ranger()` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
 
@@ -156,7 +164,7 @@ Here are tweaks to make things faster:
 
 - Use a low `max.iter`, e.g. 1 or 2.
 
-### Examples evaluated on a normal laptop (not run here)
+Evaluated on a normal laptop:
 
 ```r
 library(ggplot2) # for diamonds data
@@ -185,11 +193,9 @@ system.time(
 )
 ```
 
-## Trick: Use `case.weights` to weight down contribution of rows with many missings
+### Trick: Use `case.weights` to weight down contribution of rows with many missings
 
 Using the `case.weights` argument, you can pass case weights to the imputation models. This might be useful to weight down the contribution of rows with many missings.
-
-### Example
 
 ``` {r}
 # Count the number of non-missing values per row
