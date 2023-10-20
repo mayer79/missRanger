@@ -74,6 +74,11 @@ test_that("non-syntactic column names work", {
   expect_equal(imp2, imp3)
   expect_equal(imp2, imp4)
   expect_equal(imp2, imp5)
+  
+  # https://github.com/mayer79/missRanger/issues/51
+  ir3 <- iris
+  colnames(ir3)[2L] <- "IGHV3-43D;IGHV3-9"
+  expect_no_error(missRanger(ir3, verbose = 0L))
 })
 
 test_that("pmm.k works regarding value range in double columns", {
@@ -197,6 +202,7 @@ test_that("Too few case.weights give an error", {
 })
 
 test_that("Extremely wide datasets are handled", {
+  # https://github.com/mayer79/missRanger/issues/50
   set.seed(1L)
   data <- matrix(rnorm(385 * 20000), nrow = 385L, ncol = 20000L)
   data[5L, 5L] <- NA
