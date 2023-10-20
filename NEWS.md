@@ -3,7 +3,7 @@
 ## Major improvements
 
 - `missRanger()` now works with syntactically wrong variable names like "1bad:variable". This solves an [old issue](https://github.com/mayer79/missRanger/issues/19), recently popping up in [this new issue](https://github.com/mayer79/missRanger/issues/51).
-- `missRanger()` now works with any number of features, as long as the formula is left at its default, i.e., `.~.`. This solves this [issue](https://github.com/mayer79/missRanger/issues/50).
+- `missRanger()` now works with any number of features, as long as the formula is left at its default, i.e., `. ~ .`. This solves this [issue](https://github.com/mayer79/missRanger/issues/50).
 
 ## Other changes
 
