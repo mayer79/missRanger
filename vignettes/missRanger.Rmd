@@ -182,7 +182,7 @@ system.time(
   m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50)
 )
 
-# Takes 7 seconds
+# Takes 6 seconds
 system.time(
   m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 1)
 )
