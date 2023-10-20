@@ -1,6 +1,14 @@
-# missRanger 2.2.2
+# missRanger 2.3.0
 
-- Documentation improvement
+## Major improvements
+
+- `missRanger()` now works with syntactically wrong variable names like "1bad:variable". This solves an [old issue](https://github.com/mayer79/missRanger/issues/19), recently popping up in [this new issue](https://github.com/mayer79/missRanger/issues/51).
+- `missRanger()` now works with any number of features, as long as the formula is left at its default, i.e., `.~.`. This solves this [issue](https://github.com/mayer79/missRanger/issues/50).
+
+## Other changes
+
+- Documentation improvement.
+- `ranger()` is now called via the x/y interface, not the formula interface anymore.
 
 # missRanger 2.2.1
 

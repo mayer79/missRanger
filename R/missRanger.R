@@ -1,6 +1,6 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
-#' Uses the {ranger} package (Wright & Ziegler) to do fast missing value imputation by 
+#' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by 
 #' chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
 #' Between the iterative model fitting, it offers the option of predictive mean matching. 
 #' This firstly avoids imputation with values not present in the original data 
@@ -108,8 +108,13 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
   
   # Extract lhs and rhs from formula
-  relevantVars <- lapply(formula[2:3], function(z) attr(stats::terms.formula(
-    stats::reformulate(z), data = data[1L, ]), "term.labels"))
+  parsef <- function(z) {
+    if (z == ".") {
+      return(colnames(data))
+    }
+    all.vars(stats::terms.formula(stats::reformulate(z), data = data[1L, ]))
+  }
+  relevantVars <- lapply(formula[2:3], parsef)
   
   # Pick variables from lhs with some but not all missings
   toImpute <- relevantVars[[1L]][vapply(data[, relevantVars[[1L]], drop = FALSE], 
@@ -189,9 +194,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         fit <- ranger::ranger(
-          formula = stats::reformulate(completed, response = v),
-          data = data[!v.na, union(v, completed), drop = FALSE],
-          case.weights = case.weights[!v.na], 
+          y = data[[v]][!v.na],
+          x = data[!v.na, completed, drop = FALSE],
+          case.weights = case.weights[!v.na],
           ...
         )
         pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
