@@ -31,12 +31,49 @@ X <- data.frame(
   x5 = seq_len(n) > n %/% 3
 )
 X_NA <- generateNA(X, p = seq(0.2, 0.8, length.out = ncol(X)), seed = 13L)
+imp <- missRanger(X_NA, maxiter = 3L, num.trees = 20L, verbose = 0L, seed = 1L)
 
 test_that("variable type is respected (integer might get double)", {
-  imp <- missRanger(X_NA, maxiter = 3L, num.trees = 20L, verbose = 0L)
   expect_true(!anyNA(imp))
   expect_equal(sapply(imp[-1L], class), sapply(X_NA[-1L], class))
   expect_true(class(imp[, 1L]) %in% c("integer", "numeric"))
+})
+
+test_that("non-syntactic column names work", {
+  X_NA2 <- X_NA
+  colnames(X_NA2) <- paste(1:5, colnames(X_NA))
+  imp2 <- missRanger(X_NA2, maxiter = 3L, num.trees = 20L, verbose = 0L, seed = 1L)
+  imp3 <- missRanger(
+    `1 x1` + `2 x2` + `3 x3` + `4 x4` + `5 x5` ~ `1 x1` + `2 x2` + `3 x3` + `4 x4` + `5 x5`,
+    data = X_NA2, 
+    maxiter = 3L, 
+    num.trees = 20L, 
+    verbose = 0L, 
+    seed = 1L
+  )
+  
+  imp4 <- missRanger(
+    . ~ `1 x1` + `2 x2` + `3 x3` + `4 x4` + `5 x5`,
+    data = X_NA2, 
+    maxiter = 3L, 
+    num.trees = 20L, 
+    verbose = 0L, 
+    seed = 1L
+  )
+  
+  imp5 <- missRanger(
+    `1 x1` + `2 x2` + `3 x3` + `4 x4` + `5 x5` ~ .,
+    data = X_NA2, 
+    maxiter = 3L, 
+    num.trees = 20L, 
+    verbose = 0L, 
+    seed = 1L
+  )
+  expect_equal(colnames(X_NA2), colnames(imp2))
+  expect_equal(imp, setNames(imp2, colnames(imp)))
+  expect_equal(imp2, imp3)
+  expect_equal(imp2, imp4)
+  expect_equal(imp2, imp5)
 })
 
 test_that("pmm.k works regarding value range in double columns", {
@@ -157,4 +194,11 @@ test_that("Too few case.weights give an error", {
       case.weights = 1:10
     )
   )
+})
+
+test_that("Extremely wide datasets are handled", {
+  set.seed(1L)
+  data <- matrix(rnorm(385 * 20000), nrow = 385L, ncol = 20000L)
+  data[5L, 5L] <- NA
+  expect_no_error(missRanger(as.data.frame(data), num.trees = 3L, verbose = 0L))
 })
