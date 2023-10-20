@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
       </span>
     </div>
 
@@ -64,9 +64,21 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.2.2" id="missranger-222">missRanger 2.2.2<a class="anchor" aria-label="anchor" href="#missranger-222"></a></h2>
-<ul><li>Documentation improvement</li>
+<h2 class="page-header" data-toc-text="2.3.0" id="missranger-230">missRanger 2.3.0<a class="anchor" aria-label="anchor" href="#missranger-230"></a></h2>
+<div class="section level3">
+<h3 id="major-improvements-2-3-0">Major improvements<a class="anchor" aria-label="anchor" href="#major-improvements-2-3-0"></a></h3>
+<ul><li>
+<code><a href="../reference/missRanger.html">missRanger()</a></code> now works with syntactically wrong variable names like “1bad:variable”. This solves an <a href="https://github.com/mayer79/missRanger/issues/19" class="external-link">old issue</a>, recently popping up in <a href="https://github.com/mayer79/missRanger/issues/51" class="external-link">this new issue</a>.</li>
+<li>
+<code><a href="../reference/missRanger.html">missRanger()</a></code> now works with any number of features, as long as the formula is left at its default, i.e., <code>.~.</code>. This solves this <a href="https://github.com/mayer79/missRanger/issues/50" class="external-link">issue</a>.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="other-changes-2-3-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-2-3-0"></a></h3>
+<ul><li>Documentation improvement.</li>
+<li>
+<code>ranger()</code> is now called via the x/y interface, not the formula interface anymore.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.1" id="missranger-221">missRanger 2.2.1<small>2023-04-28</small><a class="anchor" aria-label="anchor" href="#missranger-221"></a></h2>
 <ul><li>Switch from <code>importFrom</code> to <code>::</code> code style</li>

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">missRanger</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
       </span>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Censored Variables</h1>
             
-            <h4 data-toc-skip class="date">2023-05-26</h4>
+            <h4 data-toc-skip class="date">2023-10-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/HEAD/vignettes/working_with_censoring.Rmd" class="external-link"><code>vignettes/working_with_censoring.Rmd</code></a></small>
       <div class="hidden name"><code>working_with_censoring.Rmd</code></div>
@@ -187,14 +187,14 @@ package {mice} <span class="citation">(<a href="#ref-buuren" role="doc-biblioref
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#                term     estimate   std.error  statistic        df      p.value</span></span>
-<span><span class="co"># 1               trt  0.238408881 0.213416156  1.1171079 108.30303 2.664203e-01</span></span>
-<span><span class="co"># 2 celltypesmallcell  0.801088770 0.286383107  2.7972626 112.17712 6.066665e-03</span></span>
-<span><span class="co"># 3     celltypeadeno  1.134351839 0.308977998  3.6713030 110.65791 3.731780e-04</span></span>
-<span><span class="co"># 4     celltypelarge  0.327092592 0.291069423  1.1237614 109.29555 2.635765e-01</span></span>
-<span><span class="co"># 5             karno -0.031250557 0.005786704 -5.4004073  99.60711 4.529695e-07</span></span>
-<span><span class="co"># 6          diagtime  0.002889092 0.009020319  0.3202872 106.17585 7.493801e-01</span></span>
-<span><span class="co"># 7               age -0.007620985 0.009632902 -0.7911411  97.27459 4.307864e-01</span></span>
-<span><span class="co"># 8             prior  0.003954604 0.023537476  0.1680131 111.98360 8.668760e-01</span></span>
+<span><span class="co"># 1               trt  0.245855250 0.212810467  1.1552780 108.72929 2.505091e-01</span></span>
+<span><span class="co"># 2 celltypesmallcell  0.805233656 0.284424937  2.8310937 114.17088 5.483657e-03</span></span>
+<span><span class="co"># 3     celltypeadeno  1.110172771 0.307570269  3.6094931 111.91588 4.603422e-04</span></span>
+<span><span class="co"># 4     celltypelarge  0.328227283 0.291163500  1.1272954 109.30510 2.620862e-01</span></span>
+<span><span class="co"># 5             karno -0.031838682 0.005663349 -5.6218824 112.60325 1.390333e-07</span></span>
+<span><span class="co"># 6          diagtime  0.002775351 0.009382270  0.2958081  86.61582 7.680847e-01</span></span>
+<span><span class="co"># 7               age -0.007843577 0.009293988 -0.8439410 107.86917 4.005701e-01</span></span>
+<span><span class="co"># 8             prior  0.003165245 0.023501821  0.1346809 111.84783 8.931063e-01</span></span>
 <span></span>
 <span><span class="co"># Compare with the results on the original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">veteran</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></span>
