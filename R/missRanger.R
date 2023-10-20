@@ -1,6 +1,6 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
-#' Uses the {ranger} package (Wright & Ziegler) to do fast missing value imputation by 
+#' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by 
 #' chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
 #' Between the iterative model fitting, it offers the option of predictive mean matching. 
 #' This firstly avoids imputation with values not present in the original data 
