@@ -42,4 +42,10 @@
   <url>
     <loc>/reference/pmm.html</loc>
   </url>
+  <url>
+    <loc>/reference/print.missRanger.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summary.missRanger.html</loc>
+  </url>
 </urlset>
