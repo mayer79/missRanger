@@ -13,6 +13,8 @@ missRanger(
   verbose = 1,
   returnOOB = FALSE,
   case.weights = NULL,
+  data_only = TRUE,
+  attach_forests = FALSE,
   ...
 )
 }
@@ -43,10 +45,17 @@ listed as well as the variables to be imputed (in the imputation order).
 This will be useful to detect if some variables are unexpectedly skipped.}
 
 \item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error
-is added to the output as attribute "oob". This does not work in the special case
-when the variables are imputed univariately.}
+is added to the resulting data as attribute "oob".
+Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
 \item{case.weights}{Vector with non-negative case weights.}
+
+\item{data_only}{If \code{TRUE} (default), only the imputed data is returned.
+Otherwise, a "missRanger" object with additional information is returned.}
+
+\item{attach_forests}{Should the random forests of the final imputations
+be returned? The default is \code{FALSE}. Setting this option will use a lot of memory.
+Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
 \item{...}{Arguments passed to \code{\link[ranger:ranger]{ranger::ranger()}}. If the data set is large,
 better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
@@ -55,7 +64,16 @@ better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
 \code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
-An imputed \code{data.frame}.
+If \code{data_only} an imputed \code{data.frame}. Otherwise, a "missRanger" object with
+the following elements that can be extracted via \code{$}:
+\itemize{
+\item \code{data}: The imputed data.
+\item \code{visit_seq}: Variables to be imputed (in this order).
+\item \code{impute_by}: Variables used for imputation.
+\item \code{best_iter}: Best iteration.
+\item \code{pred_errors}: Per iteration OOB prediction errors.
+\item \code{mean_pred_errors}: Averages of OOB prediction errors.
+}
 }
 \description{
 Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by
@@ -85,6 +103,11 @@ irisWithNA <- generateNA(iris, seed = 34)
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
+
+# Extended output
+imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
+head(imp$data)
+imp$pred_errors
 }
 \references{
 \enumerate{

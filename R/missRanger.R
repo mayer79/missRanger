@@ -41,15 +41,29 @@
 #'   listed as well as the variables to be imputed (in the imputation order). 
 #'   This will be useful to detect if some variables are unexpectedly skipped.
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error
-#'   is added to the output as attribute "oob". This does not work in the special case 
-#'   when the variables are imputed univariately.
+#'   is added to the resulting data as attribute "oob". 
+#'   Only relevant when `data_only = TRUE` (and when forests are grown).
 #' @param case.weights Vector with non-negative case weights.
+#' @param data_only If `TRUE` (default), only the imputed data is returned.
+#'   Otherwise, a "missRanger" object with additional information is returned.
+#' @param attach_forests Should the random forests of the final imputations
+#'   be returned? The default is `FALSE`. Setting this option will use a lot of memory.
+#'   Only relevant when `data_only = TRUE` (and when forests are grown).
 #' @param ... Arguments passed to [ranger::ranger()]. If the data set is large, 
 #'   better use less trees (e.g. `num.trees = 20`) and/or a low value of 
 #'   `sample.fraction`. The following arguments are incompatible, amongst others: 
 #'   `write.forest`, `probability`, `split.select.weights`, 
 #'   `dependent.variable.name`, and `classification`. 
-#' @returns An imputed `data.frame`.
+#' @returns 
+#'   If `data_only` an imputed `data.frame`. Otherwise, a "missRanger" object with
+#'   the following elements that can be extracted via `$`:
+#'   - `data`: The imputed data.
+#'   - `visit_seq`: Variables to be imputed (in this order).
+#'   - `impute_by`: Variables used for imputation.
+#'   - `best_iter`: Best iteration.
+#'   - `pred_errors`: Per iteration OOB prediction errors.
+#'   - `mean_pred_errors`: Averages of OOB prediction errors.
+#'   
 #' @references
 #'   1. Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of 
 #'     Random Forests for High Dimensional Data in C++ and R. Journal of Statistical 
@@ -66,32 +80,31 @@
 #' irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 #' head(irisImputed)
 #' head(irisWithNA)
+#' 
+#' # Extended output
+#' imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
+#' head(imp$data)
+#' imp$pred_errors
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
-                       seed = NULL, verbose = 1, returnOOB = FALSE, 
-                       case.weights = NULL, ...) {
+                       seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL, 
+                       data_only = TRUE, attach_forests = FALSE, ...) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
   
   # 1) INITIAL CHECKS
   bad_args <- c(
-    "write.forest", 
-    "probability", 
-    "split.select.weights",  
-    "dependent.variable.name", 
-    "classification"
+    "write.forest", "probability", "split.select.weights",  
+    "dependent.variable.name", "classification"
   )
   stopifnot(
     "'data' should be a data.frame!" = is.data.frame(data), 
     "'data' should have at least one row and column!" = dim(data) >= 1L, 
     "'formula' should be a formula!" = inherits(formula, "formula"), 
-    length(formula <- as.character(formula)) == 3L,
-    "'pmm.k' must be numeric!" = is.numeric(pmm.k), 
-    "'pmm.k' must be a single number!" = length(pmm.k) == 1L, 
+    "Don't load {formula.tools}. It breaks base R's as.character()" = 
+      length(formula <- as.character(formula)) == 3L,
     "'pmm.k' should not be negative!" = pmm.k >= 0L,
-    "'maxiter' must be numeric!" = is.numeric(maxiter), 
-    "'maxiter' must be a single number!" = length(maxiter) == 1L, 
-    "'maxiter' should not be negative!" = maxiter >= 1L,
+    "'maxiter' should be a positiv number!" = maxiter >= 1L,
     "incompatible ranger arguments" = !(bad_args  %in% names(list(...)))
   )
   if (!is.null(case.weights)) {
@@ -103,8 +116,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   
   if (!is.null(seed)) {
     set.seed(seed)
-  }  
-  
+  }
+
   # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
   
   # Extract lhs and rhs from formula
@@ -114,47 +127,66 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     }
     all.vars(stats::terms.formula(stats::reformulate(z), data = data[1L, ]))
   }
-  relevantVars <- lapply(formula[2:3], parsef)
+  relevant_vars <- lapply(formula[2:3], parsef)
   
   # Pick variables from lhs with some but not all missings
-  toImpute <- relevantVars[[1L]][vapply(data[, relevantVars[[1L]], drop = FALSE], 
-                FUN.VALUE = TRUE, function(z) anyNA(z) && !all(is.na(z)))]
+  pick <- vapply(
+    data[, relevant_vars[[1L]], drop = FALSE], 
+    FUN = function(z) anyNA(z) && !all(is.na(z)),
+    FUN.VALUE = TRUE
+  )
+  to_impute <- relevant_vars[[1L]][pick]
   
   # Try to convert special variables to numeric/factor
   # in order to be safely predicted by ranger
-  converted <- convert(data[, toImpute, drop = FALSE], check = TRUE)
-  data[, toImpute] <- converted$X
+  converted <- convert(data[, to_impute, drop = FALSE], check = TRUE)
+  data[, to_impute] <- converted$X
   
   # Remove variables that cannot be safely converted
-  visitSeq <- setdiff(toImpute, converted$bad)
+  visit_seq <- setdiff(to_impute, converted$bad)
   
   if (verbose) {
     cat("\n  Variables to impute:\t\t")
-    cat(visitSeq, sep = ", ")
+    cat(visit_seq, sep = ", ")
   }
   
-  if (!length(visitSeq)) {
+  if (!length(visit_seq)) {
     if (verbose) {
       cat("\n")
     }
-    return(data)
+    if (data_only) {
+      return(data) 
+    } else {
+      out <- structure(
+        list(
+          data = data,
+          visit_seq = c(),
+          impute_by = c(),
+          best_iter = 0L,
+          pred_errors = NULL,
+          mean_pred_errors = NULL
+        ), 
+        class = "missRanger"
+      )  
+      return(out)
+    }
   }
   
   # Get missing indicators and order variables by number of missings
-  dataNA <- is.na(data[, visitSeq, drop = FALSE])
-  visitSeq <- names(sort(colSums(dataNA)))
+  data_NA <- is.na(data[, visit_seq, drop = FALSE])
+  visit_seq <- names(sort(colSums(data_NA)))
   
   # 3) SELECT VARIABLES USED TO IMPUTE
   
-  # Variables on the rhs should either appear in "visitSeq" 
+  # Variables on the rhs should either appear in "visit_seq" 
   # or do not contain any missings
-  imputeBy <- relevantVars[[2L]][relevantVars[[2L]] %in% visitSeq | 
-     !vapply(data[, relevantVars[[2L]], drop = FALSE], anyNA, TRUE)]
-  completed <- setdiff(imputeBy, visitSeq)
+  impute_by <- relevant_vars[[2L]][relevant_vars[[2L]] %in% visit_seq | 
+     !vapply(data[, relevant_vars[[2L]], drop = FALSE], anyNA, TRUE)]
+  completed <- setdiff(impute_by, visit_seq)
   
   if (verbose) {
     cat("\n  Variables used to impute:\t")
-    cat(imputeBy, sep = ", ")
+    cat(impute_by, sep = ", ")
     cat("\n")
   }
 
@@ -163,11 +195,12 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   # Initialization  
   j <- 1L
   crit <- TRUE
-  verboseDigits <- 4L
-  predError <- stats::setNames(rep(1, length(visitSeq)), visitSeq)
+  dig <- 4L
+  pred_error <- stats::setNames(rep(1, length(visit_seq)), visit_seq)
+  pred_errors <- list()
   
   if (verbose >= 2) {
-    cat("\n", abbreviate(visitSeq, minlength = verboseDigits + 2L), sep = "\t")
+    cat("\n", abbreviate(visit_seq, minlength = dig + 2L), sep = "\t")
   }
   
   # Looping over iterations and variables to impute
@@ -178,17 +211,17 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
         cat("\n")
         cat(paste("iter", j))
         cat("\n")
-        pb <- utils::txtProgressBar(0, length(visitSeq), style = 3)
+        pb <- utils::txtProgressBar(0, length(visit_seq), style = 3)
       } else if (verbose >= 2) {
         cat("\niter ", j, ":\t", sep = "")
       }
     }
     
-    dataLast <- data
-    predErrorLast <- predError
-    
-    for (v in visitSeq) {
-      v.na <- dataNA[, v]
+    data_last <- data
+    pred_error_last <- pred_error
+
+    for (v in visit_seq) {
+      v.na <- data_NA[, v]
       
       if (length(completed) == 0L) {
         data[[v]] <- imputeUnivariate(data[[v]])
@@ -203,16 +236,21 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
         data[v.na, v] <- if (pmm.k) pmm(
           xtrain = fit$predictions, xtest = pred, ytrain = data[[v]][!v.na], k = pmm.k
         ) else pred
-        predError[[v]] <- fit$prediction.error / (
+        pred_error[[v]] <- fit$prediction.error / (
           if (fit$treetype == "Regression") stats::var(data[[v]][!v.na]) else 1
         )
         
-        if (is.nan(predError[[v]])) {
-          predError[[v]] <- 0
+        if (is.nan(pred_error[[v]])) {
+          pred_error[[v]] <- 0
         }
+        # 
+        # if (attach_forests) {
+        #   out$forests[[v]] <- fit
+        # }
+
       }
       
-      if (j == 1L && (v %in% imputeBy)) {
+      if (j == 1L && (v %in% impute_by)) {
         completed <- union(completed, v)
       }
       
@@ -221,31 +259,50 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
           utils::setTxtProgressBar(pb, i)
           i <- i + 1L
         } else if (verbose >= 2) {
-          cat(format(round(predError[[v]], verboseDigits), 
-                     nsmall = verboseDigits), "\t")  
+          cat(format(round(pred_error[[v]], dig), nsmall = dig), "\t")  
         }
       }
     }
-
+    
+    pred_errors[[j]] <- pred_error
+    crit <- mean(pred_error) < mean(pred_error_last)
     j <- j + 1L
-    crit <- mean(predError) < mean(predErrorLast)
   }
   
   if (verbose) {
     cat("\n")
   }
   
-  if (j == 2L || (j == maxiter && crit)) {
-    dataLast <- data
-    predErrorLast <- predError
-  }
-  
-  if (returnOOB) {
-    attr(dataLast, "oob") <- predErrorLast 
+  # We take the current iteration if (a) the iteration before did not impute yet
+  # or (b) we had to stop before performance worsened
+  if (j == 2L || (j > maxiter && crit)) {
+    data_last <- data
+    pred_error_last <- pred_error
+    best_iter <- j - 1L
+  } else {
+    best_iter <- j - 2L
   }
   
   # Revert the conversions
-  revert(converted, X = dataLast)
+  data_last <- revert(converted, X = data_last)
+  
+  if (data_only) {
+    if (returnOOB) {
+      attr(data_last, "oob") <- pred_error_last 
+    }
+    return(data_last)
+  }
+  
+  out <- list(
+    data = data_last,
+    visit_seq = visit_seq,
+    impute_by = impute_by,
+    best_iter = best_iter,
+    pred_errors = do.call(rbind, pred_errors),
+    mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1))
+  )
+  class(out) <- "missRanger"
+  return(out)
 }
 
 # Helper functions
