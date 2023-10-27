@@ -108,6 +108,17 @@ iris |>
   head()
 ```
 
+### Two output options
+
+Since {missRanger} 2.4.0, setting `data_only = FALSE` allows to not just return the imputed data, but rather a "missRanger" object containing more information.
+
+```{r}
+(imp <- missRanger(irisWithNA, data_only = FALSE, verbose = 0))
+
+# Summary
+summary(imp)
+```
+
 ### Formula interface
 
 By default `missRanger()` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
