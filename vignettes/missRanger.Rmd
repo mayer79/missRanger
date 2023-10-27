@@ -110,15 +110,12 @@ iris |>
 
 ### Two output options
 
-Since {missRanger} 2.4.0, setting `data_only = FALSE` returns not just the imputed data, but rather a "missRanger" object containing more information.
+Since {missRanger} 2.4.0, setting `data_only = FALSE` allows to not just return the imputed data, but rather a "missRanger" object containing more information.
 
 ```r
-imp <- missRanger(irisWithNA, data_only = FALSE)
+(imp <- missRanger(irisWithNA, data_only = FALSE))
 
-# Print method
-imp
-
-# Summary method
+# Summary
 summary(imp)
 ```
 

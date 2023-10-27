@@ -19,6 +19,6 @@ Summary method for an object of class "missRanger".
 }
 \examples{
 CO2_ <- generateNA(CO2, seed = 1)
-imp <- missRanger(CO2_, data_only = FALSE)
+imp <- missRanger(CO2_, pmm.k = 5, data_only = FALSE)
 summary(imp)
 }

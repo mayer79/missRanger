@@ -14,7 +14,7 @@ missRanger(
   returnOOB = FALSE,
   case.weights = NULL,
   data_only = TRUE,
-  attach_forests = FALSE,
+  keep_forests = FALSE,
   ...
 )
 }
@@ -44,8 +44,8 @@ Furthermore, if \code{verbose} is positive, the variables used for imputation ar
 listed as well as the variables to be imputed (in the imputation order).
 This will be useful to detect if some variables are unexpectedly skipped.}
 
-\item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction error
-is added to the resulting data as attribute "oob".
+\item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction
+errors per variable is added to the resulting data as attribute "oob".
 Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
 \item{case.weights}{Vector with non-negative case weights.}
@@ -53,7 +53,7 @@ Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 \item{data_only}{If \code{TRUE} (default), only the imputed data is returned.
 Otherwise, a "missRanger" object with additional information is returned.}
 
-\item{attach_forests}{Should the random forests of the final imputations
+\item{keep_forests}{Should the random forests of the final imputations
 be returned? The default is \code{FALSE}. Setting this option will use a lot of memory.
 Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
@@ -68,11 +68,14 @@ If \code{data_only} an imputed \code{data.frame}. Otherwise, a "missRanger" obje
 the following elements that can be extracted via \code{$}:
 \itemize{
 \item \code{data}: The imputed data.
+\item \code{forests}: When \code{keep_forests = TRUE}, a list of "ranger" models used to
+generate the imputed data. \code{NULL} otherwise.
 \item \code{visit_seq}: Variables to be imputed (in this order).
 \item \code{impute_by}: Variables used for imputation.
 \item \code{best_iter}: Best iteration.
-\item \code{pred_errors}: Per iteration OOB prediction errors.
-\item \code{mean_pred_errors}: Averages of OOB prediction errors.
+\item \code{pred_errors}: Per-iteration OOB prediction errors (1 - R^2 for regression,
+classification error otherwise).
+\item \code{mean_pred_errors}: Per-iteration averages of OOB prediction errors.
 }
 }
 \description{
@@ -84,12 +87,17 @@ This firstly avoids imputation with values not present in the original data
 Secondly, predictive mean matching tries to raise the variance in the resulting
 conditional distributions to a realistic level. This allows to do multiple imputation
 when repeating the call to \code{\link[=missRanger]{missRanger()}}.
-The iterative chaining stops as soon as \code{maxiter} is reached or if the average
-out-of-bag estimate of performance stops improving.
-In the latter case, except for the first iteration, the second last (i.e. best)
-imputed data is returned.
 }
 \details{
+The iterative chaining stops as soon as \code{maxiter} is reached or if the average
+out-of-bag (OOB) prediction errors stop reducing.
+In the latter case, except for the first iteration, the second last (= best)
+imputed data is returned.
+
+OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as
+classification error otherwise. If a variable has been imputed only univariately,
+the value is 1.
+
 A note on \code{mtry}: Be careful when passing a non-default \code{mtry} to
 \code{\link[ranger:ranger]{ranger::ranger()}} because the number of available covariates might be growing during
 the first iteration, depending on the missing pattern.
@@ -108,6 +116,14 @@ head(irisWithNA)
 imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
 head(imp$data)
 imp$pred_errors
+
+# If you even want to keep the random forests of the best iteration
+imp <- missRanger(
+  irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
+)
+imp$forests$Species
+imp$forests$Sepal.Width
+imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
 }
 \references{
 \enumerate{

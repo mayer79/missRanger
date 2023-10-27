@@ -1,5 +1,6 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
+#' @description
 #' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by 
 #' chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
 #' Between the iterative model fitting, it offers the option of predictive mean matching. 
@@ -8,10 +9,16 @@
 #' Secondly, predictive mean matching tries to raise the variance in the resulting 
 #' conditional distributions to a realistic level. This allows to do multiple imputation 
 #' when repeating the call to [missRanger()]. 
+#' 
+#' @details
 #' The iterative chaining stops as soon as `maxiter` is reached or if the average 
-#' out-of-bag estimate of performance stops improving. 
-#' In the latter case, except for the first iteration, the second last (i.e. best) 
+#' out-of-bag (OOB) prediction errors stop reducing. 
+#' In the latter case, except for the first iteration, the second last (= best) 
 #' imputed data is returned.
+#' 
+#' OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as 
+#' classification error otherwise. If a variable has been imputed only univariately,
+#' the value is 1.
 #' 
 #' A note on `mtry`: Be careful when passing a non-default `mtry` to 
 #' [ranger::ranger()] because the number of available covariates might be growing during 
@@ -40,13 +47,13 @@
 #'   Furthermore, if `verbose` is positive, the variables used for imputation are 
 #'   listed as well as the variables to be imputed (in the imputation order). 
 #'   This will be useful to detect if some variables are unexpectedly skipped.
-#' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction error
-#'   is added to the resulting data as attribute "oob". 
+#' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction 
+#'   errors per variable is added to the resulting data as attribute "oob". 
 #'   Only relevant when `data_only = TRUE` (and when forests are grown).
 #' @param case.weights Vector with non-negative case weights.
 #' @param data_only If `TRUE` (default), only the imputed data is returned.
 #'   Otherwise, a "missRanger" object with additional information is returned.
-#' @param attach_forests Should the random forests of the final imputations
+#' @param keep_forests Should the random forests of the final imputations
 #'   be returned? The default is `FALSE`. Setting this option will use a lot of memory.
 #'   Only relevant when `data_only = TRUE` (and when forests are grown).
 #' @param ... Arguments passed to [ranger::ranger()]. If the data set is large, 
@@ -58,11 +65,14 @@
 #'   If `data_only` an imputed `data.frame`. Otherwise, a "missRanger" object with
 #'   the following elements that can be extracted via `$`:
 #'   - `data`: The imputed data.
+#'   - `forests`: When `keep_forests = TRUE`, a list of "ranger" models used to 
+#'     generate the imputed data. `NULL` otherwise.
 #'   - `visit_seq`: Variables to be imputed (in this order).
 #'   - `impute_by`: Variables used for imputation.
 #'   - `best_iter`: Best iteration.
-#'   - `pred_errors`: Per iteration OOB prediction errors.
-#'   - `mean_pred_errors`: Averages of OOB prediction errors.
+#'   - `pred_errors`: Per-iteration OOB prediction errors (1 - R^2 for regression,
+#'     classification error otherwise).
+#'   - `mean_pred_errors`: Per-iteration averages of OOB prediction errors.
 #'   
 #' @references
 #'   1. Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of 
@@ -85,9 +95,17 @@
 #' imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
 #' head(imp$data)
 #' imp$pred_errors
+#' 
+#' # If you even want to keep the random forests of the best iteration
+#' imp <- missRanger(
+#'   irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
+#' )
+#' imp$forests$Species
+#' imp$forests$Sepal.Width
+#' imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
                        seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL, 
-                       data_only = TRUE, attach_forests = FALSE, ...) {
+                       data_only = TRUE, keep_forests = FALSE, ...) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
@@ -160,6 +178,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
       out <- structure(
         list(
           data = data,
+          forests = NULL,
           visit_seq = c(),
           impute_by = c(),
           best_iter = 0L,
@@ -198,6 +217,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   dig <- 4L
   pred_error <- stats::setNames(rep(1, length(visit_seq)), visit_seq)
   pred_errors <- list()
+  if (keep_forests) {
+    forests <- list()
+  }
   
   if (verbose >= 2) {
     cat("\n", abbreviate(visit_seq, minlength = dig + 2L), sep = "\t")
@@ -219,6 +241,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     
     data_last <- data
     pred_error_last <- pred_error
+    if (keep_forests) {
+      forests_last <- forests
+    }
 
     for (v in visit_seq) {
       v.na <- data_NA[, v]
@@ -233,21 +258,24 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
           ...
         )
         pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
+        
         data[v.na, v] <- if (pmm.k) pmm(
           xtrain = fit$predictions, xtest = pred, ytrain = data[[v]][!v.na], k = pmm.k
         ) else pred
-        pred_error[[v]] <- fit$prediction.error / (
-          if (fit$treetype == "Regression") stats::var(data[[v]][!v.na]) else 1
-        )
+        
+        if (fit$treetype == "Regression") {
+          pred_error[[v]] <- 1 - fit$r.squared
+        } else {  # Classification error
+          pred_error[[v]] <- fit$prediction.error
+        }
         
         if (is.nan(pred_error[[v]])) {
           pred_error[[v]] <- 0
         }
-        # 
-        # if (attach_forests) {
-        #   out$forests[[v]] <- fit
-        # }
 
+        if (keep_forests) {
+          forests[[v]] <- fit
+        }
       }
       
       if (j == 1L && (v %in% impute_by)) {
@@ -279,6 +307,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     data_last <- data
     pred_error_last <- pred_error
     best_iter <- j - 1L
+    if (keep_forests) {
+      forests_last <- forests
+    }
   } else {
     best_iter <- j - 2L
   }
@@ -295,6 +326,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   
   out <- list(
     data = data_last,
+    forests = if (keep_forests) forests_last,
     visit_seq = visit_seq,
     impute_by = impute_by,
     best_iter = best_iter,
