@@ -22,12 +22,14 @@
 #' pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
 #' pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
 pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
-  stopifnot(length(xtrain) == length(ytrain), 
-            sum(ok <- !is.na(xtrain) & !is.na(ytrain)) >= 1L,
-            (nt <- length(xtest)) >= 1L, !anyNA(xtest),
-            mode(xtrain) %in% c("logical", "numeric", "character"),
-            mode(xtrain) == mode(xtest),
-            k >= 1L)
+  stopifnot(
+    length(xtrain) == length(ytrain), 
+    sum(ok <- !is.na(xtrain) & !is.na(ytrain)) >= 1L,
+    (nt <- length(xtest)) >= 1L, !anyNA(xtest),
+    mode(xtrain) %in% c("logical", "numeric", "character"),
+    mode(xtrain) == mode(xtest),
+    k >= 1L
+  )
   
   xtrain <- xtrain[ok]
   ytrain <- ytrain[ok]
