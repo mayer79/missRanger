@@ -208,3 +208,26 @@ test_that("Extremely wide datasets are handled", {
   data[5L, 5L] <- NA
   expect_no_error(missRanger(as.data.frame(data), num.trees = 3L, verbose = 0L))
 })
+
+test_that("Convert and revert do what they should", {
+  n <- 20L
+  X <- data.frame(
+    x1 = seq_len(n), 
+    x2 = rep(LETTERS[1:4], n %/% 4),
+    x3 = factor(rep(LETTERS[1:2], n %/% 2)),
+    x4 = seq_len(n) > n %/% 3,
+    x5 = seq(as.Date("2008-11-01"), as.Date("2008-11-21"), length.out = n)
+  )
+  X <- generateNA(X, seed = 1L)
+  conv <- convert(X)
+  reve <- revert(conv)
+  
+  expect_equal(X, reve)
+  expect_equal(
+    unname(sapply(conv$X, class)), 
+    c("integer", "factor", "factor", "factor", "numeric")
+  )
+  
+  Ximp <- missRanger(X, seed = 1L, verbose = FALSE, pmm.k = 3L)
+  expect_equal(sapply(Ximp, class), sapply(X, class))
+})

@@ -375,8 +375,14 @@ convert <- function(X, check = FALSE) {
   stopifnot(is.data.frame(X))
   
   if (!ncol(X)) {
-    return(list(X = X, bad = character(0), vars = character(0), 
-                types = character(0), classes = character(0)))
+    out <- list(
+      X = X, 
+      bad = character(0), 
+      vars = character(0), 
+      types = character(0), 
+      classes = character(0)
+    )
+    return(out)
   }
   
   types <- vapply(X, typeof2, FUN.VALUE = "")
