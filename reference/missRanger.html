@@ -159,7 +159,7 @@ Only relevant when <code>data_only = TRUE</code> (and when forests are grown).</
 
 
 <dt>...</dt>
-<dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code>. If the data set is large,
+<dd><p>Arguments passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>. If the data set is large,
 better use less trees (e.g. <code>num.trees = 20</code>) and/or a low value of
 <code>sample.fraction</code>. The following arguments are incompatible, amongst others:
 <code>write.forest</code>, <code>probability</code>, <code>split.select.weights</code>,
@@ -191,10 +191,10 @@ imputed data is returned.</p>
 classification error otherwise. If a variable has been imputed only univariately,
 the value is 1.</p>
 <p>A note on <code>mtry</code>: Be careful when passing a non-default <code>mtry</code> to
-<code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code> because the number of available covariates might be growing during
+<code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code> because the number of available covariates might be growing during
 the first iteration, depending on the missing pattern.
 Values <code>NULL</code> (default) and 1 are safe choices.
-Additionally, recent versions of <code><a href="https://rdrr.io/pkg/ranger/man/ranger.html" class="external-link">ranger::ranger()</a></code> allow <code>mtry</code> to be a
+Additionally, recent versions of <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code> allow <code>mtry</code> to be a
 single-argument function of the number of available covariables,
 e.g., <code>mtry = function(m) max(1, m %/% 3)</code>.</p>
     </div>
@@ -247,84 +247,19 @@ http://www.jstatsoft.org/v45/i03/</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5          5.0         3.6          1.4         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6          5.4         3.9          1.7         0.4  setosa</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co"># Extended output</span></span></span>
 <span class="r-in"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imp</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          5.1         3.5          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          4.9         3.0          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          4.7         3.2          1.3         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          4.6         3.1          1.5         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          5.0         3.6          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          5.4         3.9          1.7         0.4  setosa</span>
 <span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">pred_errors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Sepal.Length Sepal.Width Petal.Length Petal.Width    Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   1.00000000  1.04048866  0.427717496 0.113585583 0.05925926</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   0.02422837  0.06848149  0.007721615 0.008392830 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   0.02232834  0.07635333  0.005661813 0.007973031 0.00000000</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If you even want to keep the random forests of the best iteration</span></span></span>
 <span class="r-in"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span>, keep_forests <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">forests</span><span class="op">$</span><span class="va">Species</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ranger result</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ranger::ranger(y = data[[v]][!v.na], x = data[!v.na, completed,      drop = FALSE], case.weights = case.weights[!v.na], ...) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type:                             Classification </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trees:                  100 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sample size:                      135 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of independent variables:  5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mtry:                             2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Target node size:                 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variable importance mode:         none </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Splitrule:                        gini </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> OOB prediction error:             0.74 % </span>
 <span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">forests</span><span class="op">$</span><span class="va">Sepal.Width</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ranger result</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ranger::ranger(y = data[[v]][!v.na], x = data[!v.na, completed,      drop = FALSE], case.weights = case.weights[!v.na], ...) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type:                             Regression </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trees:                  100 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sample size:                      135 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of independent variables:  5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mtry:                             2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Target node size:                 5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variable importance mode:         none </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Splitrule:                        variance </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> OOB prediction error (MSE):       0.01252737 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> R squared (OOB):                  0.9361608 </span>
 <span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">pred_errors</span><span class="op">[</span><span class="va">imp</span><span class="op">$</span><span class="va">best_iter</span>, <span class="st">"Sepal.Width"</span><span class="op">]</span>  <span class="co"># 1 - R-squared</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.06383917 </span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>

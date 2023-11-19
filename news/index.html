@@ -66,10 +66,12 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.4.0" id="missranger-240">missRanger 2.4.0<a class="anchor" aria-label="anchor" href="#missranger-240"></a></h2>
 <div class="section level3">
+<h3 id="future-output-api-2-4-0">Future Output API<a class="anchor" aria-label="anchor" href="#future-output-api-2-4-0"></a></h3>
+<ul><li>New argument <code>data_only = TRUE</code> to control if only the imputed data should be returned (default), or an object of class “missRanger”. This object contains the imputed data and infos like OOB prediction errors, fixing <a href="https://github.com/mayer79/missRanger/issues/28" class="external-link">#28</a>. The value <code>FALSE</code> will later becoming the default in {missRanger 3.0.0}. This will be announced via deprecation cycle.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="enhancements-2-4-0">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-2-4-0"></a></h3>
-<ul><li>New argument <code>data_only = TRUE</code> to control if only the imputed data should returned (default), or an object of class “missRanger”. This object contains the imputed data and infos like OOB prediction errors. This fixes <a href="https://github.com/mayer79/missRanger/issues/28" class="external-link">28</a>. The value <code>FALSE</code> will become the default in {missRanger 3.0.0}. This will be announced via deprecation cycle.</li>
-<li>New argument <code>keep_forests = FALSE</code>. Should the random forests of the best iteration (the one that generated the final imputed data) be added to the “missRanger” object? Note that this will use a lot of memory. Only relevant if <code>data_only = FALSE</code>. This solves <a href="https://github.com/mayer79/missRanger/issues/54" class="external-link">54</a>
-</li>
+<ul><li>New argument <code>keep_forests = FALSE</code>. Should the random forests of the best iteration (the one that generated the final imputed data) be added to the “missRanger” object? Note that this will use a lot of memory. Only relevant if <code>data_only = FALSE</code>. This solves <a href="https://github.com/mayer79/missRanger/issues/54" class="external-link">#54</a>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-4-0"></a></h3>
