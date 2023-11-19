@@ -10,7 +10,7 @@
 |collate  |German_Switzerland.utf8                                  |
 |ctype    |German_Switzerland.utf8                                  |
 |tz       |Europe/Zurich                                            |
-|date     |2023-10-20                                               |
+|date     |2023-11-19                                               |
 |rstudio  |2023.06.1+524 Mountain Hydrangea (desktop)               |
 |pandoc   |3.1.6 @ C:\Users\Michael\AppData\Local\Pandoc\pandoc.exe |
 
@@ -18,11 +18,11 @@
 
 |package    |old       |new       |Δ  |
 |:----------|:---------|:---------|:--|
-|missRanger |2.2.1     |2.3.0     |*  |
+|missRanger |2.3.0     |2.4.0     |*  |
 |FNN        |1.1.3.2   |1.1.3.2   |   |
-|ranger     |0.15.1    |0.15.1    |   |
+|ranger     |0.16.0    |0.16.0    |   |
 |Rcpp       |1.0.11    |1.0.11    |   |
-|RcppEigen  |0.3.3.9.3 |0.3.3.9.3 |   |
+|RcppEigen  |0.3.3.9.4 |0.3.3.9.4 |   |
 
 # Revdeps
 

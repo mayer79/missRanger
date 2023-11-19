@@ -11,9 +11,18 @@ This update introduces the future API of missRanger.
 
 ## RHub 
 
+* checking for non-standard things in the check directory ... NOTE
+Found the following files/directories:
+  ''NULL''
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
+
 ## Winbuilder
 
 Status: OK
 
 ## revdepcheck results
 
+OK: 7                                                                              
+BROKEN: 0

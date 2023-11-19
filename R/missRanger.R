@@ -97,12 +97,13 @@
 #' imp$pred_errors
 #' 
 #' # If you even want to keep the random forests of the best iteration
+#' \dontrun{
 #' imp <- missRanger(
 #'   irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
 #' )
-#' imp$forests$Species
 #' imp$forests$Sepal.Width
 #' imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
+#' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
                        seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL, 
                        data_only = TRUE, keep_forests = FALSE, ...) {
