@@ -1,31 +1,28 @@
-# missRanger 2.3.0
+# missRanger 2.4.0
 
-Dear CRAN team
+Hello CRAN team
 
-This update fixes two issues: non-syntactic column names, and too many features.
+This update introduces the future API of missRanger.
 
-I have checked reverse dependencies, without finding.
-
-## R CMD check
+## R CMD check (local)
 
 - WARNING: 'qpdf' is needed for checks on size reduction of PDFs
-- NOTE: no command 'tidy' found
+- NOTE: Skipping checking HTML validation: no command 'tidy' found
 
 ## RHub 
 
-* checking HTML version of manual ... NOTE
-Skipping checking HTML validation: no command 'tidy' found
+* checking for non-standard things in the check directory ... NOTE
+Found the following files/directories:
+  ''NULL''
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
 
 ## Winbuilder
 
-Status: 1 NOTE
-R Under development (unstable) (2023-10-18 r85349 ucrt)
+Status: OK
 
 ## revdepcheck results
 
-We checked 7 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
-
- * We saw 0 new problems
- * We failed to check 0 packages
-
-
+OK: 7                                                                              
+BROKEN: 0
