@@ -1,9 +1,12 @@
 # missRanger 2.4.0
 
+## Future Output API
+
+- New argument `data_only = TRUE` to control if only the imputed data should be returned (default), or an object of class "missRanger". This object contains the imputed data and infos like OOB prediction errors, fixing [#28](https://github.com/mayer79/missRanger/issues/28). The value `FALSE` will later becoming the default in {missRanger 3.0.0}. This will be announced via deprecation cycle.
+
 ## Enhancements
 
-- New argument `data_only = TRUE` to control if only the imputed data should returned (default), or an object of class "missRanger". This object contains the imputed data and infos like OOB prediction errors. This fixes [28](https://github.com/mayer79/missRanger/issues/28). The value `FALSE` will become the default in {missRanger 3.0.0}. This will be announced via deprecation cycle.
-- New argument `keep_forests = FALSE`. Should the random forests of the best iteration (the one that generated the final imputed data) be added to the "missRanger" object? Note that this will use a lot of memory. Only relevant if `data_only = FALSE`. This solves [54](https://github.com/mayer79/missRanger/issues/54)
+- New argument `keep_forests = FALSE`. Should the random forests of the best iteration (the one that generated the final imputed data) be added to the "missRanger" object? Note that this will use a lot of memory. Only relevant if `data_only = FALSE`. This solves [#54](https://github.com/mayer79/missRanger/issues/54).
 
 ## Bug fixes
 
