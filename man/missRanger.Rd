@@ -112,13 +112,13 @@ irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
 
+\dontrun{
 # Extended output
 imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
 head(imp$data)
 imp$pred_errors
 
 # If you even want to keep the random forests of the best iteration
-\dontrun{
 imp <- missRanger(
   irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
 )
