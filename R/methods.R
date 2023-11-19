@@ -8,7 +8,7 @@
 #' @export
 #' @examples
 #' CO2_ <- generateNA(CO2, seed = 1)
-#' imp <- missRanger(CO2_, pmm.k = 5, data_only = FALSE)
+#' imp <- missRanger(CO2_, pmm.k = 5, data_only = FALSE, num.threads = 1)
 #' imp
 print.missRanger <- function(x, ...) {
   b <- x$best_iter
@@ -28,7 +28,7 @@ print.missRanger <- function(x, ...) {
 #' @export
 #' @examples
 #' CO2_ <- generateNA(CO2, seed = 1)
-#' imp <- missRanger(CO2_, pmm.k = 5, data_only = FALSE)
+#' imp <- missRanger(CO2_, pmm.k = 5, data_only = FALSE, num.threads = 1)
 #' summary(imp)
 summary.missRanger <- function(object, ...) {
   print(object)
