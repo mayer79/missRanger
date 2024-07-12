@@ -118,6 +118,20 @@ test_that("formula interface works with unspecified left side", {
   expect_true(!anyNA(imp))
 })
 
+test_that("dropping columns on left side leave its missing values", {
+  imp <- missRanger(X_NA, . - x1 ~ ., pmm = 3L, num.trees = 20L, verbose = 0L)
+  expect_equal(
+    colSums(is.na(imp)) > 0,
+    c(x1 = TRUE, x2 = FALSE, x3 = FALSE, x4 = FALSE, x5 = FALSE)
+  )
+})
+
+test_that("dropping columns on right side has an impact", {
+  imp1 <- missRanger(X_NA, . ~ . - x1, num.trees = 20L, verbose = 0L, seed = 1L)
+  imp2 <- missRanger(X_NA, . ~ ., num.trees = 20L, verbose = 0L, seed = 1L)
+  expect_false(identical(imp1, imp2))
+})
+
 test_that("date and datetime columns work", {
   n <- 20L
   Xd <- data.frame(

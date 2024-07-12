@@ -1,3 +1,13 @@
+# missRanger 2.5.0
+
+## Bug fixes
+
+- Since Release 2.3.0, unintentionally, negative formula terms haven't been dropped, see [#62](https://github.com/mayer79/missRanger/issues/62). This is fixed now.
+
+## Enhancements
+
+- The vignette on multiple imputations has been revised, and a larger number of donors in predictive mean matching is being used in the example.
+
 # missRanger 2.4.0
 
 ## Future Output API

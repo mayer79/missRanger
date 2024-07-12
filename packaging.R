@@ -15,18 +15,18 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Version = "2.4.0",
+    Version = "2.5.0",
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
     Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
-    lightning fast random jungle package 'ranger'. Between the iterative model fitting, 
+    lightning fast random forest package 'ranger'. Between the iterative model fitting, 
     we offer the option of using predictive mean matching. This firstly avoids imputation 
     with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
     Secondly, predictive mean matching tries to raise the variance in the resulting conditional 
-    distributions to a realistic level. This would allow e.g. to do multiple imputation when 
+    distributions to a realistic level. This would allow, e.g., to do multiple imputation when 
     repeating the call to missRanger(). 
     A formula interface allows to control which variables should be imputed by which.",
-    `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre', 'cph'))",
+    `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre'))",
     Depends = "R (>= 3.5.0)",
     LazyData = NULL
   ),
@@ -90,7 +90,6 @@ library(devtools)
 
 document()
 test()
-# build_vignettes()
 check(manual = TRUE, cran = TRUE)
 build(vignettes = FALSE)
 # build(binary = TRUE)
