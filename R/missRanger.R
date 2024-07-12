@@ -144,7 +144,11 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     if (z == ".") {
       return(colnames(data))
     }
-    all.vars(stats::terms.formula(stats::reformulate(z), data = data[1L, ]))
+    out <- attr(
+      stats::terms.formula(stats::reformulate(z), data = data[1L, ]),
+      "term.labels"
+    )
+    trimws(out, whitespace = "`")  # Remove enclosing backticks
   }
   relevant_vars <- lapply(formula[2:3], parsef)
   
