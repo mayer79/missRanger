@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 For statistical inference, extra variability introduced by imputation has to be accounted for. This is usually done by multiple imputation.
 
-One of the standard approaches is to impute the dataset multiple times, generating, e.g., 10 or 100 versions of the complete data. Then, the intended analysis (t-test, linear model etc.) is performed with each of the datasets. Their results are then pooled, usually by Rubin's rule [@rubin]: Parameter *estimates* are averaged. Their *variances* are avaraged as well, and corrected upwards by adding the variance of the paramrter estimates across imputations.
+One of the standard approaches is to impute the dataset multiple times, generating, e.g., 10 or 100 versions of the complete data. Then, the intended analysis (t-test, linear model etc.) is performed with each of the datasets. Their results are then pooled, usually by Rubin's rule [@rubin]: Parameter *estimates* are averaged. Their *variances* are avaraged as well, and corrected upwards by adding the variance of the parameter estimates across imputations.
 
 The package {mice} [@buuren] takes care of this pooling step. The creation of multiple complete data sets can be done by {mice} or also by {missRanger}. In the latter case, in order to keep the variance of imputed values at a realistic level, we suggest to use predictive mean matching with relatively large `pmm.k` on top of the random forest imputation. 
 
