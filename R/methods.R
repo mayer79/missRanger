@@ -40,4 +40,3 @@ summary.missRanger <- function(object, ...) {
   print(utils::head(object$data, 3L))
   invisible(object)
 }
-

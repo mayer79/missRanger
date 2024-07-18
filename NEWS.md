@@ -1,3 +1,9 @@
+# missRanger 2.6.0
+
+## Minor changes
+
+- Add original data to output.
+
 # missRanger 2.5.0
 
 ## Bug fixes

@@ -68,6 +68,7 @@ If \code{data_only} an imputed \code{data.frame}. Otherwise, a "missRanger" obje
 the following elements that can be extracted via \code{$}:
 \itemize{
 \item \code{data}: The imputed data.
+\item \code{data_raw}: The original data provided.
 \item \code{forests}: When \code{keep_forests = TRUE}, a list of "ranger" models used to
 generate the imputed data. \code{NULL} otherwise.
 \item \code{visit_seq}: Variables to be imputed (in this order).
