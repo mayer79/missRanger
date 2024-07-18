@@ -65,6 +65,7 @@
 #'   If `data_only` an imputed `data.frame`. Otherwise, a "missRanger" object with
 #'   the following elements that can be extracted via `$`:
 #'   - `data`: The imputed data.
+#'   - `data_raw`: The original data provided.
 #'   - `forests`: When `keep_forests = TRUE`, a list of "ranger" models used to 
 #'     generate the imputed data. `NULL` otherwise.
 #'   - `visit_seq`: Variables to be imputed (in this order).
@@ -135,6 +136,10 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   
   if (!is.null(seed)) {
     set.seed(seed)
+  }
+  
+  if (!data_only) {
+    data_raw <- data
   }
 
   # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
@@ -331,6 +336,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   
   out <- list(
     data = data_last,
+    data_raw = data_raw,
     forests = if (keep_forests) forests_last,
     visit_seq = visit_seq,
     impute_by = impute_by,
@@ -339,6 +345,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1))
   )
   class(out) <- "missRanger"
+  
   return(out)
 }
 
