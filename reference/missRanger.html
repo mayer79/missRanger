@@ -21,7 +21,7 @@ when repeating the call to missRanger().'><meta property="og:image" content="/lo
 
     <a class="navbar-brand me-2" href="../index.html">missRanger</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,6 +154,7 @@ better use less trees (e.g. <code>num.trees = 20</code>) and/or a low value of
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>If <code>data_only</code> an imputed <code>data.frame</code>. Otherwise, a "missRanger" object with
 the following elements that can be extracted via <code>$</code>:</p><ul><li><p><code>data</code>: The imputed data.</p></li>
+<li><p><code>data_raw</code>: The original data provided.</p></li>
 <li><p><code>forests</code>: When <code>keep_forests = TRUE</code>, a list of "ranger" models used to
 generate the imputed data. <code>NULL</code> otherwise.</p></li>
 <li><p><code>visit_seq</code>: Variables to be imputed (in this order).</p></li>
