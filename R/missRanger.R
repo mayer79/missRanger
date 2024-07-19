@@ -38,6 +38,13 @@
 #'   must appear in the left hand side if they should be used on the right hand side.
 #' @param pmm.k Number of candidate non-missing values to sample from in the 
 #'   predictive mean matching steps. 0 to avoid this step.
+#' @param num.trees Number of trees passed to [ranger::ranger()].
+#' @param min.node.size Minimal node size passed to [ranger::ranger()].
+#'   By default 1 for classification and 5 for regression.
+#' @param max.depth Maximal tree depth passed to [ranger::ranger()].
+#'   `NULL` means unlimited depth. 1 means single split trees.
+#' @param num.threads Number of threads passed to [ranger::ranger()].
+#'   The default uses all threads.
 #' @param maxiter Maximum number of chaining iterations.
 #' @param seed Integer seed to initialize the random generator.
 #' @param verbose Controls how much info is printed to screen. 
@@ -50,17 +57,13 @@
 #' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction 
 #'   errors per variable is added to the resulting data as attribute "oob". 
 #'   Only relevant when `data_only = TRUE` (and when forests are grown).
-#' @param case.weights Vector with non-negative case weights.
+#' @param case.weights Optional vector with case weights passed to [ranger::ranger()].
 #' @param data_only If `TRUE` (default), only the imputed data is returned.
 #'   Otherwise, a "missRanger" object with additional information is returned.
 #' @param keep_forests Should the random forests of the final imputations
 #'   be returned? The default is `FALSE`. Setting this option will use a lot of memory.
 #'   Only relevant when `data_only = TRUE` (and when forests are grown).
-#' @param ... Arguments passed to [ranger::ranger()]. If the data set is large, 
-#'   better use less trees (e.g. `num.trees = 20`) and/or a low value of 
-#'   `sample.fraction`. The following arguments are incompatible, amongst others: 
-#'   `write.forest`, `probability`, `split.select.weights`, 
-#'   `dependent.variable.name`, and `classification`. 
+#' @param ... Additional arguments passed to [ranger::ranger()].
 #' @returns 
 #'   If `data_only = TRUE` an imputed `data.frame`. Otherwise, a "missRanger" object
 #'   with the following elements:
@@ -103,9 +106,23 @@
 #' )
 #' imp$forests$Sepal.Width
 #' imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
-missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
-                       seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL, 
-                       data_only = TRUE, keep_forests = FALSE, ...) {
+missRanger <- function(
+    data,
+    formula = . ~ .,
+    pmm.k = 0L,
+    num.trees = 500,
+    min.node.size = NULL,
+    max.depth = NULL,
+    num.threads = NULL,
+    maxiter = 10L,
+    seed = NULL,
+    verbose = 1,
+    returnOOB = FALSE,
+    case.weights = NULL,
+    data_only = TRUE,
+    keep_forests = FALSE,
+    ...
+  ) {
   if (verbose) {
     cat("\nMissing value imputation by random forests\n")
   }
@@ -259,15 +276,22 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         fit <- ranger::ranger(
-          y = data[[v]][!v.na],
+          num.trees = num.trees,
+          min.node.size = min.node.size,
+          max.depth = max.depth,
+          num.threads = num.threads,
           x = data[!v.na, completed, drop = FALSE],
+          y = data[[v]][!v.na],
           case.weights = case.weights[!v.na],
           ...
         )
         pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
         
         data[v.na, v] <- if (pmm.k) pmm(
-          xtrain = fit$predictions, xtest = pred, ytrain = data[[v]][!v.na], k = pmm.k
+          xtrain = fit$predictions,
+          xtest = pred,
+          ytrain = data[[v]][!v.na],
+          k = pmm.k
         ) else pred
         
         if (fit$treetype == "Regression") {

@@ -8,6 +8,10 @@ missRanger(
   data,
   formula = . ~ .,
   pmm.k = 0L,
+  num.trees = 500,
+  min.node.size = NULL,
+  max.depth = NULL,
+  num.threads = NULL,
   maxiter = 10L,
   seed = NULL,
   verbose = 1,
@@ -32,6 +36,17 @@ must appear in the left hand side if they should be used on the right hand side.
 \item{pmm.k}{Number of candidate non-missing values to sample from in the
 predictive mean matching steps. 0 to avoid this step.}
 
+\item{num.trees}{Number of trees passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+
+\item{min.node.size}{Minimal node size passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+By default 1 for classification and 5 for regression.}
+
+\item{max.depth}{Maximal tree depth passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+\code{NULL} means unlimited depth. 1 means single split trees.}
+
+\item{num.threads}{Number of threads passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+The default uses all threads.}
+
 \item{maxiter}{Maximum number of chaining iterations.}
 
 \item{seed}{Integer seed to initialize the random generator.}
@@ -48,7 +63,7 @@ This will be useful to detect if some variables are unexpectedly skipped.}
 errors per variable is added to the resulting data as attribute "oob".
 Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
-\item{case.weights}{Vector with non-negative case weights.}
+\item{case.weights}{Optional vector with case weights passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
 
 \item{data_only}{If \code{TRUE} (default), only the imputed data is returned.
 Otherwise, a "missRanger" object with additional information is returned.}
@@ -57,11 +72,7 @@ Otherwise, a "missRanger" object with additional information is returned.}
 be returned? The default is \code{FALSE}. Setting this option will use a lot of memory.
 Only relevant when \code{data_only = TRUE} (and when forests are grown).}
 
-\item{...}{Arguments passed to \code{\link[ranger:ranger]{ranger::ranger()}}. If the data set is large,
-better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
-\code{sample.fraction}. The following arguments are incompatible, amongst others:
-\code{write.forest}, \code{probability}, \code{split.select.weights},
-\code{dependent.variable.name}, and \code{classification}.}
+\item{...}{Additional arguments passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
 }
 \value{
 If \code{data_only = TRUE} an imputed \code{data.frame}. Otherwise, a "missRanger" object

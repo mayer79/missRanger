@@ -8,6 +8,7 @@
 ## Other changes
 
 - Improvement in the vignette on censored data.
+- Explicit arguments passed to `ranger()`:`num.trees = 500`, `min.node.size = NULL`, `max.depth = NULL`, and `num.threads = NULL`. This has the advantage to see it in tab completion.
 
 # missRanger 2.5.0
 
