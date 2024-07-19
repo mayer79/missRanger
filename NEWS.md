@@ -5,6 +5,10 @@
 - Add original data as `data_raw`.
 - Renamed `visit_seq` to `to_impute`.
 
+## Other changes
+
+- Improvement in the vignette on censored data.
+
 # missRanger 2.5.0
 
 ## Bug fixes

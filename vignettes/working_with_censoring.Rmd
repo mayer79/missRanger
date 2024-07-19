@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## How to deal with censored variables?
 
-There is no obvious way of how to deal with survival variables as covariables in imputation models. 
+There is no obvious way of how to deal with survival variables as covariates in imputation models.
 
 Options discussed in [@white] include:
 
@@ -31,16 +31,16 @@ Options discussed in [@white] include:
 
 - $\text{surv}(t)$, and, optionally $s$
 
-By $\text{surv}(t)$, we denote the Nelson-Aalen survival estimate at each value of $t$. The third option is the most elegant one as it explicitly deals with censoring information. We provide some additional details on it in the example.
+By $\text{surv}(t)$, we denote the Nelson-Aalen survival estimate at each value of $t$. The third option seems attractive as it explicitly deals with censoring information. We provide some additional details on it in the example.
 
 ### Example
 
-For illustration, we use data from a randomized two-arm trial about lung cancer. The aim is to estimate the treatment effect of "trt" with reliable inference using Cox regression. Unfortunately, we have added missing values in the covariables "age", "karno", and "diagtime". 
+For illustration, we use data from a randomized two-arm trial about lung cancer. The aim is to estimate the treatment effect of "trt" with reliable inference using Cox regression. We add missing values in the covariates "age", "karno", and "diagtime".
 
-A reasonable way to estimate the covariable adjusted treatment effect is the following:
+Let's estimate the covariate adjusted treatment effect using the following steps:
 
 1. Add Nelson-Aalen survival estimates "surv" to the dataset.
-2. Use "surv" as well as the covariables to impute missing values in the covariables multiple times.
+2. Use "surv" as well as the covariates to impute missing values in the covariates multiple times.
 3. Perform the intended Cox regression for each of the imputed data sets.
 4. Pool their results by Rubin's rule [@rubin], using package {mice} [@buuren].
 
@@ -62,14 +62,12 @@ head(veteran)
 # 6   1 squamous   10      1    20        5  49     0
 
 # 1. Calculate Nelson-Aalen survival probabilities for each time point
-nelson_aalen <- summary(
-  survfit(Surv(time, status) ~ 1, data = veteran), 
-  times = unique(veteran$time)
-)[c("time", "surv")]
-nelson_aalen <- data.frame(nelson_aalen)
+nelson_aalen <- survfit(Surv(time, status) ~ 1, data = veteran) |>
+  summary(times = unique(veteran$time))
+nelson_aalen <- nelson_aalen[c("time", "surv")]
 
 # Add it to the original data set
-veteran2 <- merge(veteran, nelson_aalen, all.x = TRUE)
+veteran2 <- merge(veteran, nelson_aalen, all.x = TRUE, by = "time")
 
 # Add missing values to make things tricky
 veteran2 <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
@@ -80,7 +78,7 @@ filled <- replicate(
   missRanger(
     veteran2, . ~ . - time - status, 
     verbose = 0, 
-    pmm.k = 3, 
+    pmm.k = 10, 
     num.trees = 25
   ), 
   simplify = FALSE
@@ -92,28 +90,28 @@ models <- lapply(filled, function(x) coxph(Surv(time, status) ~ . - surv, x))
 # 4. Pool the results by mice
 summary(pooled_fit <- pool(models))
 
-#                term     estimate   std.error  statistic        df      p.value
-# 1               trt  0.245855250 0.212810467  1.1552780 108.72929 2.505091e-01
-# 2 celltypesmallcell  0.805233656 0.284424937  2.8310937 114.17088 5.483657e-03
-# 3     celltypeadeno  1.110172771 0.307570269  3.6094931 111.91588 4.603422e-04
-# 4     celltypelarge  0.328227283 0.291163500  1.1272954 109.30510 2.620862e-01
-# 5             karno -0.031838682 0.005663349 -5.6218824 112.60325 1.390333e-07
-# 6          diagtime  0.002775351 0.009382270  0.2958081  86.61582 7.680847e-01
-# 7               age -0.007843577 0.009293988 -0.8439410 107.86917 4.005701e-01
-# 8             prior  0.003165245 0.023501821  0.1346809 111.84783 8.931063e-01
+               term     estimate   std.error  statistic        df      p.value
+1               trt  0.253538955 0.212912636  1.1908122 108.60558 2.363235e-01
+2 celltypesmallcell  0.815455716 0.285715626  2.8540816 113.48112 5.132019e-03
+3     celltypeadeno  1.110530627 0.311566058  3.5643505 108.55506 5.436043e-04
+4     celltypelarge  0.346762041 0.288497586  1.2019582 113.27005 2.318866e-01
+5             karno -0.030754195 0.005758037 -5.3410901  99.68585 5.837902e-07
+6          diagtime  0.001835002 0.009233708  0.1987286 107.07024 8.428519e-01
+7               age -0.006032505 0.009447786 -0.6385099 101.88961 5.245745e-01
+8             prior  0.002983767 0.023275501  0.1281935 115.27919 8.982192e-01
 
 # Compare with the results on the original data
 summary(coxph(Surv(time, status) ~ ., veteran))$coefficients
 
-#                            coef exp(coef)    se(coef)            z     Pr(>|z|)
-# trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01
-# celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03
-# celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05
-# celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01
-# karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09
-# diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01
-# age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01
-# prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01
+                           coef exp(coef)    se(coef)            z     Pr(>|z|)
+trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01
+celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03
+celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05
+celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01
+karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09
+diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01
+age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01
+prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01
 ```
 
 ## References
