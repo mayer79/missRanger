@@ -241,9 +241,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     if (verbose) {
       if (verbose == 1) {
         i <- 1L
-        cat("\n")
-        cat(paste("iter", j))
-        cat("\n")
+        cat("\niter", j, "\n")
         pb <- utils::txtProgressBar(0, length(to_impute), style = 3)
       } else if (verbose >= 2) {
         cat("\niter ", j, ":\t", sep = "")
