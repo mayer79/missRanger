@@ -24,49 +24,54 @@
 pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
   stopifnot(
     length(xtrain) == length(ytrain), 
-    sum(ok <- !is.na(xtrain) & !is.na(ytrain)) >= 1L,
-    (nt <- length(xtest)) >= 1L, !anyNA(xtest),
-    mode(xtrain) %in% c("logical", "numeric", "character"),
-    mode(xtrain) == mode(xtest),
+    length(xtest) >= 1L, 
+    !anyNA(xtest),
+    mode(xtrain) %in% c("logical", "numeric", "character"),  # factor/int are "numeric"
+    class(xtrain) == class(xtest),  # multiple classes are okay
     k >= 1L
   )
   
+  # Filter on complete train data
+  ok <- !is.na(xtrain) & !is.na(ytrain)
+  if (!any(ok)) {
+    stop("xtrain and ytrain need at least one complete observation")
+  }
   xtrain <- xtrain[ok]
   ytrain <- ytrain[ok]
   
   # Handle trivial case
-  if (length(u <- unique(ytrain)) == 1L) {
-    return(rep(u, nt))
+  u <- unique(ytrain)
+  if (length(u) == 1L) {
+    return(rep(u, length(xtest)))
   }
   
   if (!is.null(seed)) {
     set.seed(seed)
   }
   
-  # STEP 1: Turn xtrain and xtest into numbers.
-  # Handles the case of inconsistent factor levels of xtrain and xtest.
-  if (is.factor(xtrain) && (nlevels(xtrain) != nlevels(xtest) || 
-                            !all(levels(xtrain) == levels(xtest)))) {
+  # STEP 1: Turn xtrain and xtest into numbers
+  # Handles the case of inconsistent factor levels of xtrain and xtest
+  if (is.factor(xtrain) && !identical(levels(xtrain), levels(xtest))) {
     xtrain <- as.character(xtrain)
     xtest <- as.character(xtest)
   }
   
-  # Turns character vectors into factors.
+  # Turns character vectors into factors
   if (is.character(xtrain)) {
     lvl <- unique(c(xtrain, xtest))
     xtrain <- factor(xtrain, levels = lvl)
     xtest <- factor(xtest, levels = lvl)
   } 
   
-  # Turns everything into numbers.
-  if (!is.numeric(xtrain) && mode(xtrain) %in% c("logical", "numeric")) {
+  # Turns x into numbers (note: factors and logicals are converted here)
+  if (!is.numeric(xtrain)) {
     xtrain <- as.numeric(xtrain)
     xtest <- as.numeric(xtest)
   } 
   
-  # STEP 2: PMM based on k-nearest neightbour.
+  # STEP 2: PMM based on k-nearest neightbour
   k <- min(k, length(xtrain))
   nn <- FNN::knnx.index(xtrain, xtest, k)
-  take <- t(stats::rmultinom(nt, 1L, rep(1L, k)))
+  take <- t(stats::rmultinom(length(xtest), 1L, rep(1L, k)))
   ytrain[rowSums(nn * take)]
 }

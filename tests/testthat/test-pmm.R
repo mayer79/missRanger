@@ -27,20 +27,25 @@ test_that("pmm picks the right reference based on date vector", {
   expect_equal(pmm(xtrain, xquery, ytrain = 1:2), rep(2, 2))
 })
 
+test_that("pmm works for different types of responses", {
+  expect_equal(
+    pmm(Sys.Date(), xtest = Sys.Date(), ytrain = TRUE),
+    TRUE
+  )
+  
+  expect_equal(
+    pmm(Sys.Date(), xtest = Sys.Date(), ytrain = factor("A")),
+    factor("A")
+  )
+  
+  expect_equal(
+    pmm(2, xtest = 1, ytrain = Sys.Date()),
+    Sys.Date()
+  )
+})
+
 test_that("pmm gives error if ytrain is of wrong length", {
   expect_error(pmm(xtrain = 1, xtest = 1, ytrain = 1:2))
-})
-
-test_that("pmm works for logical y", {
-  expect_equal(pmm(1, xtest = Sys.Date(), ytrain = TRUE), TRUE)
-})
-
-test_that("pmm works for factor y", {
-  expect_equal(pmm(1, xtest = Sys.Date(), ytrain = factor("A")), factor("A"))
-})
-
-test_that("pmm works for date y", {
-  expect_equal(pmm(1, xtest = Sys.Date(), ytrain = Sys.Date()), Sys.Date())
 })
 
 test_that("pmm works with NA in xtrain", {
