@@ -62,13 +62,13 @@
 #'   `write.forest`, `probability`, `split.select.weights`, 
 #'   `dependent.variable.name`, and `classification`. 
 #' @returns 
-#'   If `data_only` an imputed `data.frame`. Otherwise, a "missRanger" object with
-#'   the following elements that can be extracted via `$`:
+#'   If `data_only = TRUE` an imputed `data.frame`. Otherwise, a "missRanger" object
+#'   with the following elements:
 #'   - `data`: The imputed data.
 #'   - `data_raw`: The original data provided.
 #'   - `forests`: When `keep_forests = TRUE`, a list of "ranger" models used to 
 #'     generate the imputed data. `NULL` otherwise.
-#'   - `visit_seq`: Variables to be imputed (in this order).
+#'   - `to_impute`: Variables to be imputed (in this order).
 #'   - `impute_by`: Variables used for imputation.
 #'   - `best_iter`: Best iteration.
 #'   - `pred_errors`: Per-iteration OOB prediction errors (1 - R^2 for regression,
@@ -92,19 +92,17 @@
 #' head(irisImputed)
 #' head(irisWithNA)
 #' 
-#' \dontrun{
 #' # Extended output
-#' imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
+#' imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE)
 #' head(imp$data)
 #' imp$pred_errors
 #' 
 #' # If you even want to keep the random forests of the best iteration
 #' imp <- missRanger(
-#'   irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
+#'   irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE, keep_forests = TRUE
 #' )
 #' imp$forests$Sepal.Width
 #' imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
-#' }
 missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L, 
                        seed = NULL, verbose = 1, returnOOB = FALSE, case.weights = NULL, 
                        data_only = TRUE, keep_forests = FALSE, ...) {
@@ -153,7 +151,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
       stats::terms.formula(stats::reformulate(z), data = data[1L, ]),
       "term.labels"
     )
-    trimws(out, whitespace = "`")  # Remove enclosing backticks
+    return(trimws(out, whitespace = "`"))  # Remove enclosing backticks
   }
   relevant_vars <- lapply(formula[2:3], parsef)
   
@@ -171,14 +169,14 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   data[, to_impute] <- converted$X
   
   # Remove variables that cannot be safely converted
-  visit_seq <- setdiff(to_impute, converted$bad)
+  to_impute <- setdiff(to_impute, converted$bad)
   
   if (verbose) {
     cat("\n  Variables to impute:\t\t")
-    cat(visit_seq, sep = ", ")
+    cat(to_impute, sep = ", ")
   }
   
-  if (!length(visit_seq)) {
+  if (!length(to_impute)) {
     if (verbose) {
       cat("\n")
     }
@@ -188,8 +186,9 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
       out <- structure(
         list(
           data = data,
+          data_raw = data_raw,
           forests = NULL,
-          visit_seq = c(),
+          to_impute = c(),
           impute_by = c(),
           best_iter = 0L,
           pred_errors = NULL,
@@ -202,16 +201,16 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   }
   
   # Get missing indicators and order variables by number of missings
-  data_NA <- is.na(data[, visit_seq, drop = FALSE])
-  visit_seq <- names(sort(colSums(data_NA)))
+  data_NA <- is.na(data[, to_impute, drop = FALSE])
+  to_impute <- names(sort(colSums(data_NA)))
   
   # 3) SELECT VARIABLES USED TO IMPUTE
   
-  # Variables on the rhs should either appear in "visit_seq" 
+  # Variables on the rhs should either appear in "to_impute" 
   # or do not contain any missings
-  impute_by <- relevant_vars[[2L]][relevant_vars[[2L]] %in% visit_seq | 
+  impute_by <- relevant_vars[[2L]][relevant_vars[[2L]] %in% to_impute | 
      !vapply(data[, relevant_vars[[2L]], drop = FALSE], anyNA, TRUE)]
-  completed <- setdiff(impute_by, visit_seq)
+  completed <- setdiff(impute_by, to_impute)
   
   if (verbose) {
     cat("\n  Variables used to impute:\t")
@@ -225,14 +224,14 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
   j <- 1L
   crit <- TRUE
   dig <- 4L
-  pred_error <- stats::setNames(rep(1, length(visit_seq)), visit_seq)
+  pred_error <- stats::setNames(rep(1, length(to_impute)), to_impute)
   pred_errors <- list()
   if (keep_forests) {
     forests <- list()
   }
   
   if (verbose >= 2) {
-    cat("\n", abbreviate(visit_seq, minlength = dig + 2L), sep = "\t")
+    cat("\n", abbreviate(to_impute, minlength = dig + 2L), sep = "\t")
   }
   
   # Looping over iterations and variables to impute
@@ -240,10 +239,8 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     if (verbose) {
       if (verbose == 1) {
         i <- 1L
-        cat("\n")
-        cat(paste("iter", j))
-        cat("\n")
-        pb <- utils::txtProgressBar(0, length(visit_seq), style = 3)
+        cat("\niter", j, "\n")
+        pb <- utils::txtProgressBar(0, length(to_impute), style = 3)
       } else if (verbose >= 2) {
         cat("\niter ", j, ":\t", sep = "")
       }
@@ -255,7 +252,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
       forests_last <- forests
     }
 
-    for (v in visit_seq) {
+    for (v in to_impute) {
       v.na <- data_NA[, v]
       
       if (length(completed) == 0L) {
@@ -338,7 +335,7 @@ missRanger <- function(data, formula = . ~ ., pmm.k = 0L, maxiter = 10L,
     data = data_last,
     data_raw = data_raw,
     forests = if (keep_forests) forests_last,
-    visit_seq = visit_seq,
+    to_impute = to_impute,
     impute_by = impute_by,
     best_iter = best_iter,
     pred_errors = do.call(rbind, pred_errors),

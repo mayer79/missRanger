@@ -1,8 +1,13 @@
 # missRanger 2.6.0
 
-## Minor changes
+## Minor changes in output object
 
-- Add original data to output.
+- Add original data as `data_raw`.
+- Renamed `visit_seq` to `to_impute`.
+
+## Other changes
+
+- Improvement in the vignette on censored data.
 
 # missRanger 2.5.0
 

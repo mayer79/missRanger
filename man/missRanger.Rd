@@ -64,14 +64,14 @@ better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
 \code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
-If \code{data_only} an imputed \code{data.frame}. Otherwise, a "missRanger" object with
-the following elements that can be extracted via \code{$}:
+If \code{data_only = TRUE} an imputed \code{data.frame}. Otherwise, a "missRanger" object
+with the following elements:
 \itemize{
 \item \code{data}: The imputed data.
 \item \code{data_raw}: The original data provided.
 \item \code{forests}: When \code{keep_forests = TRUE}, a list of "ranger" models used to
 generate the imputed data. \code{NULL} otherwise.
-\item \code{visit_seq}: Variables to be imputed (in this order).
+\item \code{to_impute}: Variables to be imputed (in this order).
 \item \code{impute_by}: Variables used for imputation.
 \item \code{best_iter}: Best iteration.
 \item \code{pred_errors}: Per-iteration OOB prediction errors (1 - R^2 for regression,
@@ -113,19 +113,17 @@ irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
 
-\dontrun{
 # Extended output
-imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
+imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE)
 head(imp$data)
 imp$pred_errors
 
 # If you even want to keep the random forests of the best iteration
 imp <- missRanger(
-  irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
+  irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE, keep_forests = TRUE
 )
 imp$forests$Sepal.Width
 imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
-}
 }
 \references{
 \enumerate{
