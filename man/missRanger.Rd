@@ -64,14 +64,14 @@ better use less trees (e.g. \code{num.trees = 20}) and/or a low value of
 \code{dependent.variable.name}, and \code{classification}.}
 }
 \value{
-If \code{data_only} an imputed \code{data.frame}. Otherwise, a "missRanger" object with
-the following elements that can be extracted via \code{$}:
+If \code{data_only = TRUE} an imputed \code{data.frame}. Otherwise, a "missRanger" object
+with the following elements:
 \itemize{
 \item \code{data}: The imputed data.
 \item \code{data_raw}: The original data provided.
 \item \code{forests}: When \code{keep_forests = TRUE}, a list of "ranger" models used to
 generate the imputed data. \code{NULL} otherwise.
-\item \code{visit_seq}: Variables to be imputed (in this order).
+\item \code{to_impute}: Variables to be imputed (in this order).
 \item \code{impute_by}: Variables used for imputation.
 \item \code{best_iter}: Best iteration.
 \item \code{pred_errors}: Per-iteration OOB prediction errors (1 - R^2 for regression,
