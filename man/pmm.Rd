@@ -30,9 +30,9 @@ values in the prediction vector \code{xtrain} is randomly chosen and its observe
 value in \code{ytrain} is returned.
 }
 \examples{
-pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1)) # 0
-pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1)) # 0
-pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2) # "A" or "B"
-pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2) # 2
-pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2) # 2
+pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1))
+pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1))
+pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2)
+pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2)
+pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2)
 }

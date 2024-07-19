@@ -113,19 +113,17 @@ irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
 head(irisImputed)
 head(irisWithNA)
 
-\dontrun{
 # Extended output
-imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE)
+imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE)
 head(imp$data)
 imp$pred_errors
 
 # If you even want to keep the random forests of the best iteration
 imp <- missRanger(
-  irisWithNA, pmm.k = 3, num.trees = 100, data_only = FALSE, keep_forests = TRUE
+  irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE, keep_forests = TRUE
 )
 imp$forests$Sepal.Width
 imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
-}
 }
 \references{
 \enumerate{
