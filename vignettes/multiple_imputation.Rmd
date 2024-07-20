@@ -77,6 +77,6 @@ summary(lm(Sepal.Length ~ ., data = iris))
 # F-statistic: 188.3 on 5 and 144 DF,  p-value: < 2.2e-16
 ```
 
-As expected, standard errors and p values of the multiple imputation are larger than of the original data set.
+As expected, standard errors and p values of the imputed data are larger than of the original data.
 
 ## References

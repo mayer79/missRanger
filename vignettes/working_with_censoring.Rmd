@@ -21,15 +21,11 @@ knitr::opts_chunk$set(
 
 ## How to deal with censored variables?
 
-There is no obvious way of how to deal with survival variables as covariates in imputation models.
+There is no obvious way of how to deal with survival variables as covariates in imputation models. Options discussed in [@white] include:
 
-Options discussed in [@white] include:
-
-- Use both status variable $s$ and (censored) time variable $t$
-
-- $s$ and $\log(t)$
-
-- $\text{surv}(t)$, and, optionally $s$
+- Use the status variable $s$ and the (censored) time variable $t$.
+- Use $s$ and $\log(t)$.
+- Use $\text{surv}(t)$, and, optionally $s$.
 
 By $\text{surv}(t)$, we denote the Nelson-Aalen survival estimate at each value of $t$. The third option seems attractive as it explicitly deals with censoring information. We provide some additional details on it in the example.
 
@@ -75,12 +71,7 @@ veteran2 <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
 # 2. Generate 20 complete data sets, representing "time" and "status" by "surv"
 filled <- replicate(
   20, 
-  missRanger(
-    veteran2, . ~ . - time - status, 
-    verbose = 0, 
-    pmm.k = 10, 
-    num.trees = 25
-  ), 
+  missRanger(veteran2, . ~ . - time - status, verbose = 0, pmm.k = 10, num.trees = 25), 
   simplify = FALSE
 )
 
