@@ -31,7 +31,9 @@
 #' @param num.trees Number of trees passed to [ranger::ranger()].
 #' @param mtry Number of covariates considered per split. The default `NULL` equals
 #'   the rounded down root of the number of features. Can be a function, e.g.,
-#'   `function(p) trunc(p/3)`. Passed to [ranger::ranger()].
+#'   `function(p) trunc(p/3)`. Passed to [ranger::ranger()]. Note that during the
+#'   first iteration, the number of features is growing. Thus, a fixed value can lead to
+#'   an error. Using a function like `function(p) min(p, 2)` will fix such problem.
 #' @param min.node.size Minimal node size passed to [ranger::ranger()].
 #'   By default 1 for classification and 5 for regression.
 #' @param min.bucket Minimal terminal node size passed to [ranger::ranger()].
