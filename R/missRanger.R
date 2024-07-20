@@ -135,10 +135,7 @@ missRanger <- function(
   )
   stopifnot(
     "'data' should be a data.frame!" = is.data.frame(data), 
-    "'data' should have at least one row and column!" = dim(data) >= 1L, 
-    "'formula' should be a formula!" = inherits(formula, "formula"), 
-    "Don't load {formula.tools}. It breaks base R's as.character()" = 
-      length(formula <- as.character(formula)) == 3L,
+    "'data' should have at least one row and one column!" = dim(data) >= 1L, 
     "'pmm.k' should not be negative!" = pmm.k >= 0L,
     "'maxiter' should be positive!" = maxiter >= 1L,
     "Incompatible ranger() arguments in ..." = !(bad_args  %in% names(list(...)))
@@ -159,19 +156,7 @@ missRanger <- function(
   }
 
   # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
-  
-  # Extract lhs and rhs from formula
-  parsef <- function(z) {
-    if (z == ".") {
-      return(colnames(data))
-    }
-    out <- attr(
-      stats::terms.formula(stats::reformulate(z), data = data[1L, ]),
-      "term.labels"
-    )
-    return(trimws(out, whitespace = "`"))  # Remove enclosing backticks
-  }
-  relevant_vars <- lapply(formula[2:3], parsef)
+  relevant_vars <- .formula_parser(formula, data[1L, ])
   
   # Pick variables from lhs with some but not all missings
   pick <- vapply(
@@ -465,4 +450,28 @@ revert <- function(con, X = con$X) {
   }
   X[, con$vars] <- Map(f, X[, con$vars, drop = FALSE], con$types, con$classes)
   X
+}
+
+# Helper functions
+
+# Extracts colnames of data from a string like "a + b + c"
+.string_parser <- function(z, data) {
+  if (z == ".") {
+    return(colnames(data))
+  }
+  out <- attr(stats::terms.formula(stats::reformulate(z), data = data), "term.labels")
+  return(trimws(out, whitespace = "`"))  # Remove annoying enclosing backticks
+}
+
+# Returns list with lhs and rhs variable name vectors
+.formula_parser <- function(formula, data) {
+  if (!inherits(formula, "formula")) {
+    stop("'formula' should be a formula!")
+  }
+  formula <- as.character(formula)
+  if (length(formula) != 3L) {
+    stop("Don't load {formula.tools}. It breaks base R's as.character()")
+  }
+  
+  return(lapply(formula[2:3], FUN = .string_parser, data = data))
 }
