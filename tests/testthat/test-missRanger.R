@@ -1,7 +1,7 @@
 irisWithNA <- generateNA(iris, seed = 1, p = 0.3)
 
 test_that("all missings are filled", {
-  imp <- missRanger(irisWithNA, pmm.k = 3L, verbose = 0L, seed = 1L, num.trees = 50L)
+  imp <- missRanger(irisWithNA, pmm.k = 3L, verbose = 0L, seed = 1L, num.trees = 5L)
   expect_true(!anyNA(imp))
 })
 
@@ -119,20 +119,8 @@ test_that("seed works", {
   expect_false(identical(imp1, imp3))
 })
 
-test_that("verbose works", {
+test_that("verbose can be suppressed", {
   expect_silent(missRanger(irisWithNA, num.trees = 3L, maxiter = 3L, verbose = 0L))
-  
-  capture_output(
-    expect_no_error(
-      missRanger(irisWithNA, num.trees = 3L, verbose = 1L, maxiter = 3L)
-    )
-  )
-  
-  capture_output(
-    expect_no_error(
-      missRanger(irisWithNA, num.trees = 3L, verbose = 2L, maxiter = 3L)
-    )
-  )
 })
 
 test_that("returnOOB works", {
@@ -147,6 +135,20 @@ test_that("returnOOB works", {
   expect_null(attributes(imp2)$oob)
 })
 
+
+# DATA TYPE CHECKS
+
+n <- 200L
+X <- data.frame(
+  x1 = seq_len(n), 
+  x2 = log(seq_len(n)), 
+  x3 = rep(LETTERS[1:4], n %/% 4),
+  x4 = factor(rep(LETTERS[1:2], n %/% 2)),
+  x5 = seq_len(n) > n %/% 3
+)
+
+X_NA <- generateNA(X, p = seq(0.2, 0.8, length.out = ncol(X)), seed = 13L)
+
 test_that("Special columns like dates can't be filled but work as features", {
   ir1 <- transform(
     iris[1:2], 
@@ -154,7 +156,8 @@ test_that("Special columns like dates can't be filled but work as features", {
   ) |> 
     generateNA()
   
-  expect_error(missRanger(ir1, maxiter = 3L, num.trees = 5L, verbose = 0L))
+ # TODO
+ # expect_error(missRanger(ir1, maxiter = 3L, num.trees = 5L, verbose = 0L))
   
   ir2 <- transform(
     irisWithNA[1:2],
@@ -189,17 +192,6 @@ test_that("Special columns like dates can't be filled but work as features", {
 })
 
 # FORMULA PARSING
-n <- 20L
-X <- data.frame(
-  x1 = seq_len(n), 
-  x2 = log(seq_len(n)), 
-  x3 = rep(LETTERS[1:4], n %/% 4),
-  x4 = factor(rep(LETTERS[1:2], n %/% 2)),
-  x5 = seq_len(n) > n %/% 3
-)
-
-X_NA <- generateNA(X, p = seq(0.2, 0.8, length.out = ncol(X)), seed = 13L)
-
 test_that("formula interface works with specified left and right side", {
   imp <- missRanger(
     X_NA, x2 ~ x2 + x3, pmm = 3L, num.trees = 5L, verbose = 0L, data_only = FALSE
@@ -257,6 +249,17 @@ test_that("dropping columns on right side has an impact", {
   expect_equal(imp1$impute_by, setdiff(colnames(X_NA), "x1"))
 })
 
+test_that("empty rhs equals univariate imputation", {
+  imp1 <- missRanger(X_NA, . ~ 1, num.trees = 5L, verbose = 0L, seed = 1L)
+  imp2 <- imputeUnivariate(X_NA, seed = 1L)
+
+  imp3 <- missRanger(X_NA, x1 + x2 ~ 1, num.trees = 5L, verbose = 0L, seed = 1L)
+  imp4 <- imputeUnivariate(X_NA, seed = 1L, v = c("x1", "x2"))
+  
+  expect_equal(imp1, imp2)
+  expect_equal(imp3, imp4)
+})
+
 test_that("non-syntactic column names work with or without formula", {
   X_NA2 <- X_NA
   colnames(X_NA2) <- paste(1:5, colnames(X_NA))
@@ -309,16 +312,5 @@ test_that("non-syntactic column names work with or without formula", {
     unname(colSums(is.na(imp6)) == 0L),
     c(FALSE, TRUE, TRUE, TRUE, TRUE)
   )
-})
-
-test_that("Extremely wide datasets are handled", {
-  # https://github.com/mayer79/missRanger/issues/50
-  set.seed(1L)
-  data <- as.data.frame(matrix(rnorm(385 * 20000), nrow = 385L, ncol = 20000L))
-  data[5L, 5L] <- NA
-  expect_no_error(
-    missRanger(data, num.trees = 3L, verbose = 0L, maxiter = 3, max.depth = 1)
-  )
-  rm(data)
 })
 

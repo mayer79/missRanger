@@ -84,22 +84,19 @@
 #'     http://www.jstatsoft.org/v45/i03/
 #' @export
 #' @examples
-#' irisWithNA <- generateNA(iris, seed = 34)
-#' irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100)
-#' head(irisImputed)
-#' head(irisWithNA)
+#' set.seed(34)
+#' iris2 <- generateNA(iris)
+#' 
+#' imp1 <- missRanger(iris2, pmm.k = 5, num.trees = 50, seed = 1)
+#' head(imp1)
 #' 
 #' # Extended output
-#' imp <- missRanger(irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE)
-#' head(imp$data)
-#' imp$pred_errors
+#' imp2 <- missRanger(iris2, pmm.k = 5, num.trees = 50, data_only = FALSE, seed = 1)
+#' summary(imp2)
+#' identical(imp1, imp2$data)  # TRUE
 #' 
-#' # If you even want to keep the random forests of the best iteration
-#' imp <- missRanger(
-#'   irisWithNA, pmm.k = 3, num.trees = 50, data_only = FALSE, keep_forests = TRUE
-#' )
-#' imp$forests$Sepal.Width
-#' imp$pred_errors[imp$best_iter, "Sepal.Width"]  # 1 - R-squared
+#' # Univariate imputation of Species and Sepal.Width
+#' imp3 <- missRanger(iris2, Species + Sepal.Width ~ 1)
 missRanger <- function(
     data,
     formula = . ~ .,
@@ -123,7 +120,7 @@ missRanger <- function(
     ...
   ) {
   if (verbose) {
-    cat("\nMissing value imputation by random forests\n")
+    message("Missing value imputation by random forests")
   }
   
   # 1) INITIAL CHECKS
@@ -157,31 +154,36 @@ missRanger <- function(
     data_raw <- data
   }
 
-  # 2) SELECT AND CONVERT VARIABLES TO IMPUTE
-  relevant_vars <- .formula_parser(formula, data[1L, ])
+  lhs_rhs <- .formula_parser(formula, data[1L, ])
+  to_impute <- lhs_rhs[[1L]]  # lhs
+  impute_by <- lhs_rhs[[2L]]  # rhs
   
-  # Pick variables from lhs with some but not all missings
-  pick <- vapply(
-    data[, relevant_vars[[1L]], drop = FALSE], 
+  # 2) SELECT VARIABLES TO IMPUTE
+  
+  # 2a) Pick variables with some but not all missings
+  ok <- vapply(
+    data[, to_impute, drop = FALSE], 
     FUN = function(z) anyNA(z) && !all(is.na(z)),
-    FUN.VALUE = TRUE
+    FUN.VALUE = logical(1L)
   )
-  to_impute <- relevant_vars[[1L]][pick]
+  to_impute <- to_impute[ok]
   
-  # Try to convert special variables to numeric/factor
-  # in order to be safely predicted by ranger
-  converted <- convert(data[, to_impute, drop = FALSE], check = TRUE)
-  data[, to_impute] <- converted$X
-  
-  # Remove variables that cannot be safely converted
-  to_impute <- setdiff(to_impute, converted$bad)
-  
-  if (verbose) {
-    cat("\n  Variables to impute:\t\t")
-    cat(to_impute, sep = ", ")
+  # 2b) Drop variables incompatible as responses in ranger()
+  #  Note: We *could* do univariate imputation though. But at this stage we do not
+  #  know this yet in all cases: impute_by might still contain bad variables.
+  ok <- vapply(
+    data[, to_impute, drop = FALSE], 
+    FUN = function(z) .check_response(z),
+    FUN.VALUE = logical(1L)
+  )
+  if (verbose && !all(ok)) {
+    message("Can't impute non-numeric/factor/character/logical features")
+    message(paste(to_impute[!ok], collapse = ", "))
   }
+  to_impute <- to_impute[ok]
   
-  if (!length(to_impute)) {
+  if (length(to_impute) == 0L) {
+    # Nothing to do...
     if (verbose) {
       cat("\n")
     }
@@ -205,19 +207,50 @@ missRanger <- function(
     }
   }
   
-  # Get missing indicators and order variables by number of missings
+  # Get missing indicators, and sort variables by increasing number of missings
   data_NA <- is.na(data[, to_impute, drop = FALSE])
   to_impute <- names(sort(colSums(data_NA)))
   
   # 3) SELECT VARIABLES USED TO IMPUTE
   
-  # Variables on the rhs should either appear in "to_impute" 
-  # or do not contain any missings
-  impute_by <- relevant_vars[[2L]][relevant_vars[[2L]] %in% to_impute | 
-     !vapply(data[, relevant_vars[[2L]], drop = FALSE], anyNA, TRUE)]
-  completed <- setdiff(impute_by, to_impute)
+  # Variables should either appear in "to_impute" or do not contain any missings
+  ok <- impute_by %in% to_impute |
+    !vapply(data[, impute_by, drop = FALSE], FUN = anyNA, FUN.VALUE = logical(1L))
+  if (verbose && !all(ok)) {
+    message("Can't use these features for imputation because they contain missing values 
+            and do not appear on the LHS of the formula.")
+    message(paste(impute_by[!ok], collapse = ", "))
+  }  
+  impute_by <- impute_by[ok]
   
+  # 3b) Drop variables that can't be used as features in ranger()
+  ok <- vapply(
+    data[, impute_by, drop = FALSE],
+    FUN = function(z) .check_feature(z),
+    FUN.VALUE = logical(1L)
+  )
+  if (verbose && !all(ok)) {
+    message("Dropping features of incompatible mode() to impute:")
+    message(paste(impute_by[!ok], collapse = ", "))
+  }
+  impute_by <- impute_by[ok]
+  
+  # 3c) Drop constant features (NA does not count as value)
+  ok <- vapply(
+    data[, impute_by, drop = FALSE],
+    FUN = function(z) length(unique(z[!is.na(z)])) > 1L,
+    FUN.VALUE = logical(1L)
+  )
+  if (verbose && !all(ok)) {
+    message("Skip constant features for imputation:")
+    message(paste(impute_by[!ok], collapse = ", "))
+  }
+  impute_by <- impute_by[ok]
+  
+
   if (verbose) {
+    cat("\n  Variables to impute:\t\t")
+    cat(to_impute, sep = ", ")
     cat("\n  Variables used to impute:\t")
     cat(impute_by, sep = ", ")
     cat("\n")
@@ -225,12 +258,14 @@ missRanger <- function(
 
   # 4) IMPUTATION
   
-  # Initialization  
-  j <- 1L
-  crit <- TRUE
-  dig <- 4L
-  pred_error <- stats::setNames(rep(1, length(to_impute)), to_impute)
-  pred_errors <- list()
+  # Initialization
+  completed <- setdiff(impute_by, to_impute)  # Immediately used as features in ranger()
+  j <- 1L                                     # Which iteration?
+  crit <- TRUE                                # Iterate until criterium is FALSE
+  dig <- 4L                                   # Only used if verbose = 2
+  pred_error <- rep(1, length(to_impute))     # Within iteration OOB errors per feature
+  names(pred_error) <- to_impute
+  pred_errors <- list()                       # Keeps OOB errors per iteration
   if (keep_forests) {
     forests <- list()
   }
@@ -263,6 +298,12 @@ missRanger <- function(
       if (length(completed) == 0L) {
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
+        y <- data[[v]][!v.na]
+        is_char <- is.character(y)
+        if (is_char) {
+          y <- as.factor(y)
+        }
+        
         fit <- ranger::ranger(
           num.trees = num.trees,
           mtry = mtry,
@@ -275,18 +316,21 @@ missRanger <- function(
           num.threads = num.threads,
           save.memory = save.memory,
           x = data[!v.na, completed, drop = FALSE],
-          y = data[[v]][!v.na],
+          y = y,
           ...
         )
 
         pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
+        
+        if (pmm.k >= 1L) {
+          pred <- pmm(xtrain = fit$predictions, xtest = pred, ytrain = y, k = pmm.k)
+        } else if (is.logical(y)) {
+          pred <- as.logical(pred)
+        } else if (is_char) {
+          pred <- as.character(pred)
+        }
 
-        data[v.na, v] <- if (pmm.k) pmm(
-          xtrain = fit$predictions,
-          xtest = pred,
-          ytrain = data[[v]][!v.na],
-          k = pmm.k
-        ) else pred
+        data[v.na, v] <- pred
         
         if (fit$treetype == "Regression") {
           pred_error[[v]] <- 1 - fit$r.squared
@@ -339,9 +383,6 @@ missRanger <- function(
     best_iter <- j - 2L
   }
   
-  # Revert the conversions
-  data_last <- revert(converted, X = data_last)
-  
   if (data_only) {
     if (returnOOB) {
       attr(data_last, "oob") <- pred_error_last 
@@ -364,97 +405,8 @@ missRanger <- function(
   return(out)
 }
 
-# Helper functions
 
-#' A version of [typeof()] internally used by [missRanger()].
-#'
-#' Returns either "numeric" (double or integer), "factor", "character", "logical", 
-#' "special" (mode numeric, but neither double nor integer) or "" (otherwise).
-#' [missRanger()] requires this information to deal with response types not natively 
-#' supported by [ranger::ranger()].
-#' 
-#' @noRd
-#' @param object Any object.
-#' @returns A string.
-typeof2 <- function(object) {
-  if (is.numeric(object)) "numeric" else
-    if (is.factor(object)) "factor" else
-      if (is.character(object)) "character" else
-        if (is.logical(object)) "logical" else
-          if (mode(object) == "numeric") "special" else ""
-}  
-
-#' Conversion of non-factor/non-numeric variables.
-#'
-#' Converts non-factor/non-numeric variables in a data frame to factor/numeric. 
-#' Stores information to revert back.
-#' 
-#' @noRd
-#' @param X A `data.frame`.
-#' @param check If `TRUE`, the function checks if the converted columns can be 
-#'   reverted without changes.
-#' @returns 
-#'   A list with the following elements: `X` is the converted data frame, 
-#'   `vars`, `types`, `classes` are the names, types and classes of the 
-#'   converted variables. Finally, `bad` names variables in `X` that should 
-#'   have been converted but could not. 
-convert <- function(X, check = FALSE) {
-  stopifnot(is.data.frame(X))
-  
-  if (!ncol(X)) {
-    out <- list(
-      X = X, 
-      bad = character(0), 
-      vars = character(0), 
-      types = character(0), 
-      classes = character(0)
-    )
-    return(out)
-  }
-  
-  types <- vapply(X, typeof2, FUN.VALUE = "")
-  bad <- types == "" | if (check) mapply(function(a, b) 
-    isFALSE(all.equal(a, b)), X, revert(convert(X))) else FALSE
-  types <- types[!(types %in% c("numeric", "factor") | bad)]
-  vars <- names(types)
-  classes <- lapply(X[, vars, drop = FALSE], class)
-  
-  X[, vars] <- lapply(X[, vars, drop = FALSE], function(v) 
-    if (is.character(v) || is.logical(v)) as.factor(v) else as.numeric(v))
-  
-  list(X = X, bad = names(X)[bad], vars = vars, types = types, classes = classes)
-}
-
-#' Revert conversion.
-#' 
-#' Reverts conversions done by [convert()].
-#' 
-#' @noRd
-#' @param con A list returned by [convert()].
-#' @param X A data frame with some columns to be converted back according to the 
-#'   information stored in \code{converted}.
-#' @returns A data frame.
-revert <- function(con, X = con$X) {
-  stopifnot(c("vars", "types", "classes") %in% names(con), is.data.frame(X))
-  
-  if (!length(con$vars)) {
-    return(X)
-  }
-  
-  f <- function(v, ty, cl) {
-    switch(
-      ty, 
-      logical = as.logical(v), 
-      character = as.character(v),
-      special = {class(v) <- cl; v}, 
-      v
-    )
-  }
-  X[, con$vars] <- Map(f, X[, con$vars, drop = FALSE], con$types, con$classes)
-  X
-}
-
-# Helper functions
+# HELPER FUNCTIONS
 
 # Extracts colnames of data from a string like "a + b + c"
 .string_parser <- function(z, data) {
@@ -474,6 +426,19 @@ revert <- function(con, X = con$X) {
   if (length(formula) != 3L) {
     stop("Don't load {formula.tools}. It breaks base R's as.character()")
   }
-  
   return(lapply(formula[2:3], FUN = .string_parser, data = data))
 }
+
+# Checks if response type can be used in ranger (or easily converted to)
+.check_response <- function(x) {
+  # is.numeric(1L) -> TRUE
+  return(is.numeric(x) || is.factor(x) || is.character(x) || is.logical(x))
+}
+
+# Checks if feature type can be used in ranger (assumption)
+.check_feature <- function(x) {
+  # factor/integer/Date -> "numeric"
+  return(mode(x) %in% c("numeric", "character", "logical"))
+}
+
+
