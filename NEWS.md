@@ -1,9 +1,16 @@
+# OUTLOOK for missRanger 3.0.0
+
+## Planned user-visible changes of defaults
+
+- `data_only = FALSE`. For the old API (simply return data), use `data_only = FALSE`.
+- `pmm.k = 3`. For the old behaviour (no PMM), set `pmm.k = 0`.
+
 # missRanger 2.6.0
 
 ## Possibly breaking changes
 
 - Special columns like date/time can't be imputed anymore. You will need to convert them to numeric before imputation.
-- `pmm()` is much more picky: `xtrain` and `xtest` must both be either numeric, logical, or factor (with identical levels).
+- `pmm()` is more picky: `xtrain` and `xtest` must both be either numeric, logical, or factor (with identical levels).
 
 ## Minor changes in output object
 
@@ -13,6 +20,7 @@
 ## Other changes
 
 - More compact vignettes.
+- Better examples.
 - Many relevant `ranger()` arguments are now explicit arguments in `missRanger()` to improve tab-completion experience:
   - num.trees = 500
   - mtry = NULL
