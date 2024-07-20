@@ -1,69 +1,61 @@
 #' Fast Imputation of Missing Values by Chained Random Forests
 #' 
-#' @description
-#' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by 
+#' Uses the "ranger" package (Wright & Ziegler) to do fast missing value imputation by
 #' chained random forests, see Stekhoven & Buehlmann and Van Buuren & Groothuis-Oudshoorn.
-#' Between the iterative model fitting, it offers the option of predictive mean matching. 
-#' This firstly avoids imputation with values not present in the original data 
-#' (like a value 0.3334 in a 0-1 coded variable). 
-#' Secondly, predictive mean matching tries to raise the variance in the resulting 
-#' conditional distributions to a realistic level. This allows to do multiple imputation 
-#' when repeating the call to [missRanger()]. 
+#' Between the iterative model fitting, it offers the option of predictive mean matching.
+#' This firstly avoids imputation with values not present in the original data
+#' (like a value 0.3334 in a 0-1 coded variable).
+#' Secondly, predictive mean matching tries to raise the variance in the resulting
+#' conditional distributions to a realistic level. This allows to do multiple imputation
+#' when repeating the call to [missRanger()].
 #' 
-#' @details
-#' The iterative chaining stops as soon as `maxiter` is reached or if the average 
-#' out-of-bag (OOB) prediction errors stop reducing. 
-#' In the latter case, except for the first iteration, the second last (= best) 
+#' The iterative chaining stops as soon as `maxiter` is reached or if the average
+#' out-of-bag (OOB) prediction errors stop reducing.
+#' In the latter case, except for the first iteration, the second last (= best)
 #' imputed data is returned.
 #' 
-#' OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as 
+#' OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as
 #' classification error otherwise. If a variable has been imputed only univariately,
 #' the value is 1.
 #' 
-#' A note on `mtry`: Be careful when passing a non-default `mtry` to 
-#' [ranger::ranger()] because the number of available covariates might be growing during 
-#' the first iteration, depending on the missing pattern. 
-#' Values `NULL` (default) and 1 are safe choices. 
-#' Additionally, recent versions of [ranger::ranger()] allow `mtry` to be a 
-#' single-argument function of the number of available covariables, 
-#' e.g., `mtry = function(m) max(1, m %/% 3)`.
-#' 
 #' @param data A `data.frame` with missing values to impute.
-#' @param formula A two-sided formula specifying variables to be imputed 
-#'   (left hand side) and variables used to impute (right hand side). 
-#'   Defaults to `. ~ .`, i.e., use all variables to impute all variables. 
-#'   For instance, if all variables (with missings) should be imputed by all variables 
-#'   except variable "ID", use `. ~ . - ID`. Note that a "." is evaluated 
-#'   separately for each side of the formula. Further note that variables with missings 
+#' @param formula A two-sided formula specifying variables to be imputed
+#'   (left hand side) and variables used to impute (right hand side).
+#'   Defaults to `. ~ .`, i.e., use all variables to impute all variables.
+#'   For instance, if all variables (with missings) should be imputed by all variables
+#'   except variable "ID", use `. ~ . - ID`. Note that a "." is evaluated
+#'   separately for each side of the formula. Further note that variables with missings
 #'   must appear in the left hand side if they should be used on the right hand side.
 #' @param pmm.k Number of candidate non-missing values to sample from in the 
 #'   predictive mean matching steps. 0 to avoid this step.
 #' @param num.trees Number of trees passed to [ranger::ranger()].
+#' @param mtry Number of covariates considered per split. The default `NULL` equals
+#'   the rounded down root of the number of features. Can be a function, e.g.,
+#'   `function(p) trunc(p/3)`. Passed to [ranger::ranger()].
 #' @param min.node.size Minimal node size passed to [ranger::ranger()].
 #'   By default 1 for classification and 5 for regression.
+#' @param min.bucket Minimal terminal node size passed to [ranger::ranger()].
+#'   The default `NULL` means 1.
 #' @param max.depth Maximal tree depth passed to [ranger::ranger()].
 #'   `NULL` means unlimited depth. 1 means single split trees.
+#' @param replace Sample with replacement passed to [ranger::ranger()].
+#' @param sample.fraction Fraction of rows per tree passed to [ranger::ranger()].
+#'   The default: use all rows when `replace = TRUE` and 0.632 otherwise.
+#' @param case.weights Optional case weights passed to [ranger::ranger()].
 #' @param num.threads Number of threads passed to [ranger::ranger()].
-#'   The default uses all threads.
-#' @param maxiter Maximum number of chaining iterations.
-#' @param seed Integer seed to initialize the random generator.
-#' @param verbose Controls how much info is printed to screen. 
-#'   0 to print nothing. 1 (default) to print a progress bar per iteration, 
-#'   2 to print the OOB prediction error per iteration and variable 
-#'   (1 minus R-squared for regression).
-#'   Furthermore, if `verbose` is positive, the variables used for imputation are 
-#'   listed as well as the variables to be imputed (in the imputation order). 
-#'   This will be useful to detect if some variables are unexpectedly skipped.
-#' @param returnOOB Logical flag. If TRUE, the final average out-of-bag prediction 
-#'   errors per variable is added to the resulting data as attribute "oob". 
-#'   Only relevant when `data_only = TRUE` (and when forests are grown).
-#' @param case.weights Optional vector with case weights passed to [ranger::ranger()].
+#'   The default `NULL` uses all threads.
+#' @param save.memory Slow but memory saving mode of [ranger::ranger()].
+#' @param maxiter Maximum number of iterations.
+#' @param seed Integer seed.
+#' @param verbose A value in 0, 1, 2 contolling the verbosity.
+#' @param returnOOB Should the final average OOB prediction errors be added
+#'   as data attribute "oob"? Only relevant when `data_only = TRUE`.
 #' @param data_only If `TRUE` (default), only the imputed data is returned.
 #'   Otherwise, a "missRanger" object with additional information is returned.
-#' @param keep_forests Should the random forests of the final imputations
+#' @param keep_forests Should the random forests of the last relevant iteration
 #'   be returned? The default is `FALSE`. Setting this option will use a lot of memory.
-#'   Only relevant when `data_only = TRUE` (and when forests are grown).
-#' @param ... Additional arguments passed to [ranger::ranger()].
+#'   Only relevant when `data_only = TRUE`.
+#' @param ... Additional arguments passed to [ranger::ranger()]. Not all make sense.
 #' @returns 
 #'   If `data_only = TRUE` an imputed `data.frame`. Otherwise, a "missRanger" object
 #'   with the following elements:
@@ -111,14 +103,19 @@ missRanger <- function(
     formula = . ~ .,
     pmm.k = 0L,
     num.trees = 500,
+    mtry = NULL,
     min.node.size = NULL,
+    min.bucket = NULL,
     max.depth = NULL,
+    replace = TRUE,
+    sample.fraction = if (replace) 1 else 0.632,
+    case.weights = NULL,
     num.threads = NULL,
+    save.memory = FALSE,
     maxiter = 10L,
     seed = NULL,
     verbose = 1,
     returnOOB = FALSE,
-    case.weights = NULL,
     data_only = TRUE,
     keep_forests = FALSE,
     ...
@@ -129,8 +126,12 @@ missRanger <- function(
   
   # 1) INITIAL CHECKS
   bad_args <- c(
-    "write.forest", "probability", "split.select.weights",  
-    "dependent.variable.name", "classification"
+    "write.forest", 
+    "probability", 
+    "quantreg", 
+    "oob.error", 
+    "dependent.variable.name", 
+    "classification"
   )
   stopifnot(
     "'data' should be a data.frame!" = is.data.frame(data), 
@@ -262,7 +263,7 @@ missRanger <- function(
         cat("\niter ", j, ":\t", sep = "")
       }
     }
-    
+
     data_last <- data
     pred_error_last <- pred_error
     if (keep_forests) {
@@ -271,22 +272,28 @@ missRanger <- function(
 
     for (v in to_impute) {
       v.na <- data_NA[, v]
-      
+
       if (length(completed) == 0L) {
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         fit <- ranger::ranger(
           num.trees = num.trees,
+          mtry = mtry,
           min.node.size = min.node.size,
+          min.bucket = min.bucket,
           max.depth = max.depth,
+          replace = replace,
+          sample.fraction = sample.fraction,
+          case.weights = case.weights[!v.na],
           num.threads = num.threads,
+          save.memory = save.memory,
           x = data[!v.na, completed, drop = FALSE],
           y = data[[v]][!v.na],
-          case.weights = case.weights[!v.na],
           ...
         )
+
         pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
-        
+
         data[v.na, v] <- if (pmm.k) pmm(
           xtrain = fit$predictions,
           xtest = pred,

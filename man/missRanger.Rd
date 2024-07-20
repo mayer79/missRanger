@@ -9,14 +9,19 @@ missRanger(
   formula = . ~ .,
   pmm.k = 0L,
   num.trees = 500,
+  mtry = NULL,
   min.node.size = NULL,
+  min.bucket = NULL,
   max.depth = NULL,
+  replace = TRUE,
+  sample.fraction = if (replace) 1 else 0.632,
+  case.weights = NULL,
   num.threads = NULL,
+  save.memory = FALSE,
   maxiter = 10L,
   seed = NULL,
   verbose = 1,
   returnOOB = FALSE,
-  case.weights = NULL,
   data_only = TRUE,
   keep_forests = FALSE,
   ...
@@ -38,41 +43,48 @@ predictive mean matching steps. 0 to avoid this step.}
 
 \item{num.trees}{Number of trees passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
 
+\item{mtry}{Number of covariates considered per split. The default \code{NULL} equals
+the rounded down root of the number of features. Can be a function, e.g.,
+\code{function(p) trunc(p/3)}. Passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+
 \item{min.node.size}{Minimal node size passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
 By default 1 for classification and 5 for regression.}
+
+\item{min.bucket}{Minimal terminal node size passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+The default \code{NULL} means 1.}
 
 \item{max.depth}{Maximal tree depth passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
 \code{NULL} means unlimited depth. 1 means single split trees.}
 
+\item{replace}{Sample with replacement passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+
+\item{sample.fraction}{Fraction of rows per tree passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+The default: use all rows when \code{replace = TRUE} and 0.632 otherwise.}
+
+\item{case.weights}{Optional case weights passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+
 \item{num.threads}{Number of threads passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
-The default uses all threads.}
+The default \code{NULL} uses all threads.}
 
-\item{maxiter}{Maximum number of chaining iterations.}
+\item{save.memory}{Slow but memory saving mode of \code{\link[ranger:ranger]{ranger::ranger()}}.}
 
-\item{seed}{Integer seed to initialize the random generator.}
+\item{maxiter}{Maximum number of iterations.}
 
-\item{verbose}{Controls how much info is printed to screen.
-0 to print nothing. 1 (default) to print a progress bar per iteration,
-2 to print the OOB prediction error per iteration and variable
-(1 minus R-squared for regression).
-Furthermore, if \code{verbose} is positive, the variables used for imputation are
-listed as well as the variables to be imputed (in the imputation order).
-This will be useful to detect if some variables are unexpectedly skipped.}
+\item{seed}{Integer seed.}
 
-\item{returnOOB}{Logical flag. If TRUE, the final average out-of-bag prediction
-errors per variable is added to the resulting data as attribute "oob".
-Only relevant when \code{data_only = TRUE} (and when forests are grown).}
+\item{verbose}{A value in 0, 1, 2 contolling the verbosity.}
 
-\item{case.weights}{Optional vector with case weights passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+\item{returnOOB}{Should the final average OOB prediction errors be added
+as data attribute "oob"? Only relevant when \code{data_only = TRUE}.}
 
 \item{data_only}{If \code{TRUE} (default), only the imputed data is returned.
 Otherwise, a "missRanger" object with additional information is returned.}
 
-\item{keep_forests}{Should the random forests of the final imputations
+\item{keep_forests}{Should the random forests of the last relevant iteration
 be returned? The default is \code{FALSE}. Setting this option will use a lot of memory.
-Only relevant when \code{data_only = TRUE} (and when forests are grown).}
+Only relevant when \code{data_only = TRUE}.}
 
-\item{...}{Additional arguments passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+\item{...}{Additional arguments passed to \code{\link[ranger:ranger]{ranger::ranger()}}. Not all make sense.}
 }
 \value{
 If \code{data_only = TRUE} an imputed \code{data.frame}. Otherwise, a "missRanger" object
@@ -109,14 +121,6 @@ imputed data is returned.
 OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as
 classification error otherwise. If a variable has been imputed only univariately,
 the value is 1.
-
-A note on \code{mtry}: Be careful when passing a non-default \code{mtry} to
-\code{\link[ranger:ranger]{ranger::ranger()}} because the number of available covariates might be growing during
-the first iteration, depending on the missing pattern.
-Values \code{NULL} (default) and 1 are safe choices.
-Additionally, recent versions of \code{\link[ranger:ranger]{ranger::ranger()}} allow \code{mtry} to be a
-single-argument function of the number of available covariables,
-e.g., \code{mtry = function(m) max(1, m \%/\% 3)}.
 }
 \examples{
 irisWithNA <- generateNA(iris, seed = 34)
