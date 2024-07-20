@@ -11,11 +11,7 @@
 #' @export
 #' @examples
 #' imputeUnivariate(c(NA, 0, 1, 0, 1))
-#' imputeUnivariate(c("A", "A", NA))
-#' imputeUnivariate(as.factor(c("A", "A", NA)))
 #' head(imputeUnivariate(generateNA(iris)))
-#' head(imputeUnivariate(generateNA(iris), v = "Species"))
-#' head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
 imputeUnivariate <- function(x, v = NULL, seed = NULL) {
   stopifnot(is.atomic(x) || is.data.frame(x))
   
@@ -43,6 +39,6 @@ imputeUnivariate <- function(x, v = NULL, seed = NULL) {
   v <- if (is.null(v)) names(x) else intersect(v, names(x))
   x[, v] <- lapply(x[, v, drop = FALSE], imputeVec)
 
-  x
+  return(x)
 }
-  
+
