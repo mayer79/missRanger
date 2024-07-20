@@ -34,7 +34,7 @@ summary.missRanger <- function(object, ...) {
   print(object)
   cat("\nSequence of OOB prediction errors:\n\n")
   print(object$pred_errors)
-  cat("\nCorresponding means:\n")
+  cat("\nMean performance per iteration:\n")
   print(object$mean_pred_errors)
   cat("\nFirst rows of imputed data:\n\n")
   print(utils::head(object$data, 3L))
