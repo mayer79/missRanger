@@ -1,40 +1,37 @@
 #' Predictive Mean Matching
 #'
-#' For each value in the prediction vector `xtest`, one of the closest `k` 
-#' values in the prediction vector `xtrain` is randomly chosen and its observed 
-#' value in `ytrain` is returned. 
-#' 
-#' @param xtrain Vector with predicted values in the training data. 
-#'   Can be of type logical, numeric, character, or factor.
-#' @param xtest Vector as `xtrain` with predicted values in the test data. 
+#' For each value in the prediction vector `xtest`, one of the closest `k`
+#' values in the prediction vector `xtrain` is randomly chosen and its observed
+#' value in `ytrain` is returned. Note that `xtrain` and `xtest` must be both either
+#' numeric, logical, or factor-valued. `ytest` can be of any type.
+#'
+#' @param xtrain Vector with predicted values in the training data.
+#'   Must be numeric, logical, or factor-valued.
+#' @param xtest Vector as `xtrain` with predicted values in the test data.
 #'   Missing values are not allowed.
 #' @param ytrain Vector of the observed values in the training data. Must be of same 
-#'   length as `xtrain`. Missing values in either of `xtrain` or `ytrain` will 
-#'   be dropped in a pairwise manner.
-#' @param k Number of nearest neighbours to sample from.
+#'   length as `xtrain`.
+#' @param k Number of nearest neighbours (donors) to sample from.
 #' @param seed Integer random seed.
 #' @returns Vector of the same length as `xtest` with values from `xtrain`.
 #' @export
 #' @examples 
-#' pmm(xtrain = c(0.2, 0.2, 0.8), xtest = 0.3, ytrain = c(0, 0, 1))
-#' pmm(xtrain = c(TRUE, FALSE, TRUE), xtest = FALSE, ytrain = c(2, 0, 1))
-#' pmm(xtrain = c(0.2, 0.8), xtest = 0.3, ytrain = c("A", "B"), k = 2)
-#' pmm(xtrain = c("A", "A", "B"), xtest = "A", ytrain = c(2, 2, 4), k = 2)
-#' pmm(xtrain = factor(c("A", "B")), xtest = factor("C"), ytrain = 1:2)
+#' pmm(xtrain = c(0.2, 0.3, 0.8), xtest = c(0.7, 0.2), ytrain = 1:3, k = 1)  # c(3, 1)
 pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
   stopifnot(
-    length(xtrain) == length(ytrain), 
-    length(xtest) >= 1L, 
+    (is.numeric(xtrain) && is.numeric(xtest)) ||
+      (is.factor(xtrain) && is.factor(xtest)) ||
+      (is.logical(xtrain) && is.logical(xtest)),
+    length(xtrain) == length(ytrain),
+    length(xtest) >= 1L,
     !anyNA(xtest),
-    mode(xtrain) %in% c("logical", "numeric", "character"),  # factor/int are "numeric"
-    class(xtrain) == class(xtest),  # multiple classes are okay
     k >= 1L
   )
   
   # Filter on complete train data
   ok <- !is.na(xtrain) & !is.na(ytrain)
   if (!any(ok)) {
-    stop("xtrain and ytrain need at least one complete observation")
+    stop("'xtrain' and 'ytrain' need at least one complete observation")
   }
   xtrain <- xtrain[ok]
   ytrain <- ytrain[ok]
@@ -49,29 +46,19 @@ pmm <- function(xtrain, xtest, ytrain, k = 1L, seed = NULL) {
     set.seed(seed)
   }
   
-  # STEP 1: Turn xtrain and xtest into numbers
-  # Handles the case of inconsistent factor levels of xtrain and xtest
   if (is.factor(xtrain) && !identical(levels(xtrain), levels(xtest))) {
-    xtrain <- as.character(xtrain)
-    xtest <- as.character(xtest)
+    stop("Incompatible factor levels in 'xtrain' and 'xtest'")  
   }
   
-  # Turns character vectors into factors
-  if (is.character(xtrain)) {
-    lvl <- unique(c(xtrain, xtest))
-    xtrain <- factor(xtrain, levels = lvl)
-    xtest <- factor(xtest, levels = lvl)
-  } 
-  
-  # Turns x into numbers (note: factors and logicals are converted here)
   if (!is.numeric(xtrain)) {
     xtrain <- as.numeric(xtrain)
     xtest <- as.numeric(xtest)
-  } 
+  }
   
-  # STEP 2: PMM based on k-nearest neightbour
+  # PMM based on k-nearest neightbour
   k <- min(k, length(xtrain))
   nn <- FNN::knnx.index(xtrain, xtest, k)
   take <- t(stats::rmultinom(length(xtest), 1L, rep(1L, k)))
-  ytrain[rowSums(nn * take)]
+  
+  return(ytrain[rowSums(nn * take)])
 }

@@ -1,5 +1,10 @@
 # missRanger 2.6.0
 
+## Possibly breaking changes
+
+- Special columns like date/time can't be imputed anymore. You will need to convert them to numeric before imputation.
+- `pmm()` is much more picky: `xtrain` and `xtest` must both be either numeric, logical, or factor (with identical levels).
+
 ## Minor changes in output object
 
 - Add original data as `data_raw`.
@@ -19,6 +24,7 @@
   - case.weights = NULL
   - num.threads = NULL
   - save.memory = FALSE
+- For variables that can't be used, more information is printed.
 
 # missRanger 2.5.0
 
