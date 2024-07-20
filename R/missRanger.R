@@ -284,7 +284,7 @@ missRanger <- function(
           max.depth = max.depth,
           replace = replace,
           sample.fraction = sample.fraction,
-          case.weights = case.weights[!v.na],
+          case.weights = if (!is.null(case.weights)) case.weights[!v.na],
           num.threads = num.threads,
           save.memory = save.memory,
           x = data[!v.na, completed, drop = FALSE],
