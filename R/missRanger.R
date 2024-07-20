@@ -140,8 +140,8 @@ missRanger <- function(
     "Don't load {formula.tools}. It breaks base R's as.character()" = 
       length(formula <- as.character(formula)) == 3L,
     "'pmm.k' should not be negative!" = pmm.k >= 0L,
-    "'maxiter' should be a positiv number!" = maxiter >= 1L,
-    "incompatible ranger arguments" = !(bad_args  %in% names(list(...)))
+    "'maxiter' should be positive!" = maxiter >= 1L,
+    "Incompatible ranger() arguments in ..." = !(bad_args  %in% names(list(...)))
   )
   if (!is.null(case.weights)) {
     stopifnot(
