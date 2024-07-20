@@ -71,7 +71,7 @@ veteran2 <- generateNA(veteran2, p = c(age = 0.1, karno = 0.1, diagtime = 0.1))
 # 2. Generate 20 complete data sets, representing "time" and "status" by "surv"
 filled <- replicate(
   20, 
-  missRanger(veteran2, . ~ . - time - status, verbose = 0, pmm.k = 10, num.trees = 25), 
+  missRanger(veteran2, . ~ . - time - status, verbose = 0, pmm.k = 10, num.trees = 100), 
   simplify = FALSE
 )
 
@@ -81,28 +81,28 @@ models <- lapply(filled, function(x) coxph(Surv(time, status) ~ . - surv, x))
 # 4. Pool the results by mice
 summary(pooled_fit <- pool(models))
 
-               term     estimate   std.error  statistic        df      p.value
-1               trt  0.253538955 0.212912636  1.1908122 108.60558 2.363235e-01
-2 celltypesmallcell  0.815455716 0.285715626  2.8540816 113.48112 5.132019e-03
-3     celltypeadeno  1.110530627 0.311566058  3.5643505 108.55506 5.436043e-04
-4     celltypelarge  0.346762041 0.288497586  1.2019582 113.27005 2.318866e-01
-5             karno -0.030754195 0.005758037 -5.3410901  99.68585 5.837902e-07
-6          diagtime  0.001835002 0.009233708  0.1987286 107.07024 8.428519e-01
-7               age -0.006032505 0.009447786 -0.6385099 101.88961 5.245745e-01
-8             prior  0.002983767 0.023275501  0.1281935 115.27919 8.982192e-01
+#                term     estimate   std.error   statistic        df      p.value
+# 1               trt  0.264601452 0.212828712  1.24326013 110.30869 2.164079e-01
+# 2 celltypesmallcell  0.789909124 0.284989547  2.77171262 113.68488 6.516937e-03
+# 3     celltypeadeno  1.114851697 0.306765748  3.63421179 113.01225 4.210453e-04
+# 4     celltypelarge  0.356374858 0.289111314  1.23265621 112.81945 2.202666e-01
+# 5             karno -0.031939872 0.005678831 -5.62437418 111.96501 1.388135e-07
+# 6          diagtime  0.003620720 0.008929001  0.40550108  99.98576 6.859756e-01
+# 7               age -0.007503755 0.009199070 -0.81570798 108.97973 4.164464e-01
+# 8             prior  0.002002572 0.023640459  0.08470952 112.81848 9.326425e-01
 
 # Compare with the results on the original data
 summary(coxph(Surv(time, status) ~ ., veteran))$coefficients
 
-                           coef exp(coef)    se(coef)            z     Pr(>|z|)
-trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01
-celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03
-celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05
-celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01
-karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09
-diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01
-age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01
-prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01
+#                            coef exp(coef)    se(coef)            z     Pr(>|z|)
+# trt                2.946028e-01 1.3425930 0.207549604  1.419433313 1.557727e-01
+# celltypesmallcell  8.615605e-01 2.3668512 0.275284474  3.129709606 1.749792e-03
+# celltypeadeno      1.196066e+00 3.3070825 0.300916994  3.974738536 7.045662e-05
+# celltypelarge      4.012917e-01 1.4937529 0.282688638  1.419553530 1.557377e-01
+# karno             -3.281533e-02 0.9677173 0.005507757 -5.958020093 2.553121e-09
+# diagtime           8.132051e-05 1.0000813 0.009136062  0.008901046 9.928981e-01
+# age               -8.706475e-03 0.9913313 0.009300299 -0.936149992 3.491960e-01
+# prior              7.159360e-03 1.0071850 0.023230538  0.308187441 7.579397e-01
 ```
 
 ## References

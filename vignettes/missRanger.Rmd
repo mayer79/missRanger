@@ -60,7 +60,7 @@ head(irisImputed)
 
 ### Predictive mean matching
 
-It worked, but the new values appear overly exact. To avoid this, we can activate predictive mean matching (PMM):
+It worked, but the new values appear overly exact. To avoid this, we can add predictive mean matching (PMM) to the random forest predictions:
 
 ``` {r}
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
@@ -72,15 +72,15 @@ head(irisImputed)
 `missRanger()` offers many options to control the random forests grown by `ranger()`. Additional options to `ranger()` can be passed via `...`. How would we use one feature per split (mtry = 1) with 50 trees?
 
 ``` {r}
-irisImputed_et <- missRanger(
+irisImputed2 <- missRanger(
   irisWithNA, pmm.k = 3, mtry = 1, num.trees = 50, verbose = 0
 )
-head(irisImputed_et)
+head(irisImputed2)
 ```
 
-### Use in Pipe
+### Pipe
 
-{missRanger} also plays well together with the pipe:
+`missRanger()` plays well together with the pipe operator:
 
 ```{r}
 iris |>
@@ -91,10 +91,11 @@ iris |>
 
 ### Extended output
 
-Setting `data_only = FALSE` returns a "missRanger" object containing more information. Use `imp$data` to extract the imputed data.
+Setting `data_only = FALSE` returns a "missRanger" object containing more information.
 
 ```{r}
 (imp <- missRanger(irisWithNA, data_only = FALSE, verbose = 0))
+
 summary(imp)
 ```
 
@@ -107,22 +108,22 @@ This can be modified by passing a formula: The left hand side specifies the vari
 ``` {r}
 # Impute all variables with all (default behaviour)
 m <- missRanger(
-  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 10, seed = 1, verbose = 0
+  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 100, seed = 1, verbose = 0
 )
 
 # Don't use Species for imputation
-m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 10, verbose = 0)
+m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100, verbose = 0)
 
 # Impute Sepal.Width by Species(?)
 m <- missRanger(
-  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 10
+  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 100
 )
 head(m)
 
 # Only univariate imputation was done. Why? Because Species contains missing values
 # itself and needs to appear on the lhs as well:
 m <- missRanger(
-  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 10
+  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 100
 )
 head(m)
 
@@ -132,13 +133,13 @@ m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
 
 ### Speed-up things
 
-`missRanger()` is based on iteratively fitting random forests for each variable with missing values. For larger datasets, imputation can take long. Some tweaks to make things faster:
+`missRanger()` fits a random forest per variable and iteration. Thus, imputation can take long. Some tweaks to make things faster:
 
-- Use less trees, e.g., `num.trees = 20`.
-- Use smaller bootstrap samples, e.g., `sample.fraction = 0.1`.
+- Use less trees, e.g., `num.trees = 100`.
+- Use smaller bootstrap samples, e.g., `sample.fraction = 0.2`.
 - Use a smaller tree depth, e.g., `max.depth = 6`.
 - Use large leaves, e.g., `min.node.size = 100`.
-- Use less iterations, e.g., `max.iter = 2`.
+- Use less iterations, e.g., `max.iter = 3`.
 
 ### Trick: Use `case.weights` to reduce impact of rows with many missings
 
@@ -147,7 +148,7 @@ Using the `case.weights` argument, you can pass case weights to the imputation m
 ``` {r}
 m <- missRanger(
   irisWithNA,
-  num.trees = 20,
+  num.trees = 100,
   pmm.k = 3,
   seed = 5,
   verbose = 0,

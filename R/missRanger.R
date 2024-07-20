@@ -424,7 +424,7 @@ missRanger <- function(
   }
   formula <- as.character(formula)
   if (length(formula) != 3L) {
-    stop("Don't load {formula.tools}. It breaks base R's as.character()")
+    stop("Formula must have left and right hand side. If it has: Don't load {formula.tools}. It breaks base R's as.character()")
   }
   return(lapply(formula[2:3], FUN = .string_parser, data = data))
 }
@@ -440,5 +440,4 @@ missRanger <- function(
   # factor/integer/Date -> "numeric"
   return(mode(x) %in% c("numeric", "character", "logical"))
 }
-
 
