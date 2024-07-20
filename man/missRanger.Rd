@@ -45,7 +45,9 @@ predictive mean matching steps. 0 to avoid this step.}
 
 \item{mtry}{Number of covariates considered per split. The default \code{NULL} equals
 the rounded down root of the number of features. Can be a function, e.g.,
-\code{function(p) trunc(p/3)}. Passed to \code{\link[ranger:ranger]{ranger::ranger()}}.}
+\code{function(p) trunc(p/3)}. Passed to \code{\link[ranger:ranger]{ranger::ranger()}}. Note that during the
+first iteration, the number of features is growing. Thus, a fixed value can lead to
+an error. Using a function like \code{function(p) min(p, 2)} will fix such problem.}
 
 \item{min.node.size}{Minimal node size passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
 By default 1 for classification and 5 for regression.}

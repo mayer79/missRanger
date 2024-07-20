@@ -147,6 +147,47 @@ test_that("returnOOB works", {
   expect_null(attributes(imp2)$oob)
 })
 
+test_that("Special columns like dates can't be filled but work as features", {
+  ir1 <- transform(
+    iris[1:2], 
+    date = seq.Date(as.Date("2001-01-01"), length.out = nrow(iris), by = "1 d")
+  ) |> 
+    generateNA()
+  
+  expect_error(missRanger(ir1, maxiter = 3L, num.trees = 5L, verbose = 0L))
+  
+  ir2 <- transform(
+    irisWithNA[1:2],
+    date = seq.Date(as.Date("2001-01-01"), length.out = nrow(iris), by = "1 d")
+  )
+  
+  imp1 <- missRanger(
+    ir2,
+    maxiter = 3L,
+    num.trees = 20L,
+    verbose = 0L,
+    seed = 1L,
+    data_only = FALSE,
+    mtry = 1
+  )
+  imp2 <- missRanger(
+    ir2, 
+    . ~ . - Sepal.Width,
+    maxiter = 3L,
+    num.trees = 20L,
+    verbose = 0L,
+    seed = 1L,
+    data_only = FALSE,
+    mtry = 1
+  )
+  
+  expect_false(identical(imp1$data, imp2$data))
+  expect_equal(sort(imp1$to_impute), c("Sepal.Length", "Sepal.Width"))
+  expect_equal(sort(imp2$to_impute), c("Sepal.Length", "Sepal.Width"))
+  expect_equal(imp1$impute_by, c("Sepal.Length", "Sepal.Width", "date"))
+  expect_equal(imp2$impute_by, c("Sepal.Length", "date"))
+})
+
 # FORMULA PARSING
 n <- 20L
 X <- data.frame(
@@ -179,8 +220,8 @@ test_that("formula interface works with unspecified right side", {
   
   expect_equal(unname(na_per_col[2:3]), c(0, 0))
   expect_true(all(na_per_col[-c(2:3)] >= 1L))
-  expect_equal(imp$to_impute, c("x2", "x3"))
-  expect_equal(imp$impute_by, c("x2", "x3"))
+  expect_equal(sort(imp$to_impute), c("x2", "x3"))
+  expect_equal(sort(imp$impute_by), c("x2", "x3"))
 })
 
 test_that("formula interface works with unspecified left side", {
@@ -188,7 +229,7 @@ test_that("formula interface works with unspecified left side", {
     X_NA, . ~ x1, pmm = 3L, num.trees = 5L, verbose = 0L, data_only = FALSE
   )
   expect_true(!anyNA(imp$data))
-  expect_equal(imp$to_impute, colnames(X_NA))
+  expect_equal(sort(imp$to_impute), sort(colnames(X_NA)))
   expect_equal(imp$impute_by, "x1")
 })
 
@@ -201,7 +242,7 @@ test_that("dropping columns on left side leave missing values", {
     c(x1 = TRUE, x2 = FALSE, x3 = FALSE, x4 = FALSE, x5 = FALSE)
   )
   xpected <- setdiff(colnames(X_NA), "x1")
-  expect_equal(imp$to_impute, xpected)
+  expect_equal(sort(imp$to_impute), sort(xpected))
   expect_equal(imp$impute_by, xpected)
 })
 
@@ -212,7 +253,7 @@ test_that("dropping columns on right side has an impact", {
   imp2 <- missRanger(X_NA, num.trees = 5L, verbose = 0L, seed = 1L)
   
   expect_false(identical(imp1$data, imp2))
-  expect_equal(imp1$to_impute, colnames(X_NA))
+  expect_equal(sort(imp1$to_impute), sort(colnames(X_NA)))
   expect_equal(imp1$impute_by, setdiff(colnames(X_NA), "x1"))
 })
 

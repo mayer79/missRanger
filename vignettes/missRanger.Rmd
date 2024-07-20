@@ -73,11 +73,7 @@ head(irisImputed)
 
 ``` {r}
 irisImputed_et <- missRanger(
-  irisWithNA, 
-  pmm.k = 3, 
-  mtry = 1,
-  num.trees = 50, 
-  verbose = 0
+  irisWithNA, pmm.k = 3, mtry = 1, num.trees = 50, verbose = 0
 )
 head(irisImputed_et)
 ```
