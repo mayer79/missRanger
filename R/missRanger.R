@@ -84,8 +84,7 @@
 #'     http://www.jstatsoft.org/v45/i03/
 #' @export
 #' @examples
-#' set.seed(34)
-#' iris2 <- generateNA(iris)
+#' iris2 <- generateNA(iris, seed = 1)
 #' 
 #' imp1 <- missRanger(iris2, pmm.k = 5, num.trees = 50, seed = 1)
 #' head(imp1)
@@ -93,9 +92,10 @@
 #' # Extended output
 #' imp2 <- missRanger(iris2, pmm.k = 5, num.trees = 50, data_only = FALSE, seed = 1)
 #' summary(imp2)
-#' identical(imp1, imp2$data)  # TRUE
 #' 
-#' # Univariate imputation of Species and Sepal.Width
+#' all.equal(imp1, imp2$data)
+#' 
+#' # Formula interface: Univariate imputation of Species and Sepal.Width
 #' imp3 <- missRanger(iris2, Species + Sepal.Width ~ 1)
 missRanger <- function(
     data,
