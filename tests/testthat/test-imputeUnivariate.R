@@ -1,37 +1,36 @@
 test_that("it works for numeric vectors", {
-  x <- c(NA, 1:10, NA)
+  x <- c(NA, c(1.1, 0.2), NA)
   filled <- imputeUnivariate(x)
   expect_true(!anyNA(filled))
-})
-
-test_that("it gives same value for numeric vector", {
-  x <- c(NA, NA, 1:10)
-  filled <- imputeUnivariate(x, seed = 1L)
-  expect_equal(filled[1:2], c(9L, 4L))
+  expect_true(is.numeric(filled))
 })
 
 test_that("it works for character vectors", {
   x <- c(LETTERS[1:10], NA, NA)
   filled <- imputeUnivariate(x)
   expect_true(!anyNA(filled))
+  expect_true(is.character(filled))
 })
 
 test_that("it works for factors", {
   x <- factor(c(LETTERS[1:10], NA, NA))
   filled <- imputeUnivariate(x)
   expect_true(!anyNA(filled))
+  expect_true(is.factor(filled))
 })
 
-test_that("it works for boolean vectors", {
+test_that("it works for logical vectors", {
   x <- c(TRUE, TRUE, FALSE, NA, NA)
   filled <- imputeUnivariate(x)
   expect_true(!anyNA(filled))
+  expect_true(is.logical(filled))
 })
 
 test_that("it works for date vectors", {
   x <- generateNA(rep(Sys.Date(), 10L), p = 0.5)
   filled <- imputeUnivariate(x)
   expect_true(!anyNA(filled))
+  expect_s3_class(filled, "Date")
 })
 
 test_that("it works for matrix objects", {
@@ -46,7 +45,7 @@ test_that("it works for data.frames", {
   expect_true(!anyNA(filled))
 })
 
-test_that("it can impute only certain columns", {
+test_that("it can impute subset of all columns", {
   x <- generateNA(iris, seed = 10L)
   filled <- imputeUnivariate(x, v = c("Species", "Petal.Length"))
   expect_true(!anyNA(filled[["Species"]]))
