@@ -120,7 +120,7 @@ missRanger <- function(
     ...
   ) {
   if (verbose) {
-    message("Missing value imputation by random forests")
+    message("Missing value imputation by random forests\n")
   }
   
   # 1) INITIAL CHECKS
@@ -177,8 +177,10 @@ missRanger <- function(
     FUN.VALUE = logical(1L)
   )
   if (verbose && !all(ok)) {
-    message("Can't impute non-numeric/factor/character/logical features")
-    message(paste(to_impute[!ok], collapse = ", "))
+    message(
+      paste("Can't impute these variables (wrong type): ",
+            paste(to_impute[!ok], collapse = ", "))
+    )
   }
   to_impute <- to_impute[ok]
   
