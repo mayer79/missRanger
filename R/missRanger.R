@@ -120,7 +120,7 @@ missRanger <- function(
     ...
   ) {
   if (verbose) {
-    message("Missing value imputation by random forests\n")
+    message("Missing value imputation by random forests")
   }
   
   # 1) INITIAL CHECKS
@@ -177,17 +177,16 @@ missRanger <- function(
     FUN.VALUE = logical(1L)
   )
   if (verbose && !all(ok)) {
-    message(
-      paste("Can't impute these variables (wrong type): ",
-            paste(to_impute[!ok], collapse = ", "))
+    cat(
+      "\nCan't impute these variables (wrong type): ",
+      paste(to_impute[!ok], collapse = ", ")
     )
   }
   to_impute <- to_impute[ok]
   
   if (length(to_impute) == 0L) {
-    # Nothing to do...
     if (verbose) {
-      cat("\n")
+      message("\nNothing to impute!")
     }
     if (data_only) {
       return(data) 
@@ -218,11 +217,6 @@ missRanger <- function(
   # Variables should either appear in "to_impute" or do not contain any missings
   ok <- impute_by %in% to_impute |
     !vapply(data[, impute_by, drop = FALSE], FUN = anyNA, FUN.VALUE = logical(1L))
-  if (verbose && !all(ok)) {
-    message("Can't use these features for imputation because they contain missing values 
-            and do not appear on the LHS of the formula.")
-    message(paste(impute_by[!ok], collapse = ", "))
-  }  
   impute_by <- impute_by[ok]
   
   # 3b) Drop variables that can't be used as features in ranger()
@@ -232,8 +226,10 @@ missRanger <- function(
     FUN.VALUE = logical(1L)
   )
   if (verbose && !all(ok)) {
-    message("Dropping features of incompatible mode() to impute:")
-    message(paste(impute_by[!ok], collapse = ", "))
+    cat(
+      "\nCan't use these variables for imputation (wrong type): ",
+      paste(impute_by[!ok], collapse = ", ")
+    )
   }
   impute_by <- impute_by[ok]
   
@@ -244,16 +240,17 @@ missRanger <- function(
     FUN.VALUE = logical(1L)
   )
   if (verbose && !all(ok)) {
-    message("Skip constant features for imputation:")
-    message(paste(impute_by[!ok], collapse = ", "))
+    cat(
+      "\nSkip constant features for imputation: ",
+      paste(impute_by[!ok], collapse = ", ")
+    )
   }
   impute_by <- impute_by[ok]
-  
 
   if (verbose) {
-    cat("\n  Variables to impute:\t\t")
+    cat("\nVariables to impute:\t\t")
     cat(to_impute, sep = ", ")
-    cat("\n  Variables used to impute:\t")
+    cat("\nVariables used to impute:\t")
     cat(impute_by, sep = ", ")
     cat("\n")
   }
