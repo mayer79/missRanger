@@ -12,6 +12,7 @@
 
 ## Other changes
 
+- Now requires ranger >= 0.16.0.
 - More compact vignettes.
 - Better examples.
 - Many relevant `ranger()` arguments are now explicit arguments in `missRanger()` to improve tab-completion experience:
