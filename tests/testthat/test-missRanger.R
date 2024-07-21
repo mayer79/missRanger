@@ -186,6 +186,8 @@ test_that("seed works", {
 
 test_that("verbose can be suppressed", {
   expect_silent(missRanger(iris2, num.trees = 3L, verbose = 0L))
+  capture_output(expect_message(missRanger(iris2, num.trees = 3L, verbose = 1L)))
+  capture_output(expect_message(missRanger(iris2, num.trees = 3L, verbose = 2L)))
 })
 
 test_that("returnOOB works", {
