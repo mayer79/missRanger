@@ -40,13 +40,34 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.6.0" id="missranger-260">missRanger 2.6.0<a class="anchor" aria-label="anchor" href="#missranger-260"></a></h2>
 <div class="section level3">
+<h3 id="possibly-breaking-changes-2-6-0">Possibly breaking changes<a class="anchor" aria-label="anchor" href="#possibly-breaking-changes-2-6-0"></a></h3>
+<ul><li>Columns of special type like date/time can’t be imputed anymore. You will need to convert them to numeric before imputation.</li>
+<li>
+<code><a href="../reference/pmm.html">pmm()</a></code> is more picky: <code>xtrain</code> and <code>xtest</code> must both be either numeric, logical, or factor (with identical levels).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="minor-changes-in-output-object-2-6-0">Minor changes in output object<a class="anchor" aria-label="anchor" href="#minor-changes-in-output-object-2-6-0"></a></h3>
 <ul><li>Add original data as <code>data_raw</code>.</li>
 <li>Renamed <code>visit_seq</code> to <code>to_impute</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="other-changes-2-6-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-2-6-0"></a></h3>
-<ul><li>Improvement in the vignette on censored data.</li>
+<ul><li>Now requires ranger &gt;= 0.16.0.</li>
+<li>More compact vignettes.</li>
+<li>Better examples.</li>
+<li>Many relevant <code>ranger()</code> arguments are now explicit arguments in <code><a href="../reference/missRanger.html">missRanger()</a></code> to improve tab-completion experience:
+<ul><li>num.trees = 500</li>
+<li>mtry = NULL</li>
+<li>min.node.size = NULL</li>
+<li>min.bucket = NULL</li>
+<li>max.depth = NULL</li>
+<li>replace = TRUE</li>
+<li>sample.fraction = if (replace) 1 else 0.632</li>
+<li>case.weights = NULL</li>
+<li>num.threads = NULL</li>
+<li>save.memory = FALSE</li>
+</ul></li>
+<li>For variables that can’t be used, more information is printed.</li>
 </ul></div>
 </div>
     <div class="section level2">

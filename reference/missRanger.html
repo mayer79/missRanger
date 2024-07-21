@@ -69,11 +69,20 @@ when repeating the call to <code>missRanger()</code>.</p>
 <span>  <span class="va">data</span>,</span>
 <span>  formula <span class="op">=</span> <span class="va">.</span> <span class="op">~</span> <span class="va">.</span>,</span>
 <span>  pmm.k <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>  num.trees <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  mtry <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  min.node.size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  min.bucket <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max.depth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  replace <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sample.fraction <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">replace</span><span class="op">)</span> <span class="fl">1</span> <span class="kw">else</span> <span class="fl">0.632</span>,</span>
+<span>  case.weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  num.threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  save.memory <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  maxiter <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  returnOOB <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  case.weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  keep_forests <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -103,32 +112,70 @@ must appear in the left hand side if they should be used on the right hand side.
 predictive mean matching steps. 0 to avoid this step.</p></dd>
 
 
-<dt id="arg-maxiter">maxiter<a class="anchor" aria-label="anchor" href="#arg-maxiter"></a></dt>
-<dd><p>Maximum number of chaining iterations.</p></dd>
+<dt id="arg-num-trees">num.trees<a class="anchor" aria-label="anchor" href="#arg-num-trees"></a></dt>
+<dd><p>Number of trees passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.</p></dd>
 
 
-<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Integer seed to initialize the random generator.</p></dd>
+<dt id="arg-mtry">mtry<a class="anchor" aria-label="anchor" href="#arg-mtry"></a></dt>
+<dd><p>Number of covariates considered per split. The default <code>NULL</code> equals
+the rounded down root of the number of features. Can be a function, e.g.,
+<code>function(p) trunc(p/3)</code>. Passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>. Note that during the
+first iteration, the number of features is growing. Thus, a fixed value can lead to
+an error. Using a function like <code>function(p) min(p, 2)</code> will fix such problem.</p></dd>
 
 
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>Controls how much info is printed to screen.
-0 to print nothing. 1 (default) to print a progress bar per iteration,
-2 to print the OOB prediction error per iteration and variable
-(1 minus R-squared for regression).
-Furthermore, if <code>verbose</code> is positive, the variables used for imputation are
-listed as well as the variables to be imputed (in the imputation order).
-This will be useful to detect if some variables are unexpectedly skipped.</p></dd>
+<dt id="arg-min-node-size">min.node.size<a class="anchor" aria-label="anchor" href="#arg-min-node-size"></a></dt>
+<dd><p>Minimal node size passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.
+By default 1 for classification and 5 for regression.</p></dd>
 
 
-<dt id="arg-returnoob">returnOOB<a class="anchor" aria-label="anchor" href="#arg-returnoob"></a></dt>
-<dd><p>Logical flag. If TRUE, the final average out-of-bag prediction
-errors per variable is added to the resulting data as attribute "oob".
-Only relevant when <code>data_only = TRUE</code> (and when forests are grown).</p></dd>
+<dt id="arg-min-bucket">min.bucket<a class="anchor" aria-label="anchor" href="#arg-min-bucket"></a></dt>
+<dd><p>Minimal terminal node size passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.
+The default <code>NULL</code> means 1.</p></dd>
+
+
+<dt id="arg-max-depth">max.depth<a class="anchor" aria-label="anchor" href="#arg-max-depth"></a></dt>
+<dd><p>Maximal tree depth passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.
+<code>NULL</code> means unlimited depth. 1 means single split trees.</p></dd>
+
+
+<dt id="arg-replace">replace<a class="anchor" aria-label="anchor" href="#arg-replace"></a></dt>
+<dd><p>Sample with replacement passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.</p></dd>
+
+
+<dt id="arg-sample-fraction">sample.fraction<a class="anchor" aria-label="anchor" href="#arg-sample-fraction"></a></dt>
+<dd><p>Fraction of rows per tree passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.
+The default: use all rows when <code>replace = TRUE</code> and 0.632 otherwise.</p></dd>
 
 
 <dt id="arg-case-weights">case.weights<a class="anchor" aria-label="anchor" href="#arg-case-weights"></a></dt>
-<dd><p>Vector with non-negative case weights.</p></dd>
+<dd><p>Optional case weights passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.</p></dd>
+
+
+<dt id="arg-num-threads">num.threads<a class="anchor" aria-label="anchor" href="#arg-num-threads"></a></dt>
+<dd><p>Number of threads passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.
+The default <code>NULL</code> uses all threads.</p></dd>
+
+
+<dt id="arg-save-memory">save.memory<a class="anchor" aria-label="anchor" href="#arg-save-memory"></a></dt>
+<dd><p>Slow but memory saving mode of <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>.</p></dd>
+
+
+<dt id="arg-maxiter">maxiter<a class="anchor" aria-label="anchor" href="#arg-maxiter"></a></dt>
+<dd><p>Maximum number of iterations.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Integer seed.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A value in 0, 1, 2 contolling the verbosity.</p></dd>
+
+
+<dt id="arg-returnoob">returnOOB<a class="anchor" aria-label="anchor" href="#arg-returnoob"></a></dt>
+<dd><p>Should the final average OOB prediction errors be added
+as data attribute "oob"? Only relevant when <code>data_only = TRUE</code>.</p></dd>
 
 
 <dt id="arg-data-only">data_only<a class="anchor" aria-label="anchor" href="#arg-data-only"></a></dt>
@@ -137,17 +184,13 @@ Otherwise, a "missRanger" object with additional information is returned.</p></d
 
 
 <dt id="arg-keep-forests">keep_forests<a class="anchor" aria-label="anchor" href="#arg-keep-forests"></a></dt>
-<dd><p>Should the random forests of the final imputations
+<dd><p>Should the random forests of the last relevant iteration
 be returned? The default is <code>FALSE</code>. Setting this option will use a lot of memory.
-Only relevant when <code>data_only = TRUE</code> (and when forests are grown).</p></dd>
+Only relevant when <code>data_only = TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>. If the data set is large,
-better use less trees (e.g. <code>num.trees = 20</code>) and/or a low value of
-<code>sample.fraction</code>. The following arguments are incompatible, amongst others:
-<code>write.forest</code>, <code>probability</code>, <code>split.select.weights</code>,
-<code>dependent.variable.name</code>, and <code>classification</code>.</p></dd>
+<dd><p>Additional arguments passed to <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>. Not all make sense.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -173,13 +216,6 @@ imputed data is returned.</p>
 <p>OOB prediction errors are quantified as 1 - R^2 for numeric variables, and as
 classification error otherwise. If a variable has been imputed only univariately,
 the value is 1.</p>
-<p>A note on <code>mtry</code>: Be careful when passing a non-default <code>mtry</code> to
-<code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code> because the number of available covariates might be growing during
-the first iteration, depending on the missing pattern.
-Values <code>NULL</code> (default) and 1 are safe choices.
-Additionally, recent versions of <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code> allow <code>mtry</code> to be a
-single-argument function of the number of available covariables,
-e.g., <code>mtry = function(m) max(1, m %/% 3)</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -197,13 +233,13 @@ http://www.jstatsoft.org/v45/i03/</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">irisWithNA</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateNA.html">generateNA</a></span><span class="op">(</span><span class="va">iris</span>, seed <span class="op">=</span> <span class="fl">34</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">irisImputed</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">iris2</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateNA.html">generateNA</a></span><span class="op">(</span><span class="va">iris</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">imp1</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">iris2</span>, pmm.k <span class="op">=</span> <span class="fl">5</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
@@ -213,30 +249,21 @@ http://www.jstatsoft.org/v45/i03/</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">irisImputed</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imp1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1          5.1         3.5          1.4         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2          4.9         3.0          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          4.7         3.2          1.3         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          4.6         3.1          1.5         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          5.0         3.6          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          5.4         3.9          1.7         0.4  setosa</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">irisWithNA</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          5.1         3.5          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          4.9         3.0          1.4         0.2    &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3          4.7         3.2          1.3         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4          4.6         3.1          1.5         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5          5.0         3.6          1.4         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6          5.4         3.9          1.7         0.4  setosa</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extended output</span></span></span>
-<span class="r-in"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">imp2</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">iris2</span>, pmm.k <span class="op">=</span> <span class="fl">5</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
@@ -246,56 +273,41 @@ http://www.jstatsoft.org/v45/i03/</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imp</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">imp2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> missRanger object. Extract imputed data via $data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - best iteration: 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - best average OOB imputation error: 0.0258512 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sequence of OOB prediction errors:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      Sepal.Length Sepal.Width Petal.Length Petal.Width     Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   1.00000000  0.96274402  0.349442355 0.173460009 0.066666667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   0.03706373  0.06320082  0.009209584 0.014502826 0.007407407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   0.04380291  0.05960475  0.006512999 0.011927912 0.007407407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   0.03976932  0.06567351  0.008941608 0.007575222 0.007407407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean performance per iteration:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.51046261 0.02627687 0.02585120 0.02587341</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> First rows of imputed data:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1          5.1         3.5          1.4         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2          4.9         3.0          1.4         0.2  setosa</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3          4.7         3.2          1.3         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          4.6         3.1          1.5         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          5.0         3.6          1.4         0.2  setosa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          5.4         3.9          1.7         0.4  setosa</span>
-<span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">pred_errors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Sepal.Length Sepal.Width Petal.Length Petal.Width    Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]   1.00000000  1.06344187  0.451332816 0.169820572 0.07407407</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]   0.02631485  0.07574530  0.013566998 0.016038054 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3,]   0.03121766  0.07540698  0.008893406 0.012362313 0.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4,]   0.02912202  0.08719657  0.006315569 0.009798586 0.00000000</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># If you even want to keep the random forests of the best iteration</span></span></span>
-<span class="r-in"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">irisWithNA</span>, pmm.k <span class="op">=</span> <span class="fl">3</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span>, keep_forests <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">imp1</span>, <span class="va">imp2</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Formula interface: Univariate imputation of Species and Sepal.Width</span></span></span>
+<span class="r-in"><span><span class="va">imp3</span> <span class="op">&lt;-</span> <span class="fu">missRanger</span><span class="op">(</span><span class="va">iris2</span>, <span class="va">Species</span> <span class="op">+</span> <span class="va">Sepal.Width</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Sepal.Length, Sepal.Width, Petal.Length, Petal.Width, Species</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables to impute:		Species, Sepal.Width</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables used to impute:	</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> iter 3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
-<span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">forests</span><span class="op">$</span><span class="va">Sepal.Width</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ranger result</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ranger::ranger(y = data[[v]][!v.na], x = data[!v.na, completed,      drop = FALSE], case.weights = case.weights[!v.na], ...) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Type:                             Regression </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of trees:                  50 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sample size:                      135 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Number of independent variables:  5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mtry:                             2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Target node size:                 5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Variable importance mode:         none </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Splitrule:                        variance </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> OOB prediction error (MSE):       0.01293717 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> R squared (OOB):                  0.9340725 </span>
-<span class="r-in"><span><span class="va">imp</span><span class="op">$</span><span class="va">pred_errors</span><span class="op">[</span><span class="va">imp</span><span class="op">$</span><span class="va">best_iter</span>, <span class="st">"Sepal.Width"</span><span class="op">]</span>  <span class="co"># 1 - R-squared</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Width </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.0659275 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

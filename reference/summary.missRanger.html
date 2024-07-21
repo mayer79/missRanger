@@ -69,11 +69,10 @@
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">CO2_</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateNA.html">generateNA</a></span><span class="op">(</span><span class="va">CO2</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">CO2_</span>, pmm.k <span class="op">=</span> <span class="fl">5</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span>, num.threads <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Missing value imputation by random forests</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables to impute:		Plant, Type, Treatment, conc, uptake</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Variables used to impute:	Plant, Type, Treatment, conc, uptake</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables to impute:		Plant, Type, Treatment, conc, uptake</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Variables used to impute:	Plant, Type, Treatment, conc, uptake</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> iter 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
@@ -99,7 +98,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4,] 0.05263158 0.00000000 0.00000000 0.05884572 0.02009939</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5,] 0.07894737 0.00000000 0.00000000 0.06497536 0.01996116</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Corresponding means:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean performance per iteration:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.47353471 0.02978643 0.02938270 0.02631534 0.03277678</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> First rows of imputed data:</span>

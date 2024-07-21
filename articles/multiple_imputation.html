@@ -59,7 +59,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Multiple Imputation</h1>
             
-            <h4 data-toc-skip class="date">2024-07-19</h4>
+            <h4 data-toc-skip class="date">2024-07-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/main/vignettes/multiple_imputation.Rmd" class="external-link"><code>vignettes/multiple_imputation.Rmd</code></a></small>
       <div class="d-none name"><code>multiple_imputation.Rmd</code></div>
@@ -84,8 +84,8 @@ parameter estimates across imputations.</p>
 <p>The package {mice} <span class="citation">(<a href="#ref-buuren">Buuren and Groothuis-Oudshoorn 2011</a>)</span> takes
 care of this pooling step. The creation of multiple complete data sets
 can be done by {mice} or also by {missRanger}. In the latter case, in
-order to keep the variance of imputed values at a realistic level, we
-suggest to use predictive mean matching with relatively large
+order to keep the variance of imputed values at a more realistic level,
+we suggest to use predictive mean matching with relatively large
 <code>pmm.k</code> on top of the random forest imputation.</p>
 </div>
 <div class="section level2">
@@ -102,7 +102,7 @@ suggest to use predictive mean matching with relatively large
 <span><span class="co"># Generate 20 complete data sets with relatively large pmm.k</span></span>
 <span><span class="va">filled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span></span>
 <span>  <span class="fl">20</span>, </span>
-<span>  <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, verbose <span class="op">=</span> <span class="fl">0</span>, num.trees <span class="op">=</span> <span class="fl">50</span>, pmm.k <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, </span>
+<span>  <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">irisWithNA</span>, verbose <span class="op">=</span> <span class="fl">0</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, pmm.k <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>, </span>
 <span>  simplify <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span>                           </span>
@@ -112,13 +112,13 @@ suggest to use predictive mean matching with relatively large
 <span><span class="co"># Pool the results by mice</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#              term   estimate  std.error  statistic       df      p.value</span></span>
-<span><span class="co">#       (Intercept)  2.4927868 0.34949255  7.1325891 80.75311 3.785713e-10</span></span>
-<span><span class="co">#       Sepal.Width  0.4337064 0.10952987  3.9597088 78.74820 1.635231e-04</span></span>
-<span><span class="co">#      Petal.Length  0.7362439 0.09201064  8.0017258 50.94966 1.453609e-10</span></span>
-<span><span class="co">#       Petal.Width -0.1618100 0.18820061 -0.8597739 66.35077 3.930096e-01</span></span>
-<span><span class="co"># Speciesversicolor -0.7050250 0.30099170 -2.3423403 69.11545 2.204973e-02</span></span>
-<span><span class="co">#  Speciesvirginica -0.9125055 0.41666494 -2.1900224 66.90964 3.201281e-02</span></span>
+<span><span class="co">#                term   estimate  std.error statistic        df      p.value</span></span>
+<span><span class="co"># 1       (Intercept)  2.4600621 0.33998737  7.235746  86.25283 1.785004e-10</span></span>
+<span><span class="co"># 2       Sepal.Width  0.4454417 0.10405609  4.280785  96.17676 4.406215e-05</span></span>
+<span><span class="co"># 3      Petal.Length  0.7394242 0.08393401  8.809590  77.63584 2.620202e-13</span></span>
+<span><span class="co"># 4       Petal.Width -0.1937151 0.17905818 -1.081856  80.36361 2.825524e-01</span></span>
+<span><span class="co"># 5 Speciesversicolor -0.6785451 0.26812613 -2.530694 116.18041 1.272124e-02</span></span>
+<span><span class="co"># 6  Speciesvirginica -0.8737822 0.37086417 -2.356071 110.15525 2.023735e-02</span></span>
 <span></span>
 <span><span class="co"># Compare with model on original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span><span class="op">)</span></span>
@@ -137,8 +137,8 @@ suggest to use predictive mean matching with relatively large
 <span><span class="co"># Residual standard error: 0.3068 on 144 degrees of freedom</span></span>
 <span><span class="co"># Multiple R-squared:  0.8673,  Adjusted R-squared:  0.8627 </span></span>
 <span><span class="co"># F-statistic: 188.3 on 5 and 144 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
-<p>As expected, standard errors and p values of the multiple imputation
-are larger than of the original data set.</p>
+<p>As expected, inference from multiple imputation seems to be less
+strong than of the original data without missings.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
