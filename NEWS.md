@@ -1,5 +1,10 @@
 # missRanger 2.6.0
 
+## Possibly breaking changes
+
+- Columns of special type like date/time can't be imputed anymore. You will need to convert them to numeric before imputation.
+- `pmm()` is more picky: `xtrain` and `xtest` must both be either numeric, logical, or factor (with identical levels).
+
 ## Minor changes in output object
 
 - Add original data as `data_raw`.
@@ -7,7 +12,21 @@
 
 ## Other changes
 
-- Improvement in the vignette on censored data.
+- Now requires ranger >= 0.16.0.
+- More compact vignettes.
+- Better examples.
+- Many relevant `ranger()` arguments are now explicit arguments in `missRanger()` to improve tab-completion experience:
+  - num.trees = 500
+  - mtry = NULL
+  - min.node.size = NULL
+  - min.bucket = NULL
+  - max.depth = NULL
+  - replace = TRUE
+  - sample.fraction = if (replace) 1 else 0.632
+  - case.weights = NULL
+  - num.threads = NULL
+  - save.memory = FALSE
+- For variables that can't be used, more information is printed.
 
 # missRanger 2.5.0
 

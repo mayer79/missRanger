@@ -24,7 +24,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     FNN,
-    ranger,
+    ranger (>= 0.16.0),
     stats,
     utils
 URL: https://github.com/mayer79/missRanger, https://mayer79.github.io/missRanger/

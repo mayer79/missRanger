@@ -34,7 +34,7 @@ use_description(
 )
 
 use_package("FNN", "imports")
-use_package("ranger", "Imports")
+use_package("ranger", "Imports", min_version = "0.16.0")
 use_package("stats", "Imports")
 use_package("utils", "Imports")
 

@@ -23,9 +23,5 @@ from the non-missing values. For data frames, this sampling is done within colum
 }
 \examples{
 imputeUnivariate(c(NA, 0, 1, 0, 1))
-imputeUnivariate(c("A", "A", NA))
-imputeUnivariate(as.factor(c("A", "A", NA)))
 head(imputeUnivariate(generateNA(iris)))
-head(imputeUnivariate(generateNA(iris), v = "Species"))
-head(imputeUnivariate(generateNA(iris), v = c("Species", "Petal.Length")))
 }

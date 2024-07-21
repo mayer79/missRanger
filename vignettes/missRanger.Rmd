@@ -21,25 +21,14 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The aim of this vignette is to introduce {missRanger} for imputation of missing values and to explain how to use it for multiple imputation.
-
-{missRanger} uses the {ranger} package [@wright] to do fast missing value imputation by chained random forest. As such, it can be used as an alternative to {missForest}, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariables. The main function `missRanger()` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops to improve.
+{missRanger} uses {ranger} [@wright] for fast missing value imputation by chained random forest. As such, it is an alternative to {missForest}, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariates. The main function `missRanger()` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops improving.
 
 Why should you consider {missRanger}?
 
 - It is fast.
-
-- It is flexible and intuitive to apply: E.g. calling `missRanger(data, . ~ 1)` would impute all variables univariately, `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
-
-- It can deal with most realistic variable types, even dates and times without destroying the original data structure.
-
-- It combines random forest imputation with predictive mean matching. This generates realistic variability and avoids "new" values like 0.3334 in a 0-1 coded variable. Like this, `missRanger()` can be used for realistic multiple imputation scenarios, see e.g. [@rubin] for the statistical background.
-
-In the examples below, we will meet two functions from {missRanger}:
-
-- `generateNA()`: To replace values in a data set by missing values.
-
-- `missRanger()`: To impute missing values in a data frame.
+- It is flexible and intuitive to apply: E.g., calling `missRanger(data, . ~ 1)` would impute all variables univariately, `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
+- It works for a variety of data types.
+- It combines random forest imputation with predictive mean matching. This avoids "new" values like 0.3334 in a 0-1 coded variable and helps to raise the variance of the imputations, which is especially important for multiple imputation.
 
 ## Installation
 
@@ -53,7 +42,7 @@ devtools::install_github("mayer79/missRanger")
 
 ## Usage
 
-We first generate a data set with about 20% missing values per column and fill them again by `missRanger()`.
+We first generate data with 20% missing values per column. Then we fill them by `missRanger()`.
 
 ``` {r}
 library(missRanger)
@@ -62,18 +51,16 @@ set.seed(84553)
 
 head(iris)
 
-# Generate data with missing values in all columns
 irisWithNA <- generateNA(iris, p = 0.2)
 head(irisWithNA)
  
-# Impute missing values with missRanger
 irisImputed <- missRanger(irisWithNA, num.trees = 100, verbose = 0)
 head(irisImputed)
 ```
 
 ### Predictive mean matching
 
-It worked! Unfortunately, the new values look somewhat unnatural due to different rounding. If we would like to avoid this, we just set the `pmm.k` argument to a positive number. All imputations done during the process are then combined with a predictive mean matching (PMM) step, leading to more natural imputations and improved distributional properties of the resulting values:
+It worked, but the new values appear overly exact. To avoid this, we can add predictive mean matching (PMM) to the random forest predictions:
 
 ``` {r}
 irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
@@ -82,146 +69,91 @@ head(irisImputed)
 
 ### Controlling the random forests
 
-`missRanger()` offers a `...` argument to pass options to `ranger()`, e.g. `num.trees` or `min.node.size`. How would we use its "extremely randomized trees" variant with 50 trees?
+`missRanger()` offers many options to control the random forests grown by `ranger()`. Additional options to `ranger()` can be passed via `...`. How would we use one feature per split (mtry = 1) with 50 trees?
 
 ``` {r}
-irisImputed_et <- missRanger(
-  irisWithNA, 
-  pmm.k = 3, 
-  splitrule = "extratrees", 
-  num.trees = 50, 
-  verbose = 0
+irisImputed2 <- missRanger(
+  irisWithNA, pmm.k = 3, mtry = 1, num.trees = 50, verbose = 0
 )
-head(irisImputed_et)
+head(irisImputed2)
 ```
 
-It is as simple!
+### Pipe
 
-### Use in Pipe
+`missRanger()` plays well together with the pipe operator:
 
-{missRanger} also plays well together with the pipe:
-
-```r
+```{r}
 iris |>
   generateNA() |>
-  missRanger(verbose = 0) |>
+  missRanger(verbose = 0, pmm.k = 5) |>
   head()
 ```
 
-### Two output options
+### Extended output
 
-Since {missRanger} 2.4.0, setting `data_only = FALSE` allows to not just return the imputed data, but rather a "missRanger" object containing more information.
+Setting `data_only = FALSE` returns a "missRanger" object containing more information.
 
 ```{r}
 (imp <- missRanger(irisWithNA, data_only = FALSE, verbose = 0))
 
-# Summary
 summary(imp)
 ```
 
-### Formula interface
+### Formulas
 
-By default `missRanger()` uses all columns in the data set to impute all columns with missings. To override this behaviour, you can use an intuitive formula interface: The left hand side specifies the variables to be imputed (variable names separated by a `+`), while the right hand side lists the variables used for imputation.
+By default, `missRanger()` uses all columns to impute all columns with missings.
+
+This can be modified by passing a formula: The left hand side specifies the variables to be imputed, while the right hand side lists the variables used for imputation.
 
 ``` {r}
-# Impute all variables with all (default behaviour). Note that variables without
-# missing values will be skipped from the left hand side of the formula.
+# Impute all variables with all (default behaviour)
 m <- missRanger(
-  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 10, seed = 1, verbose = 0
+  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 100, seed = 1, verbose = 0
+)
+
+# Don't use Species for imputation
+m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100, verbose = 0)
+
+# Impute Sepal.Width by Species(?)
+m <- missRanger(
+  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 100
 )
 head(m)
 
-# Same
-m <- missRanger(irisWithNA, pmm.k = 3, num.trees = 10, seed = 1, verbose = 0)
-head(m)
-
-# Impute all variables with all except Species
-m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 10, verbose = 0)
-head(m)
-
-# Impute Sepal.Width by Species 
+# Only univariate imputation was done. Why? Because Species contains missing values
+# itself and needs to appear on the lhs as well:
 m <- missRanger(
-  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 10, verbose = 0
+  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 100
 )
 head(m)
 
-# No success. Why? Species contains missing values and thus can only 
-# be used for imputation if it is being imputed as well
-m <- missRanger(
-  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 10, verbose = 0
-)
-head(m)
-
-# Impute all variables univariatly
+# Impute all variables univariately
 m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
-head(m)
 ```
 
-### Imputation takes too much time. What can I do?
+### Speed-up things
 
-`missRanger()` is based on iteratively fitting random forests for each variable with missing values. Since the underlying random forest implementation `ranger()` uses 500 trees per default, a huge number of trees might be calculated. For larger data sets, the overall process can take very long.
+`missRanger()` fits a random forest per variable and iteration. Thus, imputation can take long. Some tweaks to make things faster:
 
-Here are tweaks to make things faster:
+- Use less trees, e.g., `num.trees = 100`.
+- Use smaller bootstrap samples, e.g., `sample.fraction = 0.2`.
+- Use a smaller tree depth, e.g., `max.depth = 6`.
+- Use large leaves, e.g., `min.node.size = 100`.
+- Use less iterations, e.g., `max.iter = 3`.
 
-- Use less trees, e.g. by setting `num.trees = 50`. Even one single tree might be sufficient. Typically, the number of iterations until convergence will increase with fewer trees though.
+### Trick: Use `case.weights` to reduce impact of rows with many missings
 
-- Use smaller bootstrap samples by setting e.g. `sample.fraction = 0.1`.
-
-- Use the less greedy `splitrule = "extratrees"`.
-
-- Use a low tree depth `max.depth = 6`.
-
-- Use large leafs, e.g. `min.node.size = 10000`.
-
-- Use a low `max.iter`, e.g. 1 or 2.
-
-Evaluated on a normal laptop:
-
-```r
-library(ggplot2) # for diamonds data
-dim(diamonds) # 53940    10
-
-diamonds_with_NA <- generateNA(diamonds)
-
-# Takes 270 seconds (10 * 500 trees per iteration!)
-system.time(
-  m <- missRanger(diamonds_with_NA, pmm.k = 3)
-)
-
-# Takes 19 seconds
-system.time(
-  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50)
-)
-
-# Takes 6 seconds
-system.time(
-  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 1)
-)
-
-# Takes 9 seconds
-system.time(
-  m <- missRanger(diamonds_with_NA, pmm.k = 3, num.trees = 50, sample.fraction = 0.1)
-)
-```
-
-### Trick: Use `case.weights` to weight down contribution of rows with many missings
-
-Using the `case.weights` argument, you can pass case weights to the imputation models. This might be useful to weight down the contribution of rows with many missings.
+Using the `case.weights` argument, you can pass case weights to the imputation models. For instance, this allows to reduce the contribution of rows with many missings:
 
 ``` {r}
-# Count the number of non-missing values per row
-non_miss <- rowSums(!is.na(irisWithNA))
-table(non_miss)
-
-# No weighting
-m <- missRanger(irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0)
-head(m)
-
-# Weighted by number of non-missing values per row. 
 m <- missRanger(
-  irisWithNA, num.trees = 20, pmm.k = 3, seed = 5, verbose = 0, case.weights = non_miss
+  irisWithNA,
+  num.trees = 100,
+  pmm.k = 3,
+  seed = 5,
+  verbose = 0,
+  case.weights = rowSums(!is.na(irisWithNA))
 )
-head(m)
 ```
 
 ## References

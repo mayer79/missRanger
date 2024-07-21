@@ -4,22 +4,19 @@
 #' 
 #' @param x A vector, matrix or `data.frame`.
 #' @param p Proportion of missing values to add to `x`. In case `x` is a `data.frame`, 
-#'   `p` can also be a vector of probabilities per column or a named vector 
-#'   (see examples).
+#'   `p` can also be a vector of probabilities per column or a named vector.
 #' @param seed An integer seed.
 #' @returns `x` with missing values.
 #' @export
 #' @examples 
-#' generateNA(1:10, p = 0.5, seed = 3345)
-#' generateNA(rep(Sys.Date(), 10))
-#' generateNA(cbind(1:10, 10:1), p = 0.2)
-#' head(generateNA(iris))
+#' generateNA(1:10, p = 0.5)
 #' head(generateNA(iris, p = 0.2))
-#' head(generateNA(iris, p = c(0, 1, 0.5, 0.5, 0.5)))
-#' head(generateNA(iris, p = c(Sepal.Length = 1)))
-#' head(generateNA(iris, p = c(Species = 0.2, Sepal.Length = 0.5)))
 generateNA <- function(x, p = 0.1, seed = NULL) {
-  stopifnot(p >= 0, p <= 1, is.atomic(x) || is.data.frame(x))
+  stopifnot(
+    p >= 0,
+    p <= 1,
+    is.atomic(x) || is.data.frame(x)
+  )
   
   if (!is.null(seed)) {
     set.seed(seed)  
@@ -40,5 +37,6 @@ generateNA <- function(x, p = 0.1, seed = NULL) {
   v <- if (is.null(names(p))) names(x) else intersect(names(p), names(x))
   x[, v] <- Map(generateNaVec, x[, v, drop = FALSE], p)
 
-  x
+  return(x)
 }
+
