@@ -220,7 +220,7 @@ X <- data.frame(
 X_NA <- generateNA(X[1:5], p = 0.2, seed = 1L)
 
 test_that("Imputing a logical produces a logical (normal, pmm, univariate)", {
-  X2 <- generateNA(X, p = c(logi = 0.3), seed = 1L)
+  X2 <- generateNA(X, p = c(logi = 0.3, fact = 0.3), seed = 1L)
   
   imp1 <- missRanger(
     X2, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L, data_only = FALSE
