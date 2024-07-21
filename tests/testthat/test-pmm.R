@@ -36,3 +36,6 @@ test_that("pmm gives error when xtest contains NA", {
   expect_error(pmm(c(1, 1, 2), NA, ytrain = c(0, 1, 2)))
 })
 
+test_that("pmm gives error there are no complete observations in xtrain/ytrain", {
+  expect_error(pmm(xtrain = c(NA, 1), xtest = 1, ytrain = c(1, NA)))
+})
