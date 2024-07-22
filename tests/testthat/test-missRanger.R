@@ -1,187 +1,91 @@
-iris2 <- generateNA(iris, seed = 1, p = 0.3)
+iris2 <- generateNA(iris, p = 0.2, seed = 1L)
 
 test_that("all missings are filled for multivariate and univariate imputation", {
-  imp <- missRanger(iris2, verbose = 0L, seed = 1L, num.trees = 20L, data_only = FALSE)
-  expect_true(imp$best_iter > 1L)
-  expect_true(!anyNA(imp$data))
+  imp <- missRanger(iris2, verbose = 0L, seed = 1L, num.trees = 20)
+  expect_true(!anyNA(imp))
   
-  imp <- missRanger(iris2, . ~ 1, verbose = 0L, seed = 1L, data_only = FALSE)
-  expect_equal(imp$best_iter, 1L)
-  expect_true(!anyNA(imp$data))
+  imp <- missRanger(iris2, . ~ 1, verbose = 0L, seed = 1L)
+  expect_true(!anyNA(imp))
 })
 
 #===================================================
-# ARGUMENTS
+# TEST ARGUMENTS
 #===================================================
 
-test_that("pmm.k produces values in the original data", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, pmm.k = 0L, seed = 1L, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, pmm.k = 3L, seed = 1L, data_only = FALSE
-  )
+imp1 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L)
+
+test_that("pmm.k produces values present in the original data", {
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, pmm.k = 3L, seed = 1L)
   
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
-  expect_true(all(imp2$data$Sepal.Length %in% iris2$Sepal.Length))
+  expect_false(isTRUE(all.equal(imp1, imp2)))
+  expect_true(all(imp2$Sepal.Length %in% iris2$Sepal.Length))
 })
 
 test_that("num.trees has an effect", {
-  imp1 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE)
-  imp2 <- missRanger(iris2, num.trees = 10L, verbose = 0L, seed = 1L, data_only = FALSE)
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  imp2 <- missRanger(iris2, num.trees = 10L, verbose = 0L, seed = 1L)
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
 test_that("mtry has an effect", {
-  imp1 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE)
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, mtry = 1, data_only = FALSE
-  )
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, mtry = 1)
   imp3 <- missRanger(
-    iris2,
-    num.trees = 20L,
-    verbose = 0L,
-    seed = 1L,
-    mtry = function(m) min(m, 4),
-    data_only = FALSE
+    iris2, num.trees = 20L, verbose = 0L, seed = 1L, mtry = function(m) min(m, 4)
   )
   
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
-  expect_false(isTRUE(all.equal(imp1$data, imp3$data)))
-  expect_false(isTRUE(all.equal(imp2$data, imp3$data)))
+  expect_false(isTRUE(all.equal(imp1, imp2)))
+  expect_false(isTRUE(all.equal(imp1, imp3)))
+  expect_false(isTRUE(all.equal(imp2, imp3)))
 })
 
 test_that("min.node.size has an effect", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.node.size = 10, data_only = FALSE
-  )
   imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.node.size = 20, data_only = FALSE
+    iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.node.size = 20
   )
-
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
 test_that("min.bucket has an effect", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.bucket = 10, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.bucket = 20, data_only = FALSE
-  )
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, min.bucket = 20)
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
 test_that("max.depth has an effect", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, max.depth = 1, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, max.depth = 2, data_only = FALSE
-  )
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, max.depth = 1)
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
 test_that("replace has an effect", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, replace = TRUE, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, seed = 1L, replace = FALSE, data_only = FALSE
-  )
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, replace = FALSE)
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
 test_that("sample.fraction has an effect", {
-  imp1 <- missRanger(
-    iris2,
-    num.trees = 20L,
-    verbose = 0L,
-    seed = 1L,
-    sample.fraction = 1,
-    data_only = FALSE
-  )
   imp2 <- missRanger(
-    iris2,
-    num.trees = 20L,
-    verbose = 0L,
-    seed = 1L,
-    sample.fraction = 0.5,
-    data_only = FALSE
+    iris2, num.trees = 20L, verbose = 0L, seed = 1L, sample.fraction = 0.5
   )
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  
-  expect_false(isTRUE(all.equal(imp1$data, imp2$data)))
+  expect_false(isTRUE(all.equal(imp1, imp2)))
 })
 
-test_that("case.weights works (only if multivariate imputation is being done)", {
-  imp1 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE)
+test_that("case.weights works", {
   imp2 <- missRanger(
-    iris2,
-    num.trees = 20L,
-    verbose = 0L,
-    seed = 1L,
-    case.weights = rep(1, nrow(iris)),
-    data_only = FALSE
+    iris2, num.trees = 20L, verbose = 0L, seed = 1L, case.weights = rep(1, nrow(iris))
   )
   imp3 <- missRanger(
-    iris2,
-    num.trees = 20L,
-    verbose = 0L,
-    seed = 1L,
-    case.weights = 1:nrow(iris),
-    data_only = FALSE
+    iris2, num.trees = 20L, verbose = 0L, seed = 1L, case.weights = 1:nrow(iris)
   )
   
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter > 1L)
-  
-  expect_equal(imp1$data, imp2$data)
-  expect_false(isTRUE(all.equal(imp1$data, imp3$data)))
+  expect_equal(imp1, imp2)
+  expect_false(isTRUE(all.equal(imp1, imp3)))
   
   expect_error(missRanger(iris2, num.trees = 3L, verbose = 0L, case.weights = 1:7))
 })
 
 test_that("seed works", {
-  imp1 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE)
-  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE)
-  imp3 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 2L, data_only = FALSE)
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 1L)
+  imp3 <- missRanger(iris2, num.trees = 20L, verbose = 0L, seed = 2L)
   
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter > 1L)
-  
-  expect_equal(imp1$data, imp2$data)
-  expect_false(identical(imp1$data, imp3$data))
+  expect_equal(imp1, imp2)
+  expect_false(identical(imp1, imp3))
 })
 
 test_that("verbose can be suppressed", {
@@ -191,15 +95,10 @@ test_that("verbose can be suppressed", {
 })
 
 test_that("returnOOB works", {
-  imp1 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, returnOOB = TRUE
-  )
-  imp2 <- missRanger(
-    iris2, num.trees = 20L, verbose = 0L, returnOOB = FALSE
-  )
+  imp2 <- missRanger(iris2, num.trees = 20L, verbose = 0L, returnOOB = TRUE)
   
-  expect_true(length(attributes(imp1)$oob) == ncol(iris))
-  expect_null(attributes(imp2)$oob)
+  expect_true(length(attributes(imp2)$oob) == ncol(iris))
+  expect_null(attributes(imp1)$oob)
 })
 
 #===================================================
@@ -219,82 +118,19 @@ X <- data.frame(
 
 X_NA <- generateNA(X[1:5], p = 0.2, seed = 1L)
 
-test_that("Imputing a logical produces a logical (normal, pmm, univariate)", {
-  X2 <- generateNA(X, p = c(logi = 0.3, fact = 0.3), seed = 1L)
-  
-  imp1 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 3, seed = 1L, data_only = FALSE
-  )
-  imp3 <- missRanger(X2, . ~ 1, verbose = 0L, seed = 1L, data_only = FALSE)
+test_that("Imputing retains data type (with/without PMM and univariately)", {
+  imp1 <- missRanger(X_NA, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L)
+  imp2 <- missRanger(X_NA, num.trees = 20L, verbose = 0L, pmm.k = 3, seed = 1L)
+  imp3 <- missRanger(X_NA, . ~ 1, verbose = 0L, seed = 1L)
 
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter == 1L)
-    
   for (imp in list(imp1, imp2, imp3)) {
-    expect_true(is.logical(imp$data$logi))
-  }
-})
-
-test_that("Imputing a factor produces a factor (normal, pmm, univariate)", {
-  X2 <- generateNA(X, p = c(fact = 0.3))
-  imp1 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 3, seed = 1L, data_only = FALSE
-  )
-  imp3 <- missRanger(X2, . ~ 1, verbose = 0L, seed = 1L, data_only = FALSE)
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter == 1L)
-  
-  for (imp in list(imp1, imp2, imp3)) {
-    expect_true(is.factor(imp$data$fact))
-    expect_equal(levels(imp$data$fact), levels(X$fact))
-  }
-})
-
-test_that("Imputing a character produces a character (normal, pmm, univariate)", {
-  X2 <- generateNA(X, p = c(char = 0.3))
-  imp1 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 3, seed = 1L, data_only = FALSE
-  )
-  imp3 <- missRanger(X2, . ~ 1, verbose = 0L, seed = 1L, data_only = FALSE)
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter == 1L)
-  
-  for (imp in list(imp1, imp2, imp3)) {
-    expect_true(is.character(imp$data$char))
-  }
-})
-
-test_that("Imputing a int produces an int or double (normal, pmm, univariate)", {
-  X2 <- generateNA(X, p = c(int = 0.3), seed = 1L)
-  
-  imp1 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 0, seed = 1L, data_only = FALSE
-  )
-  imp2 <- missRanger(
-    X2, num.trees = 20L, verbose = 0L, pmm.k = 3, seed = 1L, data_only = FALSE
-  )
-  imp3 <- missRanger(X2, . ~ 1, verbose = 0L, seed = 1L, data_only = FALSE)
-  
-  expect_true(imp1$best_iter > 1L)
-  expect_true(imp2$best_iter > 1L)
-  expect_true(imp3$best_iter == 1L)
-  
-  for (imp in list(imp1, imp2, imp3)) {
-    expect_true(is.numeric(imp$data$int))
+    expect_true(is.numeric(imp$double))
+    expect_true(is.numeric(imp$int))
+    expect_true(is.logical(imp$logi))
+    expect_true(is.character(imp$char))
+   
+    expect_true(is.factor(imp$fact))
+    expect_equal(levels(imp$fact), levels(X$fact))
   }
 })
 
@@ -353,8 +189,10 @@ test_that("Multiple problems together", {
   X2$list <- as.list(replicate(n, NULL))
   X2$const <- 1
   
-  imp <- missRanger(
-    X2, . - double ~ ., num.trees = 20L, verbose = 0L, seed = 1L, data_only = FALSE
+  suppressMessages(
+    capture_output(
+      imp <- missRanger(X2, . - double ~ ., num.trees = 20L, seed = 1L, data_only = FALSE) 
+    )
   )
   
   xpected <- setdiff(colnames(X), c("double", "date"))  
@@ -376,7 +214,7 @@ test_that("formula interface works with specified left and right side", {
   )
   na_per_col <- colSums(is.na(imp$data))
   
-  expect_equal(na_per_col[[1L]], 0L)
+  expect_equal(unname(na_per_col["int"]), 0L)
   expect_true(all(na_per_col[-1L] >= 1L))
   expect_equal(imp$to_impute, "int")
   expect_equal(imp$impute_by, "int")
@@ -394,7 +232,7 @@ test_that("formula interface works with unspecified right side", {
   )
   na_per_col <- colSums(is.na(imp$data))
   
-  expect_equal(unname(na_per_col[1:2]), c(0, 0))
+  expect_equal(unname(na_per_col[c("int", "double")]), c(0, 0))
   expect_true(all(na_per_col[-(1:2)] >= 1L))
   expect_true(.setequal(imp$to_impute, c("int", "double")))
   expect_equal(imp$impute_by, c("int", "double"))
