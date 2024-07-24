@@ -35,12 +35,12 @@ library(mice)
 
 set.seed(19)
 
-irisWithNA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
+iris_NA <- generateNA(iris, p = c(0, 0.1, 0.1, 0.1, 0.1))
 
 # Generate 20 complete data sets with relatively large pmm.k
 filled <- replicate(
   20, 
-  missRanger(irisWithNA, verbose = 0, num.trees = 100, pmm.k = 10), 
+  missRanger(iris_NA, verbose = 0, num.trees = 100, pmm.k = 10), 
   simplify = FALSE
 )
                            
