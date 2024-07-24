@@ -14,7 +14,7 @@
 
 - Now requires ranger >= 0.16.0.
 - More compact vignettes.
-- Better examples.
+- Better examples and README.
 - Many relevant `ranger()` arguments are now explicit arguments in `missRanger()` to improve tab-completion experience:
   - num.trees = 500
   - mtry = NULL

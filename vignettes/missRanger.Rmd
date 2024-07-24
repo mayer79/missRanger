@@ -21,14 +21,14 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-{missRanger} uses {ranger} [@wright] for fast missing value imputation by chained random forest. As such, it is an alternative to {missForest}, a beautiful algorithm introduced in [@stekhoven]. Basically, each variable is imputed by predictions from a random forest using all other variables as covariates. The main function `missRanger()` iterates multiple times over all variables until the average out-of-bag prediction error of the models stops improving.
+{missRanger} is a **multivariate imputation algorithm** based on random forests. It is a fast alternative to the beautiful 'MissForest' algorithm of @stekhoven, and uses the {ranger} package [@wright] to fit the random forests.
 
-Why should you consider {missRanger}?
+The algorithm iterates until the average out-of-bag (OOB) error of the forests stops improving. The missing values are filled by OOB predictions of the best iteration.
 
-- It is fast.
-- It is flexible and intuitive to apply: E.g., calling `missRanger(data, . ~ 1)` would impute all variables univariately, `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
-- It works for a variety of data types.
-- It combines random forest imputation with predictive mean matching. This avoids "new" values like 0.3334 in a 0-1 coded variable and helps to raise the variance of the imputations, which is especially important for multiple imputation.
+- {missRanger} is **fast**.
+- It is **intuitive**: E.g., calling `missRanger(data, . ~ 1)` would impute all variables univariately, while `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
+- It works for a **variety of data types**.
+- It combines random forest imputation with **predictive mean matching**. This avoids "new" values like 0.3334 in a 0-1 coded variable and helps to raise the variance of the imputations, which is especially important for **multiple imputation** (see additional vignettes).
 
 ## Installation
 
@@ -42,59 +42,41 @@ devtools::install_github("mayer79/missRanger")
 
 ## Usage
 
-We first generate data with 20% missing values per column. Then we fill them by `missRanger()`.
-
 ``` {r}
 library(missRanger)
 
-set.seed(84553)
+set.seed(3)
 
-head(iris)
-
-irisWithNA <- generateNA(iris, p = 0.2)
-head(irisWithNA)
+iris_NA <- generateNA(iris, p = 0.1)
+head(iris_NA)
  
-irisImputed <- missRanger(irisWithNA, num.trees = 100, verbose = 0)
-head(irisImputed)
+imp <- missRanger(iris_NA, num.trees = 100)
+head(imp)
 ```
 
 ### Predictive mean matching
 
-It worked, but the new values appear overly exact. To avoid this, we can add predictive mean matching (PMM) to the random forest predictions:
+It worked, but the new values appear overly exact. To avoid this, we can add predictive mean matching (PMM) to the OOB predictions:
 
 ``` {r}
-irisImputed <- missRanger(irisWithNA, pmm.k = 3, num.trees = 100, verbose = 0)
-head(irisImputed)
+imp <- missRanger(iris_NA, pmm.k = 5, num.trees = 100, verbose = 0)
+head(imp)
 ```
 
 ### Controlling the random forests
 
-`missRanger()` offers many options to control the random forests grown by `ranger()`. Additional options to `ranger()` can be passed via `...`. How would we use one feature per split (mtry = 1) with 50 trees?
+`missRanger()` offers many options. How would we use one feature per split (mtry = 1) with 200 trees?
 
 ``` {r}
-irisImputed2 <- missRanger(
-  irisWithNA, pmm.k = 3, mtry = 1, num.trees = 50, verbose = 0
-)
-head(irisImputed2)
-```
-
-### Pipe
-
-`missRanger()` plays well together with the pipe operator:
-
-```{r}
-iris |>
-  generateNA() |>
-  missRanger(verbose = 0, pmm.k = 5) |>
-  head()
+imp <- missRanger(iris_NA, pmm.k = 5, num.trees = 200, mtry = 1, verbose = 0)
 ```
 
 ### Extended output
 
-Setting `data_only = FALSE` returns a "missRanger" object containing more information.
+Setting `data_only = FALSE` returns a "missRanger" object with more information:
 
 ```{r}
-(imp <- missRanger(irisWithNA, data_only = FALSE, verbose = 0))
+(imp <- missRanger(iris_NA, pmm.k = 5, num.trees = 100, data_only = FALSE, verbose = 0))
 
 summary(imp)
 ```
@@ -105,30 +87,24 @@ By default, `missRanger()` uses all columns to impute all columns with missings.
 
 This can be modified by passing a formula: The left hand side specifies the variables to be imputed, while the right hand side lists the variables used for imputation.
 
-``` {r}
-# Impute all variables with all (default behaviour)
-m <- missRanger(
-  irisWithNA, formula = . ~ ., pmm.k = 3, num.trees = 100, seed = 1, verbose = 0
-)
+```{r}
+# Impute all variables with all (default)
+m <- missRanger(iris_NA, formula = . ~ ., pmm.k = 5, num.trees = 100, verbose = 0)
 
 # Don't use Species for imputation
-m <- missRanger(irisWithNA, . ~ . - Species, pmm.k = 3, num.trees = 100, verbose = 0)
+m <- missRanger(iris_NA, . ~ . - Species, pmm.k = 5, num.trees = 100, verbose = 0)
 
-# Impute Sepal.Width by Species(?)
-m <- missRanger(
-  irisWithNA, Sepal.Width ~ Species, pmm.k = 3, num.trees = 100
-)
+# Impute Sepal.Length by Species (or not?)
+m <- missRanger(iris_NA, Sepal.Length ~ Species, pmm.k = 5, num.trees = 100)
 head(m)
 
-# Only univariate imputation was done. Why? Because Species contains missing values
-# itself and needs to appear on the lhs as well:
-m <- missRanger(
-  irisWithNA, Sepal.Width + Species ~ Species, pmm.k = 3, num.trees = 100
-)
+# Only univariate imputation was done! Why? Because Species contains missing values
+# itself and needs to appear on the LHS as well:
+m <- missRanger(iris_NA, Sepal.Length + Species ~ Species, pmm.k = 5, num.trees = 100)
 head(m)
 
 # Impute all variables univariately
-m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
+m <- missRanger(iris_NA, . ~ 1, verbose = 0)
 ```
 
 ### Speed-up things
@@ -145,14 +121,12 @@ m <- missRanger(irisWithNA, . ~ 1, verbose = 0)
 
 Using the `case.weights` argument, you can pass case weights to the imputation models. For instance, this allows to reduce the contribution of rows with many missings:
 
-``` {r}
+```r
 m <- missRanger(
-  irisWithNA,
+  iris_NA,
   num.trees = 100,
-  pmm.k = 3,
-  seed = 5,
-  verbose = 0,
-  case.weights = rowSums(!is.na(irisWithNA))
+  pmm.k = 5,
+  case.weights = rowSums(!is.na(iris_NA))
 )
 ```
 
