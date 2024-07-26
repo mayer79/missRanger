@@ -164,7 +164,7 @@ predict.missRanger <- function(
   for (j in seq_len(iter)) {
     for (v in to_impute) {
       y <- newdata[[v]]
-      pred <- predict(object$forests[[v]], newdata[to_fill[, v], ])$predictions
+      pred <- stats::predict(object$forests[[v]], newdata[to_fill[, v], ])$predictions
       if (pmm.k >= 1) {
         xtrain <- object$forests[[v]]$predictions
         ytrain <- data_raw[[v]]

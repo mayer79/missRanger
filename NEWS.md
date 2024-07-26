@@ -2,7 +2,7 @@
 
 ## Major feature
 
-- Out-of-sample application is now possible.  This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply it to new data with missing values via `predict(imp, newdata)`. This works with or without predictive mean matching.
+- Out-of-sample application is now possible. This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply it to new data with missing values via `predict(imp, newdata)`. This works with or without predictive mean matching.
 
 ## Possibly breaking changes
 

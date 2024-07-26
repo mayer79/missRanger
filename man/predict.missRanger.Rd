@@ -22,7 +22,7 @@
 \item{pmm.k}{Number of candidate predictions of the original dataset
 for predictive mean matching (PMM). By default the same as during fitting.}
 
-\item{iter}{Number of prediction iterations.}
+\item{iter}{Number of prediction iterations. Set to 0 for univariate imputation.}
 
 \item{seed}{Integer seed used for initial univariate imputation and PMM.}
 
