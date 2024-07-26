@@ -26,6 +26,7 @@ knitr::opts_chunk$set(
 The algorithm iterates until the average out-of-bag (OOB) error of the forests stops improving. The missing values are filled by OOB predictions of the best iteration.
 
 - {missRanger} is **fast**.
+- It allows for **out-of-sample applications**.
 - It is **intuitive**: E.g., calling `missRanger(data, . ~ 1)` would impute all variables univariately, while `missRanger(data, Species ~ Sepal.Width)` would use `Sepal.Width` to impute `Species`.
 - It works for a **variety of data types**.
 - It combines random forest imputation with **predictive mean matching**. This avoids "new" values like 0.3334 in a 0-1 coded variable and helps to raise the variance of the imputations, which is especially important for **multiple imputation** (see additional vignettes).
@@ -73,12 +74,20 @@ imp <- missRanger(iris_NA, pmm.k = 5, num.trees = 200, mtry = 1, verbose = 0)
 
 ### Extended output
 
-Setting `data_only = FALSE` returns a "missRanger" object with more information:
+Setting `data_only = FALSE` (or `keep_forests = TRUE`) returns a "missRanger" object. With `keep_forests = TRUE`, this allows for out-of-sample applications:
 
 ```{r}
-(imp <- missRanger(iris_NA, pmm.k = 5, num.trees = 100, data_only = FALSE, verbose = 0))
+imp <- missRanger(
+  iris_NA, pmm.k = 5, num.trees = 100, keep_forests = TRUE, verbose = 0
+)
+imp
 
 summary(imp)
+
+# Out-of-sample application
+# saveRDS(imp, file = "imputation_model.rds")
+# imp <- readRDS("imputation_model.rds")
+predict(imp, head(iris_NA))
 ```
 
 ### Formulas
@@ -109,13 +118,15 @@ m <- missRanger(iris_NA, . ~ 1, verbose = 0)
 
 ### Speed-up things
 
-`missRanger()` fits a random forest per variable and iteration. Thus, imputation can take long. Some tweaks to make things faster:
+`missRanger()` fits a random forest per variable and iteration. Thus, imputation can take long. Some tweaks:
 
 - Use less trees, e.g., `num.trees = 100`.
-- Use smaller bootstrap samples, e.g., `sample.fraction = 0.2`.
 - Use a smaller tree depth, e.g., `max.depth = 6`.
 - Use large leaves, e.g., `min.node.size = 100`.
+- Use smaller bootstrap samples, e.g., `sample.fraction = 0.2`.
 - Use less iterations, e.g., `max.iter = 3`.
+
+The first three items also help to greatly reduce the size of the models, which might become relevant in out-of-sample applications with `keep_forests = TRUE`.
 
 ### Trick: Use `case.weights` to reduce impact of rows with many missings
 

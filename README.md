@@ -13,7 +13,7 @@
 
 ## Overview
 
-{missRanger} is a **multivariate imputation algorithm** based on random forests. It is a fast alternative to the famous 'MissForest' algorithm (Stekhoven and Buehlmann, 2012), and uses the {ranger} package (Wright and Ziegler, 2017) to fit the random forests.
+{missRanger} is a **multivariate imputation algorithm** based on random forests. It is a fast alternative to the famous 'MissForest' algorithm (Stekhoven and Buehlmann, 2012), and uses the {ranger} package (Wright and Ziegler, 2017) to fit the random forests. Since version 2.6.0, out-of-sample application is possible.
 
 ## Installation
 

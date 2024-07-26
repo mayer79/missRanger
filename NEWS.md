@@ -2,7 +2,7 @@
 
 ### Major feature
 
-Out-of-sample application is now possible!
+Out-of-sample application is now possible! Thanks at [@jeandigitale](https://github.com/jeandigitale) for pushing the idea in [#58](https://github.com/mayer79/missRanger/issues/58).
 
 This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply it to new data with missing values via `predict(imp, newdata)`. The "missRanger" object can be saved/loaded as binary file, e.g, via `saveRDS()`/`readRDS()`.
 
