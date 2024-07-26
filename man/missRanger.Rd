@@ -22,7 +22,7 @@ missRanger(
   seed = NULL,
   verbose = 1,
   returnOOB = FALSE,
-  data_only = TRUE,
+  data_only = !keep_forests,
   keep_forests = FALSE,
   ...
 )
@@ -74,7 +74,7 @@ The default \code{NULL} uses all threads.}
 
 \item{seed}{Integer seed.}
 
-\item{verbose}{A value in 0, 1, 2 contolling the verbosity.}
+\item{verbose}{A value in 0, 1, 2 controlling the verbosity.}
 
 \item{returnOOB}{Should the final average OOB prediction errors be added
 as data attribute "oob"? Only relevant when \code{data_only = TRUE}.}

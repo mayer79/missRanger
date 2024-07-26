@@ -49,7 +49,7 @@
 #' @param save.memory Slow but memory saving mode of [ranger::ranger()].
 #' @param maxiter Maximum number of iterations.
 #' @param seed Integer seed.
-#' @param verbose A value in 0, 1, 2 contolling the verbosity.
+#' @param verbose A value in 0, 1, 2 controlling the verbosity.
 #' @param returnOOB Should the final average OOB prediction errors be added
 #'   as data attribute "oob"? Only relevant when `data_only = TRUE`.
 #' @param data_only If `TRUE` (default), only the imputed data is returned.
@@ -115,7 +115,7 @@ missRanger <- function(
     seed = NULL,
     verbose = 1,
     returnOOB = FALSE,
-    data_only = TRUE,
+    data_only = !keep_forests,
     keep_forests = FALSE,
     ...
   ) {

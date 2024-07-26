@@ -1,5 +1,9 @@
 # missRanger 2.6.0
 
+## Major feature
+
+- Out-of-sample application is now possible.  This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply it to new data with missing values via `predict(imp, newdata)`. This works with or without predictive mean matching.
+
 ## Possibly breaking changes
 
 - Columns of special type like date/time can't be imputed anymore. You will need to convert them to numeric before imputation.
@@ -27,6 +31,7 @@
   - num.threads = NULL
   - save.memory = FALSE
 - For variables that can't be used, more information is printed.
+- If `keep_forests = TRUE`, the argument `data_only` is set to `FALSE` by default.
 
 # missRanger 2.5.0
 
