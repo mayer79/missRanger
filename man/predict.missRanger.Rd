@@ -8,7 +8,7 @@
   object,
   newdata,
   pmm.k = object$pmm.k,
-  iter = 7L,
+  iter = 4L,
   seed = NULL,
   verbose = 1L,
   ...
@@ -38,10 +38,24 @@ For multivariate imputation, use \code{missRanger(..., keep_forests = TRUE)}.
 For univariate imputation, no forests are required.
 This can be enforced by \code{predict(..., iter = 0)} or via \code{missRanger(. ~ 1, ...)}.
 
-Note that multivariate imputation works best for rows in \code{newdata} with only one
-missing value, counting only missings that appear in \code{object$to_impute} as well as in
-\code{object$impute_by} columns. We call this the "easy case". In the "hard case",
+Note that out-of-sample imputation works best for rows in \code{newdata} with only one
+missing value (actually counting only missings in variables used as covariates
+in random forests). We call this the "easy case". In the "hard case",
 even multiple iterations (set by \code{iter}) can lead to unsatisfactory results.
+}
+\details{
+The out-of-sample algorithm works as follows:
+\enumerate{
+\item Impute univariately all columns in \code{object$to_impute} by randomly drawing values
+from the original, unimputed data.
+\item Replace univariate imputations by predictions of random forests. This is done
+sequentially over \code{object$to_impute} in descending order of number of missings
+(to minimize the impact of univariate imputations). This is optionally followed
+by predictive mean matching (PMM).
+\item Then, if there are "hard case" rows, i.e., rows with at least two missing values
+in columns that are also used as covariates in the random forests, repeat Step 2
+multiple times.
+}
 }
 \examples{
 iris2 <- generateNA(iris, seed = 20, p = c(Sepal.Length = 0.2, Species = 0.1))

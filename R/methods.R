@@ -51,10 +51,22 @@ summary.missRanger <- function(object, ...) {
 #' For univariate imputation, no forests are required. 
 #' This can be enforced by `predict(..., iter = 0)` or via `missRanger(. ~ 1, ...)`.
 #' 
-#' Note that multivariate imputation works best for rows in `newdata` with only one
-#' missing value, counting only missings that appear in `object$to_impute` as well as in
-#' `object$impute_by` columns. We call this the "easy case". In the "hard case", 
+#' Note that out-of-sample imputation works best for rows in `newdata` with only one
+#' missing value (actually counting only missings in variables used as covariates 
+#' in random forests). We call this the "easy case". In the "hard case", 
 #' even multiple iterations (set by `iter`) can lead to unsatisfactory results.
+#' 
+#' @details
+#' The out-of-sample algorithm works as follows:
+#' 1. Impute univariately all columns in `object$to_impute` by randomly drawing values 
+#'    from the original, unimputed data.
+#' 2. Replace univariate imputations by predictions of random forests. This is done
+#'    sequentially over `object$to_impute` in descending order of number of missings
+#'    (to minimize the impact of univariate imputations). This is optionally followed
+#'    by predictive mean matching (PMM).
+#' 3. Then, if there are "hard case" rows, i.e., rows with at least two missing values
+#'    in columns that are also used as covariates in the random forests, repeat Step 2
+#'    multiple times.
 #' 
 #' @param object 'missRanger' object.
 #' @param newdata A `data.frame` with missing values to impute.
