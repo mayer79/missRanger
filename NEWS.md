@@ -2,11 +2,14 @@
 
 ### Major feature
 
-Out-of-sample application is now possible! Thanks at [@jeandigitale](https://github.com/jeandigitale) for pushing the idea in [#58](https://github.com/mayer79/missRanger/issues/58).
+Out-of-sample application is now possible! Thanks to [@jeandigitale](https://github.com/jeandigitale) for pushing the idea in [#58](https://github.com/mayer79/missRanger/issues/58).
 
-This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply it to new data with missing values via `predict(imp, newdata)`. The "missRanger" object can be saved/loaded as binary file, e.g, via `saveRDS()`/`readRDS()`.
+This means you can run `imp <- missRanger(..., keep_forests = TRUE)` and then apply its models to new data via `predict(imp, newdata)`. The "missRanger" object can be saved/loaded as binary file, e.g, via `saveRDS()`/`readRDS()` for later use.
 
-The implementation first applies univariate imputation to the relevant variables, then applies the random forests iteratively and multiple times over all variables that need to be imputed (with or without PMM).
+Note that out-of-sample imputation works best for rows in `newdata` with only one
+missing value, counting only missings that appear in `object$to_impute` as well as in
+`object$impute_by` columns. We call this the "easy case". In the "hard case", 
+even multiple iterations (set by `iter`) can lead to unsatisfactory results.
 
 ### Possibly breaking changes
 

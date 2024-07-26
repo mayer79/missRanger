@@ -8,9 +8,9 @@
   object,
   newdata,
   pmm.k = object$pmm.k,
-  iter = 3L,
+  iter = 7L,
   seed = NULL,
-  verbose = 1,
+  verbose = 1L,
   ...
 )
 }
@@ -20,9 +20,10 @@
 \item{newdata}{A \code{data.frame} with missing values to impute.}
 
 \item{pmm.k}{Number of candidate predictions of the original dataset
-for predictive mean matching (PMM). By default the same as during fitting.}
+for predictive mean matching (PMM). By default the same value as during fitting.}
 
-\item{iter}{Number of prediction iterations. Set to 0 for univariate imputation.}
+\item{iter}{Number of prediction iterations. Only required when there are rows of
+"hard case", see description. Set to 0 for univariate imputation.}
 
 \item{seed}{Integer seed used for initial univariate imputation and PMM.}
 
@@ -31,7 +32,16 @@ for predictive mean matching (PMM). By default the same as during fitting.}
 \item{...}{Currently not used.}
 }
 \description{
-Impute missing values on new data based on an object of class "missRanger".
+Impute missing values on \code{newdata} based on an object of class "missRanger".
+
+For multivariate imputation, use \code{missRanger(..., keep_forests = TRUE)}.
+For univariate imputation, no forests are required.
+This can be enforced by \code{predict(..., iter = 0)} or via \code{missRanger(. ~ 1, ...)}.
+
+Note that multivariate imputation works best for rows in \code{newdata} with only one
+missing value, counting only missings that appear in \code{object$to_impute} as well as in
+\code{object$impute_by} columns. We call this the "easy case". In the "hard case",
+even multiple iterations (set by \code{iter}) can lead to unsatisfactory results.
 }
 \examples{
 iris2 <- generateNA(iris, seed = 20, p = c(Sepal.Length = 0.2, Species = 0.1))

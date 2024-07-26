@@ -44,13 +44,24 @@ summary.missRanger <- function(object, ...) {
 
 #' Predict Method
 #' 
-#' Impute missing values on new data based on an object of class "missRanger".
+#' @description
+#' Impute missing values on `newdata` based on an object of class "missRanger".
+#' 
+#' For multivariate imputation, use `missRanger(..., keep_forests = TRUE)`. 
+#' For univariate imputation, no forests are required. 
+#' This can be enforced by `predict(..., iter = 0)` or via `missRanger(. ~ 1, ...)`.
+#' 
+#' Note that multivariate imputation works best for rows in `newdata` with only one
+#' missing value, counting only missings that appear in `object$to_impute` as well as in
+#' `object$impute_by` columns. We call this the "easy case". In the "hard case", 
+#' even multiple iterations (set by `iter`) can lead to unsatisfactory results.
 #' 
 #' @param object 'missRanger' object.
 #' @param newdata A `data.frame` with missing values to impute.
 #' @param pmm.k Number of candidate predictions of the original dataset
-#'   for predictive mean matching (PMM). By default the same as during fitting.
-#' @param iter Number of prediction iterations. Set to 0 for univariate imputation.
+#'   for predictive mean matching (PMM). By default the same value as during fitting.
+#' @param iter Number of prediction iterations. Only required when there are rows of
+#'   "hard case", see description. Set to 0 for univariate imputation.
 #' @param seed Integer seed used for initial univariate imputation and PMM.
 #' @param verbose Should info be printed? (1 = yes/default, 0 for no).
 #' @param ... Currently not used.
@@ -60,7 +71,7 @@ summary.missRanger <- function(object, ...) {
 #' imp <- missRanger(iris2, pmm.k = 5, num.trees = 100, keep_forests = TRUE, seed = 2)
 #' predict(imp, head(iris2), seed = 3)
 predict.missRanger <- function(
-    object, newdata, pmm.k = object$pmm.k, iter = 3L, seed = NULL, verbose = 1, ...
+    object, newdata, pmm.k = object$pmm.k, iter = 4L, seed = NULL, verbose = 1L, ...
   ) {
   stopifnot(
     "'newdata' should be a data.frame!" = is.data.frame(newdata),
@@ -86,7 +97,7 @@ predict.missRanger <- function(
     return(newdata)
   }
   
-  # CHECKS FOR VARIABLES USED TO IMPUTE
+  # CHECK VARIABLES USED TO IMPUTE
   
   impute_by <- object$impute_by
   if (!all(impute_by %in% colnames(newdata))) {
@@ -96,14 +107,16 @@ predict.missRanger <- function(
     )
   }
   
-  # We currently won't do multivariate imputation if variable not to be imputed 
+  # We currently don't do multivariate imputation if variable not to be imputed 
   # has missing values
   only_impute_by <- setdiff(impute_by, to_impute)
-  if (length(only_impute_by) > 0L && anyNA(newdata[, only_impute_by, drop = FALSE])) {
+  if (length(only_impute_by) > 0L && anyNA(newdata[, only_impute_by])) {
     stop(
       "Missing values in ", paste(only_impute_by, collapse = ", "), " not allowed."
     )
   }
+  
+  # CONSISTENCY CHECKS WITH 'data_raw'
   
   for (v in union(to_impute, impute_by)) {
     v_new <- newdata[[v]]
@@ -115,11 +128,13 @@ predict.missRanger <- function(
       stop("Inconsistency between 'newdata' and original data in variable ", v)
     }
     
-    # Factor inconsistencies are not okay if we predict it
-    if (v %in% to_impute && is.factor(v_new) && !identical(levels(v_new), levels(v_orig))) {
+    # Factor inconsistencies are not okay in 'to_impute'
+    if (
+      v %in% to_impute && is.factor(v_new) && !identical(levels(v_new), levels(v_orig))
+    ) {
       if (all(levels(v_new) %in% levels(v_orig))) {
         newdata[[v]] <- factor(v_new, levels(v_orig), ordered = is.ordered(v_orig))
-        if (verbose >= 1) {
+        if (verbose >= 1L) {
           message("\nExtending factor levels of '", v, "' to those in original data")
         }
       } else {
@@ -132,7 +147,8 @@ predict.missRanger <- function(
     set.seed(seed)
   }
   
-  # UNIVARIATE IMPUTATION
+  # UNIVARIATE IMPUTATION 
+  # has no effect for "easy case" rows, but is not very expensive
   
   for (v in to_impute) {
     bad <- to_fill[, v]
@@ -140,8 +156,8 @@ predict.missRanger <- function(
     newdata[[v]][bad] <- sample(v_orig[!is.na(v_orig)], size = sum(bad), replace = TRUE)
   }
   
-  if (length(impute_by) == 0L || iter == 0L) {
-    if (verbose >= 1) {
+  if (length(impute_by) == 0L || iter < 1L) {
+    if (verbose >= 1L) {
       message("\nOnly univariate imputations done")
     }  
     return(newdata)
@@ -150,20 +166,26 @@ predict.missRanger <- function(
   # MULTIVARIATE IMPUTATION
   
   if (is.null(object$forests)) {
-    stop(
-      "No random forests in 'object'. Use missRanger(..., keep_forests = TRUE)."
-    )
+    stop("No random forests in 'object'. Use missRanger(, keep_forests = TRUE).")
   }
   
   # Do we have a random forest for all variables with missings?
+  # This can fire only if the first iteration in missRanger() was the best, and only
+  # for maximal one variable.
   forests_missing <- setdiff(to_impute, names(object$forests))
-  if (verbose >= 1 && length(forests_missing) > 0L) {
+  if (verbose >= 1L && length(forests_missing) > 0L) {
     message(
       "\n", paste(forests_missing, collapse = ", "), 
       "without random forest. Univariate imputation done for this variable."
     )
   }
   to_impute <- setdiff(to_impute, forests_missing)
+  
+  # Do we have rows of "hard case"? If no, a single iteration is sufficient.
+  easy <- rowSums(to_fill[, intersect(to_impute, impute_by), drop = FALSE]) <= 1L
+  if (all(easy)) {
+    iter <- 1L
+  }
   
   for (j in seq_len(iter)) {
     for (v in to_impute) {
