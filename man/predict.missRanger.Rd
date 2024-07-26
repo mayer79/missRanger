@@ -4,7 +4,15 @@
 \alias{predict.missRanger}
 \title{Predict Method}
 \usage{
-\method{predict}{missRanger}(object, newdata, pmm.k = 5L, iter = 3L, seed = NULL, verbose = 1, ...)
+\method{predict}{missRanger}(
+  object,
+  newdata,
+  pmm.k = object$pmm.k,
+  iter = 3L,
+  seed = NULL,
+  verbose = 1,
+  ...
+)
 }
 \arguments{
 \item{object}{'missRanger' object.}
@@ -12,13 +20,13 @@
 \item{newdata}{A \code{data.frame} with missing values to impute.}
 
 \item{pmm.k}{Number of candidate predictions of the original dataset
-for predictive mean matching (PMM).}
+for predictive mean matching (PMM). By default the same as during fitting.}
 
-\item{iter}{Number of random forest iterations. Set to 0 for univariate imputation.}
+\item{iter}{Number of prediction iterations.}
 
 \item{seed}{Integer seed used for initial univariate imputation and PMM.}
 
-\item{verbose}{Should info be printed? Default is 1 (yes). Set to 0 for no info.}
+\item{verbose}{Should info be printed? (1 = yes/default, 0 for no).}
 
 \item{...}{Currently not used.}
 }
@@ -26,7 +34,7 @@ for predictive mean matching (PMM).}
 Impute missing values on new data based on an object of class "missRanger".
 }
 \examples{
-iris2 <- generateNA(iris, seed = 1)
-imp <- missRanger(iris2, pmm.k = 5, num.trees = 100, keep_forests = TRUE)
-predict(imp, head(iris2), seed = 9)
+iris2 <- generateNA(iris, seed = 20, p = c(Sepal.Length = 0.2, Species = 0.1))
+imp <- missRanger(iris2, pmm.k = 5, num.trees = 100, keep_forests = TRUE, seed = 2)
+predict(imp, head(iris2), seed = 3)
 }
