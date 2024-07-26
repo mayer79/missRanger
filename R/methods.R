@@ -66,9 +66,7 @@ predict.missRanger <- function(
     "'newdata' should be a data.frame!" = is.data.frame(newdata),
     "'newdata' should have at least one row!" = nrow(newdata) >= 1L,
     "'iter' should not be negative!" = iter >= 0L,
-    "'pmm.k' should not be negative!" = pmm.k >= 0L,
-    "No random forests found in 'object'. Use missRanger(..., keep_forests = TRUE)." =
-      !is.null(object$forests)
+    "'pmm.k' should not be negative!" = pmm.k >= 0L
   )
   data_raw <- object$data_raw
   
@@ -150,6 +148,12 @@ predict.missRanger <- function(
   }
   
   # MULTIVARIATE IMPUTATION
+  
+  if (is.null(object$forests)) {
+    stop(
+      "No random forests in 'object'. Use missRanger(..., keep_forests = TRUE)."
+    )
+  }
   
   # Do we have a random forest for all variables with missings?
   forests_missing <- setdiff(to_impute, names(object$forests))
