@@ -71,6 +71,7 @@
 #'   - `pred_errors`: Per-iteration OOB prediction errors (1 - R^2 for regression,
 #'     classification error otherwise).
 #'   - `mean_pred_errors`: Per-iteration averages of OOB prediction errors.
+#'   - `pmm.k`: Same as input `pmm.k`.
 #'   
 #' @references
 #'   1. Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of 
@@ -200,7 +201,8 @@ missRanger <- function(
           impute_by = c(),
           best_iter = 0L,
           pred_errors = NULL,
-          mean_pred_errors = NULL
+          mean_pred_errors = NULL,
+          pmm.k = pmm.k
         ), 
         class = "missRanger"
       )  
@@ -397,7 +399,8 @@ missRanger <- function(
     impute_by = impute_by,
     best_iter = best_iter,
     pred_errors = do.call(rbind, pred_errors),
-    mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1))
+    mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1)),
+    pmm.k = pmm.k
   )
   class(out) <- "missRanger"
   

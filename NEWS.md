@@ -32,6 +32,7 @@
   - save.memory = FALSE
 - For variables that can't be used, more information is printed.
 - If `keep_forests = TRUE`, the argument `data_only` is set to `FALSE` by default.
+- "missRanger" object now stores `pmm.k`.
 
 # missRanger 2.5.0
 

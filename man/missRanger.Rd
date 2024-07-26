@@ -102,6 +102,7 @@ generate the imputed data. \code{NULL} otherwise.
 \item \code{pred_errors}: Per-iteration OOB prediction errors (1 - R^2 for regression,
 classification error otherwise).
 \item \code{mean_pred_errors}: Per-iteration averages of OOB prediction errors.
+\item \code{pmm.k}: Same as input \code{pmm.k}.
 }
 }
 \description{
