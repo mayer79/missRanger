@@ -130,6 +130,10 @@ predict.missRanger <- function(
   for (v in union(to_impute, impute_by)) {
     v_new <- newdata[[v]]
     v_orig <- data_raw[[v]]
+    
+    if (all(is.na(v_new))) {
+      next  # NA can be of wrong class!
+    }
     # class() distinguishes numeric, integer, logical, factor, character, Date, ...
     # - variables in to_impute are numeric, integer, logical, factor, or character
     # - variables in impute_by can also be of *mode* numeric, which includes Dates
@@ -162,7 +166,13 @@ predict.missRanger <- function(
   for (v in to_impute) {
     bad <- to_fill[, v]
     v_orig <- data_raw[[v]]
-    newdata[[v]][bad] <- sample(v_orig[!is.na(v_orig)], size = sum(bad), replace = TRUE)
+    donors <- sample(v_orig[!is.na(v_orig)], size = sum(bad), replace = TRUE)
+    if (all(bad)) {
+      # Handles e.g. case when original is factor, but newdata has all NA of numeric type
+      newdata[[v]] <- donors
+    } else {
+      newdata[[v]][bad] <- donors
+    }
   }
   
   if (length(impute_by) == 0L || iter < 1L) {
@@ -184,8 +194,8 @@ predict.missRanger <- function(
   forests_missing <- setdiff(to_impute, names(object$forests))
   if (verbose >= 1L && length(forests_missing) > 0L) {
     message(
-      "\n", paste(forests_missing, collapse = ", "), 
-      "without random forest. Univariate imputation done for this variable."
+      "\nNo random forest for ", forests_missing, 
+      ". Univariate imputation done for this variable."
     )
   }
   to_impute <- setdiff(to_impute, forests_missing)
