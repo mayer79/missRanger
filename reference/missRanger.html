@@ -83,7 +83,7 @@ when repeating the call to <code>missRanger()</code>.</p>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  returnOOB <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  data_only <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  data_only <span class="op">=</span> <span class="op">!</span><span class="va">keep_forests</span>,</span>
 <span>  keep_forests <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -170,7 +170,7 @@ The default <code>NULL</code> uses all threads.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>A value in 0, 1, 2 contolling the verbosity.</p></dd>
+<dd><p>A value in 0, 1, 2 controlling the verbosity.</p></dd>
 
 
 <dt id="arg-returnoob">returnOOB<a class="anchor" aria-label="anchor" href="#arg-returnoob"></a></dt>
@@ -206,6 +206,7 @@ generate the imputed data. <code>NULL</code> otherwise.</p></li>
 <li><p><code>pred_errors</code>: Per-iteration OOB prediction errors (1 - R^2 for regression,
 classification error otherwise).</p></li>
 <li><p><code>mean_pred_errors</code>: Per-iteration averages of OOB prediction errors.</p></li>
+<li><p><code>pmm.k</code>: Same as input <code>pmm.k</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

@@ -59,7 +59,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Using missRanger</h1>
             
-            <h4 data-toc-skip class="date">2024-07-24</h4>
+            <h4 data-toc-skip class="date">2024-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mayer79/missRanger/blob/main/vignettes/missRanger.Rmd" class="external-link"><code>vignettes/missRanger.Rmd</code></a></small>
       <div class="d-none name"><code>missRanger.Rmd</code></div>
@@ -81,6 +81,7 @@ the forests stops improving. The missing values are filled by OOB
 predictions of the best iteration.</p>
 <ul>
 <li>{missRanger} is <strong>fast</strong>.</li>
+<li>It allows for <strong>out-of-sample applications</strong>.</li>
 <li>It is <strong>intuitive</strong>: E.g., calling
 <code>missRanger(data, . ~ 1)</code> would impute all variables
 univariately, while <code>missRanger(data, Species ~ Sepal.Width)</code>
@@ -169,10 +170,15 @@ feature per split (mtry = 1) with 200 trees?</p>
 <div class="section level3">
 <h3 id="extended-output">Extended output<a class="anchor" aria-label="anchor" href="#extended-output"></a>
 </h3>
-<p>Setting <code>data_only = FALSE</code> returns a “missRanger” object
-with more information:</p>
+<p>Setting <code>data_only = FALSE</code> (or
+<code>keep_forests = TRUE</code>) returns a “missRanger” object. With
+<code>keep_forests = TRUE</code>, this allows for out-of-sample
+applications:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span><span class="va">iris_NA</span>, pmm.k <span class="op">=</span> <span class="fl">5</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, data_only <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">imp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/missRanger.html">missRanger</a></span><span class="op">(</span></span>
+<span>  <span class="va">iris_NA</span>, pmm.k <span class="op">=</span> <span class="fl">5</span>, num.trees <span class="op">=</span> <span class="fl">100</span>, keep_forests <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">imp</span></span>
 <span><span class="co">#&gt; missRanger object. Extract imputed data via $data</span></span>
 <span><span class="co">#&gt; - best iteration: 2 </span></span>
 <span><span class="co">#&gt; - best average OOB imputation error: 0.02407416</span></span>
@@ -197,7 +203,19 @@ with more information:</p>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span></code></pre></div>
+<span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
+<span></span>
+<span><span class="co"># Out-of-sample application</span></span>
+<span><span class="co"># saveRDS(imp, file = "imputation_model.rds")</span></span>
+<span><span class="co"># imp &lt;- readRDS("imputation_model.rds")</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">imp</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris_NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 2          4.9         3.0          1.4         1.0  setosa</span></span>
+<span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
+<span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa</span></span>
+<span><span class="co">#&gt; 5          5.8         3.6          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="formulas">Formulas<a class="anchor" aria-label="anchor" href="#formulas"></a>
@@ -228,7 +246,7 @@ the variables used for imputation.</p>
 <span><span class="co">#&gt; 2          4.9         3.0          1.4          NA  setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
 <span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5          5.8         3.6          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 5          6.7         3.6          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4    &lt;NA&gt;</span></span>
 <span></span>
 <span><span class="co"># Only univariate imputation was done! Why? Because Species contains missing values</span></span>
@@ -245,8 +263,8 @@ the variables used for imputation.</p>
 <span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2     setosa</span></span>
 <span><span class="co">#&gt; 2          4.9         3.0          1.4          NA     setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2     setosa</span></span>
-<span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2     setosa</span></span>
-<span><span class="co">#&gt; 5          5.1         3.6          1.4         0.2     setosa</span></span>
+<span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2 versicolor</span></span>
+<span><span class="co">#&gt; 5          6.9         3.6          1.4         0.2     setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4 versicolor</span></span>
 <span></span>
 <span><span class="co"># Impute all variables univariately</span></span>
@@ -256,16 +274,18 @@ the variables used for imputation.</p>
 <h3 id="speed-up-things">Speed-up things<a class="anchor" aria-label="anchor" href="#speed-up-things"></a>
 </h3>
 <p><code><a href="../reference/missRanger.html">missRanger()</a></code> fits a random forest per variable and
-iteration. Thus, imputation can take long. Some tweaks to make things
-faster:</p>
+iteration. Thus, imputation can take long. Some tweaks:</p>
 <ul>
 <li>Use less trees, e.g., <code>num.trees = 100</code>.</li>
-<li>Use smaller bootstrap samples, e.g.,
-<code>sample.fraction = 0.2</code>.</li>
 <li>Use a smaller tree depth, e.g., <code>max.depth = 6</code>.</li>
 <li>Use large leaves, e.g., <code>min.node.size = 100</code>.</li>
+<li>Use smaller bootstrap samples, e.g.,
+<code>sample.fraction = 0.2</code>.</li>
 <li>Use less iterations, e.g., <code>max.iter = 3</code>.</li>
 </ul>
+<p>The first three items also help to greatly reduce the size of the
+models, which might become relevant in out-of-sample applications with
+<code>keep_forests = TRUE</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="trick-use-case-weights-to-reduce-impact-of-rows-with-many-missings">Trick: Use <code>case.weights</code> to reduce impact of rows with
