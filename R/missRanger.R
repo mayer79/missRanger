@@ -49,7 +49,7 @@
 #' @param save.memory Slow but memory saving mode of [ranger::ranger()].
 #' @param maxiter Maximum number of iterations.
 #' @param seed Integer seed.
-#' @param verbose A value in 0, 1, 2 contolling the verbosity.
+#' @param verbose A value in 0, 1, 2 controlling the verbosity.
 #' @param returnOOB Should the final average OOB prediction errors be added
 #'   as data attribute "oob"? Only relevant when `data_only = TRUE`.
 #' @param data_only If `TRUE` (default), only the imputed data is returned.
@@ -71,6 +71,7 @@
 #'   - `pred_errors`: Per-iteration OOB prediction errors (1 - R^2 for regression,
 #'     classification error otherwise).
 #'   - `mean_pred_errors`: Per-iteration averages of OOB prediction errors.
+#'   - `pmm.k`: Same as input `pmm.k`.
 #'   
 #' @references
 #'   1. Wright, M. N. & Ziegler, A. (2016). ranger: A Fast Implementation of 
@@ -115,7 +116,7 @@ missRanger <- function(
     seed = NULL,
     verbose = 1,
     returnOOB = FALSE,
-    data_only = TRUE,
+    data_only = !keep_forests,
     keep_forests = FALSE,
     ...
   ) {
@@ -200,7 +201,8 @@ missRanger <- function(
           impute_by = c(),
           best_iter = 0L,
           pred_errors = NULL,
-          mean_pred_errors = NULL
+          mean_pred_errors = NULL,
+          pmm.k = pmm.k
         ), 
         class = "missRanger"
       )  
@@ -397,7 +399,8 @@ missRanger <- function(
     impute_by = impute_by,
     best_iter = best_iter,
     pred_errors = do.call(rbind, pred_errors),
-    mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1))
+    mean_pred_errors = vapply(pred_errors, FUN = mean, FUN.VALUE = numeric(1)),
+    pmm.k = pmm.k
   )
   class(out) <- "missRanger"
   

@@ -24,8 +24,7 @@ use_description(
     with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
     Secondly, predictive mean matching tries to raise the variance in the resulting conditional 
     distributions to a realistic level. This would allow, e.g., to do multiple imputation when 
-    repeating the call to missRanger(). 
-    A formula interface allows to control which variables should be imputed by which.",
+    repeating the call to missRanger(). Out-of-sample application is supported as well.",
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre'))",
     Depends = "R (>= 3.5.0)",
     LazyData = NULL
@@ -101,7 +100,7 @@ if (FALSE) {
   check_rhub()
   
   # Takes long # devtools::install_github("r-lib/revdepcheck")
-  revdepcheck::revdep_check(num_workers = 4L)
+  revdepcheck::revdep_check(num_workers = 4L, bioc = FALSE)
 
   # Wait until above checks are passed without relevant notes/warnings
   # then submit to CRAN

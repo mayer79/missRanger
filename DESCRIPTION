@@ -14,8 +14,7 @@ Description: Alternative implementation of the beautiful 'MissForest'
     predictive mean matching tries to raise the variance in the resulting
     conditional distributions to a realistic level. This would allow,
     e.g., to do multiple imputation when repeating the call to
-    missRanger().  A formula interface allows to control which variables
-    should be imputed by which.
+    missRanger(). Out-of-sample application is supported as well.
 License: GPL (>= 2)
 Depends: 
     R (>= 3.5.0)
