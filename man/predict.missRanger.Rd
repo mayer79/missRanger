@@ -22,8 +22,7 @@
 \item{pmm.k}{Number of candidate predictions of the original dataset
 for predictive mean matching (PMM). By default the same value as during fitting.}
 
-\item{iter}{Number of prediction iterations. Only required when there are rows of
-"hard case", see description. Set to 0 for univariate imputation.}
+\item{iter}{Number of iterations for "hard case" rows. 0 for univariate imputation.}
 
 \item{seed}{Integer seed used for initial univariate imputation and PMM.}
 
@@ -46,15 +45,13 @@ even multiple iterations (set by \code{iter}) can lead to unsatisfactory results
 \details{
 The out-of-sample algorithm works as follows:
 \enumerate{
-\item Impute univariately all columns in \code{object$to_impute} by randomly drawing values
-from the original, unimputed data.
+\item Impute univariately all relevant columns by randomly drawing values
+from the original, unimputed data. This step will only impact "hard case" rows.
 \item Replace univariate imputations by predictions of random forests. This is done
-sequentially over \code{object$to_impute} in descending order of number of missings
-(to minimize the impact of univariate imputations). This is optionally followed
+sequentially over variables in descending order of number of missings
+(to minimize the impact of univariate imputations). Optionally, this is followed
 by predictive mean matching (PMM).
-\item Then, if there are "hard case" rows, i.e., rows with at least two missing values
-in columns that are also used as covariates in the random forests, repeat Step 2
-multiple times.
+\item Repeat Step 2 for "hard case" rows multiple times.
 }
 }
 \examples{

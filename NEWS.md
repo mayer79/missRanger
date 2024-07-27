@@ -12,15 +12,13 @@ even multiple iterations (set by `iter`) can lead to unsatisfactory results.
 
 The out-of-sample algorithm works as follows:
 
-1. Impute univariately all columns in `object$to_impute` by randomly drawing values 
-   from the original, unimputed data.
+1. Impute univariately all relevant columns by randomly drawing values 
+   from the original, unimputed data. This step will only impact "hard case" rows.
 2. Replace univariate imputations by predictions of random forests. This is done
-   sequentially over `object$to_impute` in descending order of number of missings
-   (to minimize the impact of univariate imputations). This is optionally followed
+   sequentially over variablse in descending order of number of missings
+   (to minimize the impact of univariate imputations). Optionally, this is followed
    by predictive mean matching (PMM).
-3. Then, if there are "hard case" rows, i.e., rows with at least two missing values
-   in columns that are also used as covariates in the random forests, repeat Step 2
-   multiple times.
+3. Repeat Step 2 for "hard case" rows multiple times.
 
 ### Possibly breaking changes
 

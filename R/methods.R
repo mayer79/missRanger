@@ -58,22 +58,19 @@ summary.missRanger <- function(object, ...) {
 #' 
 #' @details
 #' The out-of-sample algorithm works as follows:
-#' 1. Impute univariately all columns in `object$to_impute` by randomly drawing values 
-#'    from the original, unimputed data.
+#' 1. Impute univariately all relevant columns by randomly drawing values 
+#'    from the original, unimputed data. This step will only impact "hard case" rows.
 #' 2. Replace univariate imputations by predictions of random forests. This is done
-#'    sequentially over `object$to_impute` in descending order of number of missings
-#'    (to minimize the impact of univariate imputations). This is optionally followed
+#'    sequentially over variables in descending order of number of missings
+#'    (to minimize the impact of univariate imputations). Optionally, this is followed
 #'    by predictive mean matching (PMM).
-#' 3. Then, if there are "hard case" rows, i.e., rows with at least two missing values
-#'    in columns that are also used as covariates in the random forests, repeat Step 2
-#'    multiple times.
+#' 3. Repeat Step 2 for "hard case" rows multiple times.
 #' 
 #' @param object 'missRanger' object.
 #' @param newdata A `data.frame` with missing values to impute.
 #' @param pmm.k Number of candidate predictions of the original dataset
 #'   for predictive mean matching (PMM). By default the same value as during fitting.
-#' @param iter Number of prediction iterations. Only required when there are rows of
-#'   "hard case", see description. Set to 0 for univariate imputation.
+#' @param iter Number of iterations for "hard case" rows. 0 for univariate imputation.
 #' @param seed Integer seed used for initial univariate imputation and PMM.
 #' @param verbose Should info be printed? (1 = yes/default, 0 for no).
 #' @param ... Currently not used.
@@ -216,6 +213,9 @@ predict.missRanger <- function(
         pred <- as.character(pred)
       }
       newdata[[v]][to_fill[, v]] <- pred
+    }
+    if (j == 1L) {
+      to_fill <- to_fill & !easy
     }
   }
   return(newdata)
