@@ -100,7 +100,7 @@ if (FALSE) {
   check_rhub()
   
   # Takes long # devtools::install_github("r-lib/revdepcheck")
-  revdepcheck::revdep_check(num_workers = 4L)
+  revdepcheck::revdep_check(num_workers = 4L, bioc = FALSE)
 
   # Wait until above checks are passed without relevant notes/warnings
   # then submit to CRAN
