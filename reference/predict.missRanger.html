@@ -71,6 +71,7 @@ even multiple iterations (set by <code>iter</code>) can lead to unsatisfactory r
 <span>  <span class="va">newdata</span>,</span>
 <span>  pmm.k <span class="op">=</span> <span class="va">object</span><span class="op">$</span><span class="va">pmm.k</span>,</span>
 <span>  iter <span class="op">=</span> <span class="fl">4L</span>,</span>
+<span>  num.threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -98,6 +99,11 @@ for predictive mean matching (PMM). By default the same value as during fitting.
 <dd><p>Number of iterations for "hard case" rows. 0 for univariate imputation.</p></dd>
 
 
+<dt id="arg-num-threads">num.threads<a class="anchor" aria-label="anchor" href="#arg-num-threads"></a></dt>
+<dd><p>Number of threads used by ranger's predict function.
+The default <code>NULL</code> uses all threads.</p></dd>
+
+
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Integer seed used for initial univariate imputation and PMM.</p></dd>
 
@@ -107,7 +113,7 @@ for predictive mean matching (PMM). By default the same value as during fitting.
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Currently not used.</p></dd>
+<dd><p>Passed to the predict function of ranger.</p></dd>
 
 </dl></div>
     <div class="section level2">
