@@ -49,6 +49,7 @@ The out-of-sample algorithm works as follows:
 - For variables that can't be used, more information is printed.
 - If `keep_forests = TRUE`, the argument `data_only` is set to `FALSE` by default.
 - "missRanger" object now stores `pmm.k`.
+- `verbose` argument is passed to `ranger()` as well.
 
 # missRanger 2.5.0
 
