@@ -71,16 +71,25 @@ summary.missRanger <- function(object, ...) {
 #' @param pmm.k Number of candidate predictions of the original dataset
 #'   for predictive mean matching (PMM). By default the same value as during fitting.
 #' @param iter Number of iterations for "hard case" rows. 0 for univariate imputation.
+#' @param num.threads Number of threads used by ranger's predict function.
+#'   The default `NULL` uses all threads.
 #' @param seed Integer seed used for initial univariate imputation and PMM.
 #' @param verbose Should info be printed? (1 = yes/default, 0 for no).
-#' @param ... Currently not used.
+#' @param ... Passed to the predict function of ranger.
 #' @export
 #' @examples
 #' iris2 <- generateNA(iris, seed = 20, p = c(Sepal.Length = 0.2, Species = 0.1))
 #' imp <- missRanger(iris2, pmm.k = 5, num.trees = 100, keep_forests = TRUE, seed = 2)
 #' predict(imp, head(iris2), seed = 3)
 predict.missRanger <- function(
-    object, newdata, pmm.k = object$pmm.k, iter = 4L, seed = NULL, verbose = 1L, ...
+    object,
+    newdata,
+    pmm.k = object$pmm.k,
+    iter = 4L,
+    num.threads = NULL,
+    seed = NULL,
+    verbose = 1L,
+    ...
   ) {
   stopifnot(
     "'newdata' should be a data.frame!" = is.data.frame(newdata),
@@ -209,7 +218,13 @@ predict.missRanger <- function(
   for (j in seq_len(iter)) {
     for (v in to_impute) {
       y <- newdata[[v]]
-      pred <- stats::predict(object$forests[[v]], newdata[to_fill[, v], ])$predictions
+      pred <- stats::predict(
+        object$forests[[v]],
+        newdata[to_fill[, v], ],
+        num.threads = num.threads,
+        verbose = verbose >= 1L,
+        ...
+      )$predictions
       if (pmm.k >= 1) {
         xtrain <- object$forests[[v]]$predictions
         ytrain <- data_raw[[v]]
