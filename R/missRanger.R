@@ -318,6 +318,7 @@ missRanger <- function(
           save.memory = save.memory,
           x = data[!v.na, completed, drop = FALSE],
           y = y,
+          verbose = verbose >= 1,
           ...
         )
 

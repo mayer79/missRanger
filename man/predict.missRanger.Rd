@@ -9,6 +9,7 @@
   newdata,
   pmm.k = object$pmm.k,
   iter = 4L,
+  num.threads = NULL,
   seed = NULL,
   verbose = 1L,
   ...
@@ -24,11 +25,14 @@ for predictive mean matching (PMM). By default the same value as during fitting.
 
 \item{iter}{Number of iterations for "hard case" rows. 0 for univariate imputation.}
 
+\item{num.threads}{Number of threads used by ranger's predict function.
+The default \code{NULL} uses all threads.}
+
 \item{seed}{Integer seed used for initial univariate imputation and PMM.}
 
 \item{verbose}{Should info be printed? (1 = yes/default, 0 for no).}
 
-\item{...}{Currently not used.}
+\item{...}{Passed to the predict function of ranger.}
 }
 \description{
 Impute missing values on \code{newdata} based on an object of class "missRanger".
