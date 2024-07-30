@@ -216,9 +216,10 @@ predict.missRanger <- function(
     iter <- 1L
   } else {
     # We impute first the column with most missings in *hard case* rows to minimize
-    # impact of univariate imputations
-    missing_counts <- colSums(to_fill[, to_impute, drop = FALSE] & !easy)
-    to_impute <- to_impute[order(missing_counts, decreasing = TRUE)]
+    # impact of univariate imputations (here, the case above with missing forest is
+    # ignored for simplicity)
+    hard_counts <- colSums(to_fill[, to_impute, drop = FALSE] & !easy)
+    to_impute <- to_impute[order(hard_counts, decreasing = TRUE)]
   }
   
   for (j in seq_len(iter)) {
