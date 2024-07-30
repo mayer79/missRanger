@@ -245,12 +245,12 @@ predict.missRanger <- function(
       }
       newdata[[v]][to_fill[, v]] <- pred
     }
-    if (j == 1L) {
+    if (j == 1L && iter > 1L) {
       to_fill <- to_fill & !easy
-      
+
       # Remove features that were missing in easy case rows only
       missing_counts <- colSums(to_fill[, to_impute, drop = FALSE])
-      to_impute <- to_impute[missing_counts > 0L]
+      to_impute <- to_impute[missing_counts > 0L] 
     }
   }
   return(newdata)
