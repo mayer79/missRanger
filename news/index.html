@@ -46,7 +46,7 @@
 <p>Note that out-of-sample imputation works best for rows in <code>newdata</code> with only one missing value (actually counting only missings in variables used as covariates in random forests). We call this the “easy case”. In the “hard case”, even multiple iterations (set by <code>iter</code>) can lead to unsatisfactory results.</p>
 <p>The out-of-sample algorithm works as follows:</p>
 <ol style="list-style-type: decimal"><li>Impute univariately all relevant columns by randomly drawing values from the original, unimputed data. This step will only impact “hard case” rows.</li>
-<li>Replace univariate imputations by predictions of random forests. This is done sequentially over variablse in descending order of number of missings (to minimize the impact of univariate imputations). Optionally, this is followed by predictive mean matching (PMM).</li>
+<li>Replace univariate imputations by predictions of random forests. This is done sequentially over variables in decreasing order of missings in “hard case” rows (to minimize the impact of univariate imputations). Optionally, this is followed by predictive mean matching (PMM).</li>
 <li>Repeat Step 2 for “hard case” rows multiple times.</li>
 </ol></div>
 <div class="section level4">
