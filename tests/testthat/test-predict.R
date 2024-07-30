@@ -152,6 +152,19 @@ test_that("OOS does not fail if there is all missings, even of wrong type", {
   expect_no_error(x1 <- predict(imp, new_rows, seed = 1L))
 })
 
+test_that("case works where easy case fills a complete column", {
+  imp <- missRanger(iris2, verbose = 0, seed = 1L, num.trees = 10, keep_forests = TRUE)
+  
+  X <- data.frame(
+    Sepal.Length = c(5.1, NA),
+    Sepal.Width = c(3.5, 3.4),
+    Petal.Length = c(NA, 1.4),
+    Petal.Width = c(NA, 0.3),
+    Species = factor("setosa")
+  )
+  expect_no_error(predict(imp, X))
+})
+
 n <- 200L
 
 X <- data.frame(
@@ -163,6 +176,15 @@ X <- data.frame(
 )
 
 X_NA <- generateNA(X[1:5], p = 0.2, seed = 1L)
+
+test_that("non-syntactic column names work", {
+  X_NA2 <- X_NA
+  colnames(X_NA2)[1:2] <- c("1bad name", "2 also bad")
+  
+  imp1 <- missRanger(X_NA2, num.trees = 20L, verbose = 0L, seed = 1L, keep_forests = TRUE)
+  
+  expect_equal(colnames(predict(imp1, head(X_NA2))), colnames(X_NA2))
+})
 
 test_that("OOS does not fail if there is all missings, even of wrong type (MORE TYPES)", {
   imp1 <- missRanger(
@@ -180,14 +202,5 @@ test_that("OOS does not fail if there is all missings, even of wrong type (MORE 
   xp <- list(int = "numeric", double = "numeric", char = "character", 
              fact = "factor", logi = "logical")
   expect_equal(lapply(x1, class), xp)
-})
-
-test_that("non-syntactic column names work", {
-  X_NA2 <- X_NA
-  colnames(X_NA2)[1:2] <- c("1bad name", "2 also bad")
-  
-  imp1 <- missRanger(X_NA2, num.trees = 20L, verbose = 0L, seed = 1L, keep_forests = TRUE)
-  
-  expect_equal(colnames(predict(imp1, head(X_NA2))), colnames(X_NA2))
 })
 

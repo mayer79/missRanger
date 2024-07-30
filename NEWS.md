@@ -15,9 +15,9 @@ The out-of-sample algorithm works as follows:
 1. Impute univariately all relevant columns by randomly drawing values 
    from the original, unimputed data. This step will only impact "hard case" rows.
 2. Replace univariate imputations by predictions of random forests. This is done
-   sequentially over variablse in descending order of number of missings
-   (to minimize the impact of univariate imputations). Optionally, this is followed
-   by predictive mean matching (PMM).
+   sequentially over variables in decreasing order of missings in "hard case"
+   rows (to minimize the impact of univariate imputations).
+   Optionally, this is followed by predictive mean matching (PMM).
 3. Repeat Step 2 for "hard case" rows multiple times.
 
 ### Possibly breaking changes
