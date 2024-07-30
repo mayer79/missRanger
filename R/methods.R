@@ -217,7 +217,6 @@ predict.missRanger <- function(
   
   for (j in seq_len(iter)) {
     for (v in to_impute) {
-      y <- newdata[[v]]
       pred <- stats::predict(
         object$forests[[v]],
         newdata[to_fill[, v], ],
@@ -232,15 +231,19 @@ predict.missRanger <- function(
           ytrain <- ytrain[!is.na(ytrain)]  # To align with OOB predictions
         }
         pred <- pmm(xtrain = xtrain, xtest = pred, ytrain = ytrain, k = pmm.k)
-      } else if (is.logical(y)) {
+      } else if (is.logical(newdata[[v]])) {
         pred <- as.logical(pred)
-      } else if (is.character(y)) {
+      } else if (is.character(newdata[[v]])) {
         pred <- as.character(pred)
       }
       newdata[[v]][to_fill[, v]] <- pred
     }
     if (j == 1L) {
       to_fill <- to_fill & !easy
+      
+      # not all features are needed anymore
+      m <- colSums(to_fill[, to_impute, drop = FALSE])
+      to_impute <- to_impute[m > 0L]
     }
   }
   return(newdata)
