@@ -219,7 +219,9 @@ predict.missRanger <- function(
     # impact of univariate imputations (here, the case above with missing forest is
     # ignored for simplicity)
     hard_counts <- colSums(to_fill[, to_impute, drop = FALSE] & !easy)
-    to_impute <- to_impute[order(hard_counts, decreasing = TRUE)]
+    ord <- order(hard_counts, decreasing = TRUE)
+    to_impute <- to_impute[ord]
+    hard_counts <- hard_counts[ord]
   }
   
   for (j in seq_len(iter)) {
@@ -247,10 +249,7 @@ predict.missRanger <- function(
     }
     if (j == 1L && iter > 1L) {
       to_fill <- to_fill & !easy
-
-      # Remove features that were missing in easy case rows only
-      missing_counts <- colSums(to_fill[, to_impute, drop = FALSE])
-      to_impute <- to_impute[missing_counts > 0L] 
+      to_impute <- to_impute[hard_counts > 0L]  # Need to fill only hard cases when j>1
     }
   }
   return(newdata)
