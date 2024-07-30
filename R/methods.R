@@ -61,7 +61,7 @@ summary.missRanger <- function(object, ...) {
 #' 1. Impute univariately all relevant columns by randomly drawing values 
 #'    from the original, unimputed data. This step will only impact "hard case" rows.
 #' 2. Replace univariate imputations by predictions of random forests. This is done
-#'    sequentially over variables in descending order of number of missings
+#'    sequentially over variables in decreasing order of missings in "hard case" rows
 #'    (to minimize the impact of univariate imputations). Optionally, this is followed
 #'    by predictive mean matching (PMM).
 #' 3. Repeat Step 2 for "hard case" rows multiple times.
@@ -104,11 +104,10 @@ predict.missRanger <- function(
   # (a) Only those in newdata
   to_impute <- intersect(object$to_impute, colnames(newdata))
   
-  # (b) Only those with missings, and in decreasing order
-  #     to minimize impact of univariate imputations
+  # (b) Only those with missings
   to_fill <- is.na(newdata[, to_impute, drop = FALSE])
-  m <- sort(colSums(to_fill), decreasing = TRUE)
-  to_impute <- names(m[m > 0])
+  missing_counts <- colSums(to_fill)
+  to_impute <- to_impute[missing_counts > 0L]
   to_fill <- to_fill[, to_impute, drop = FALSE]
   
   if (length(to_impute) == 0L) {
@@ -201,18 +200,25 @@ predict.missRanger <- function(
   # This can fire only if the first iteration in missRanger() was the best, and only
   # for maximal one variable.
   forests_missing <- setdiff(to_impute, names(object$forests))
-  if (verbose >= 1L && length(forests_missing) > 0L) {
-    message(
-      "\nNo random forest for ", forests_missing, 
-      ". Univariate imputation done for this variable."
-    )
+  if (length(forests_missing) > 0L) {
+    if (verbose >= 1L) {
+      message(
+        "\nNo random forest for ", forests_missing, 
+        ". Univariate imputation done for this variable."
+      )
+    }
+    to_impute <- setdiff(to_impute, forests_missing)
   }
-  to_impute <- setdiff(to_impute, forests_missing)
   
   # Do we have rows of "hard case"? If no, a single iteration is sufficient.
   easy <- rowSums(to_fill[, intersect(to_impute, impute_by), drop = FALSE]) <= 1L
   if (all(easy)) {
     iter <- 1L
+  } else {
+    # We impute first the column with most missings in *hard case* rows to minimize
+    # impact of univariate imputations
+    missing_counts <- colSums(to_fill[, to_impute, drop = FALSE] & !easy)
+    to_impute <- to_impute[order(missing_counts, decreasing = TRUE)]
   }
   
   for (j in seq_len(iter)) {
@@ -241,9 +247,9 @@ predict.missRanger <- function(
     if (j == 1L) {
       to_fill <- to_fill & !easy
       
-      # not all features are needed anymore
-      m <- colSums(to_fill[, to_impute, drop = FALSE])
-      to_impute <- to_impute[m > 0L]
+      # Remove features that were missing in easy case rows only
+      missing_counts <- colSums(to_fill[, to_impute, drop = FALSE])
+      to_impute <- to_impute[missing_counts > 0L]
     }
   }
   return(newdata)
