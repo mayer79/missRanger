@@ -4,14 +4,14 @@ For multivariate imputation, use missRanger(..., keep_forests = TRUE).
 For univariate imputation, no forests are required.
 This can be enforced by predict(..., iter = 0) or via missRanger(. ~ 1, ...).
 Note that out-of-sample imputation works best for rows in newdata with only one
-missing value (actually counting only missings in variables used as covariates
+missing value (counting only missings in variables used as covariates
 in random forests). We call this the "easy case". In the "hard case",
 even multiple iterations (set by iter) can lead to unsatisfactory results.'><meta property="og:description" content='Impute missing values on newdata based on an object of class "missRanger".
 For multivariate imputation, use missRanger(..., keep_forests = TRUE).
 For univariate imputation, no forests are required.
 This can be enforced by predict(..., iter = 0) or via missRanger(. ~ 1, ...).
 Note that out-of-sample imputation works best for rows in newdata with only one
-missing value (actually counting only missings in variables used as covariates
+missing value (counting only missings in variables used as covariates
 in random forests). We call this the "easy case". In the "hard case",
 even multiple iterations (set by iter) can lead to unsatisfactory results.'><meta property="og:image" content="/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,7 +58,7 @@ even multiple iterations (set by iter) can lead to unsatisfactory results.'><met
 For univariate imputation, no forests are required.
 This can be enforced by <code>predict(..., iter = 0)</code> or via <code>missRanger(. ~ 1, ...)</code>.</p>
 <p>Note that out-of-sample imputation works best for rows in <code>newdata</code> with only one
-missing value (actually counting only missings in variables used as covariates
+missing value (counting only missings in variables used as covariates
 in random forests). We call this the "easy case". In the "hard case",
 even multiple iterations (set by <code>iter</code>) can lead to unsatisfactory results.</p>
     </div>
@@ -119,11 +119,10 @@ The default <code>NULL</code> uses all threads.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The out-of-sample algorithm works as follows:</p><ol><li><p>Impute univariately all relevant columns by randomly drawing values
-from the original, unimputed data. This step will only impact "hard case" rows.</p></li>
+from the original unimputed data. This step will only impact "hard case" rows.</p></li>
 <li><p>Replace univariate imputations by predictions of random forests. This is done
-sequentially over variables in decreasing order of missings in "hard case" rows
-(to minimize the impact of univariate imputations). Optionally, this is followed
-by predictive mean matching (PMM).</p></li>
+sequentially over variables, where the variables are sorted to minimize the impact
+of univariate imputations. Optionally, this is followed by predictive mean matching (PMM).</p></li>
 <li><p>Repeat Step 2 for "hard case" rows multiple times.</p></li>
 </ol></div>
 
