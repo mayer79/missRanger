@@ -42,7 +42,7 @@ For univariate imputation, no forests are required.
 This can be enforced by \code{predict(..., iter = 0)} or via \code{missRanger(. ~ 1, ...)}.
 
 Note that out-of-sample imputation works best for rows in \code{newdata} with only one
-missing value (actually counting only missings in variables used as covariates
+missing value (counting only missings in variables used as covariates
 in random forests). We call this the "easy case". In the "hard case",
 even multiple iterations (set by \code{iter}) can lead to unsatisfactory results.
 }
@@ -50,11 +50,10 @@ even multiple iterations (set by \code{iter}) can lead to unsatisfactory results
 The out-of-sample algorithm works as follows:
 \enumerate{
 \item Impute univariately all relevant columns by randomly drawing values
-from the original, unimputed data. This step will only impact "hard case" rows.
+from the original unimputed data. This step will only impact "hard case" rows.
 \item Replace univariate imputations by predictions of random forests. This is done
-sequentially over variables in decreasing order of missings in "hard case" rows
-(to minimize the impact of univariate imputations). Optionally, this is followed
-by predictive mean matching (PMM).
+sequentially over variables, where the variables are sorted to minimize the impact
+of univariate imputations. Optionally, this is followed by predictive mean matching (PMM).
 \item Repeat Step 2 for "hard case" rows multiple times.
 }
 }
