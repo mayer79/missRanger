@@ -14,5 +14,5 @@ Status: OK
 
 ## revdepcheck results
 
-OK: 7                                                                                                                                            
+OK: 7
 BROKEN: 0
