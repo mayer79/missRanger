@@ -2,7 +2,7 @@
 
 ### Major bug fix
 
-- Fixes a major bug introduced in version 2.3.0, by which responses would be used as covariates in the random forests. Thanks for reporting @flystar233 (Issue #77).
+- Fixes a major bug introduced in version 2.3.0, by which responses would be used as covariates in the random forests. Thanks for reporting @flystar233 (PR #78).
 
 ### Major feature
 
