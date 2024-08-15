@@ -10,7 +10,7 @@
 |collate  |German_Switzerland.utf8                                  |
 |ctype    |German_Switzerland.utf8                                  |
 |tz       |Europe/Zurich                                            |
-|date     |2024-08-02                                               |
+|date     |2024-08-15                                               |
 |rstudio  |2024.04.2+764 Chocolate Cosmos (desktop)                 |
 |pandoc   |3.1.6 @ C:\Users\Michael\AppData\Local\Pandoc\pandoc.exe |
 
