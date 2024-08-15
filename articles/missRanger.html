@@ -137,12 +137,12 @@ additional vignettes).</li>
 <span><span class="co">#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
-<span><span class="co">#&gt; 1     5.100000         3.5          1.4       0.200  setosa</span></span>
-<span><span class="co">#&gt; 2     4.900000         3.0          1.4       0.242  setosa</span></span>
-<span><span class="co">#&gt; 3     4.700000         3.2          1.3       0.200  setosa</span></span>
-<span><span class="co">#&gt; 4     4.600000         3.1          1.5       0.200  setosa</span></span>
-<span><span class="co">#&gt; 5     5.512994         3.6          1.4       0.200  setosa</span></span>
-<span><span class="co">#&gt; 6     5.400000         3.9          1.7       0.400  setosa</span></span></code></pre></div>
+<span><span class="co">#&gt; 1     5.100000         3.5          1.4   0.2000000  setosa</span></span>
+<span><span class="co">#&gt; 2     4.900000         3.0          1.4   0.1608667  setosa</span></span>
+<span><span class="co">#&gt; 3     4.700000         3.2          1.3   0.2000000  setosa</span></span>
+<span><span class="co">#&gt; 4     4.600000         3.1          1.5   0.2000000  setosa</span></span>
+<span><span class="co">#&gt; 5     5.061255         3.6          1.4   0.2000000  setosa</span></span>
+<span><span class="co">#&gt; 6     5.400000         3.9          1.7   0.4000000  setosa</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="predictive-mean-matching">Predictive mean matching<a class="anchor" aria-label="anchor" href="#predictive-mean-matching"></a>
 </h3>
@@ -153,10 +153,10 @@ can add predictive mean matching (PMM) to the OOB predictions:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">imp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 2          4.9         3.0          1.4         0.1  setosa</span></span>
+<span><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
 <span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa</span></span>
-<span><span class="co">#&gt; 5          5.8         3.6          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 5          5.4         3.6          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -180,23 +180,24 @@ applications:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">imp</span></span>
 <span><span class="co">#&gt; missRanger object. Extract imputed data via $data</span></span>
-<span><span class="co">#&gt; - best iteration: 2 </span></span>
-<span><span class="co">#&gt; - best average OOB imputation error: 0.02407416</span></span>
+<span><span class="co">#&gt; - best iteration: 3 </span></span>
+<span><span class="co">#&gt; - best average OOB imputation error: 0.1468982</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">imp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; missRanger object. Extract imputed data via $data</span></span>
-<span><span class="co">#&gt; - best iteration: 2 </span></span>
-<span><span class="co">#&gt; - best average OOB imputation error: 0.02407416 </span></span>
+<span><span class="co">#&gt; - best iteration: 3 </span></span>
+<span><span class="co">#&gt; - best average OOB imputation error: 0.1468982 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Sequence of OOB prediction errors:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      Sepal.Length Sepal.Width Petal.Length Petal.Width     Species</span></span>
-<span><span class="co">#&gt; [1,]   1.00000000  1.09469431   0.26549614  0.14457723 0.081481481</span></span>
-<span><span class="co">#&gt; [2,]   0.02236422  0.07129293   0.00858698  0.01071926 0.007407407</span></span>
-<span><span class="co">#&gt; [3,]   0.02476169  0.07609895   0.01046619  0.01349597 0.007407407</span></span>
+<span><span class="co">#&gt;      Sepal.Length Sepal.Width Petal.Length Petal.Width    Species</span></span>
+<span><span class="co">#&gt; [1,]    1.0000000   1.1108502   0.39671941  0.18322253 0.06666667</span></span>
+<span><span class="co">#&gt; [2,]    0.2224743   0.5371919   0.06000731  0.05568752 0.03703704</span></span>
+<span><span class="co">#&gt; [3,]    0.1732113   0.4517314   0.02408501  0.05583381 0.02962963</span></span>
+<span><span class="co">#&gt; [4,]    0.1796650   0.4715697   0.02106975  0.05502143 0.03703704</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Mean performance per iteration:</span></span>
-<span><span class="co">#&gt; [1] 0.51724983 0.02407416 0.02644604</span></span>
+<span><span class="co">#&gt; [1] 0.5514918 0.1824796 0.1468982 0.1528726</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; First rows of imputed data:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -211,10 +212,10 @@ applications:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">imp</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">iris_NA</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa</span></span>
-<span><span class="co">#&gt; 2          4.9         3.0          1.4         0.4  setosa</span></span>
+<span><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
 <span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa</span></span>
-<span><span class="co">#&gt; 5          5.4         3.6          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 5          5.1         3.6          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -246,7 +247,7 @@ the variables used for imputation.</p>
 <span><span class="co">#&gt; 2          4.9         3.0          1.4          NA  setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa</span></span>
 <span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2    &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5          6.7         3.6          1.4         0.2  setosa</span></span>
+<span><span class="co">#&gt; 5          6.2         3.6          1.4         0.2  setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4    &lt;NA&gt;</span></span>
 <span></span>
 <span><span class="co"># Only univariate imputation was done! Why? Because Species contains missing values</span></span>
@@ -264,7 +265,7 @@ the variables used for imputation.</p>
 <span><span class="co">#&gt; 2          4.9         3.0          1.4          NA     setosa</span></span>
 <span><span class="co">#&gt; 3          4.7         3.2          1.3         0.2     setosa</span></span>
 <span><span class="co">#&gt; 4          4.6         3.1          1.5         0.2 versicolor</span></span>
-<span><span class="co">#&gt; 5          6.9         3.6          1.4         0.2     setosa</span></span>
+<span><span class="co">#&gt; 5          6.5         3.6          1.4         0.2     setosa</span></span>
 <span><span class="co">#&gt; 6          5.4         3.9          1.7         0.4 versicolor</span></span>
 <span></span>
 <span><span class="co"># Impute all variables univariately</span></span>

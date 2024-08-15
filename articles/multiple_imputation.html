@@ -112,13 +112,13 @@ we suggest to use predictive mean matching with relatively large
 <span><span class="co"># Pool the results by mice</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#                term   estimate  std.error statistic        df      p.value</span></span>
-<span><span class="co"># 1       (Intercept)  2.4600621 0.33998737  7.235746  86.25283 1.785004e-10</span></span>
-<span><span class="co"># 2       Sepal.Width  0.4454417 0.10405609  4.280785  96.17676 4.406215e-05</span></span>
-<span><span class="co"># 3      Petal.Length  0.7394242 0.08393401  8.809590  77.63584 2.620202e-13</span></span>
-<span><span class="co"># 4       Petal.Width -0.1937151 0.17905818 -1.081856  80.36361 2.825524e-01</span></span>
-<span><span class="co"># 5 Speciesversicolor -0.6785451 0.26812613 -2.530694 116.18041 1.272124e-02</span></span>
-<span><span class="co"># 6  Speciesvirginica -0.8737822 0.37086417 -2.356071 110.15525 2.023735e-02</span></span>
+<span><span class="co">#                term   estimate std.error statistic        df      p.value</span></span>
+<span><span class="co"># 1       (Intercept)  2.3343548 0.3244342  7.195157  97.08106 1.314353e-10</span></span>
+<span><span class="co"># 2       Sepal.Width  0.4715273 0.1041384  4.527891  88.55776 1.848669e-05</span></span>
+<span><span class="co"># 3      Petal.Length  0.7700316 0.0768588 10.018783 122.02953 1.321441e-17</span></span>
+<span><span class="co"># 4       Petal.Width -0.2506538 0.1739537 -1.440922  88.10220 1.531513e-01</span></span>
+<span><span class="co"># 5 Speciesversicolor -0.6648375 0.2940828 -2.260715  81.17797 2.645368e-02</span></span>
+<span><span class="co"># 6  Speciesvirginica -0.9065327 0.4055137 -2.235517  79.87581 2.817491e-02</span></span>
 <span></span>
 <span><span class="co"># Compare with model on original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Sepal.Length</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">iris</span><span class="op">)</span><span class="op">)</span></span>

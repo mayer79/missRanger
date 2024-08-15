@@ -153,15 +153,15 @@ sets.</li>
 <span><span class="co"># 4. Pool the results by mice</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pooled_fit</span> <span class="op">&lt;-</span> <span class="fu">pool</span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#                term     estimate   std.error   statistic        df      p.value</span></span>
-<span><span class="co"># 1               trt  0.264601452 0.212828712  1.24326013 110.30869 2.164079e-01</span></span>
-<span><span class="co"># 2 celltypesmallcell  0.789909124 0.284989547  2.77171262 113.68488 6.516937e-03</span></span>
-<span><span class="co"># 3     celltypeadeno  1.114851697 0.306765748  3.63421179 113.01225 4.210453e-04</span></span>
-<span><span class="co"># 4     celltypelarge  0.356374858 0.289111314  1.23265621 112.81945 2.202666e-01</span></span>
-<span><span class="co"># 5             karno -0.031939872 0.005678831 -5.62437418 111.96501 1.388135e-07</span></span>
-<span><span class="co"># 6          diagtime  0.003620720 0.008929001  0.40550108  99.98576 6.859756e-01</span></span>
-<span><span class="co"># 7               age -0.007503755 0.009199070 -0.81570798 108.97973 4.164464e-01</span></span>
-<span><span class="co"># 8             prior  0.002002572 0.023640459  0.08470952 112.81848 9.326425e-01</span></span>
+<span><span class="co">#                term     estimate   std.error  statistic       df      p.value</span></span>
+<span><span class="co"># 1               trt  0.231154077 0.214672763  1.0767741 105.1514 2.840454e-01</span></span>
+<span><span class="co"># 2 celltypesmallcell  0.805824737 0.285571376  2.8217980 114.1273 5.634607e-03</span></span>
+<span><span class="co"># 3     celltypeadeno  1.130585762 0.306698637  3.6863084 113.3636 3.506786e-04</span></span>
+<span><span class="co"># 4     celltypelarge  0.340627347 0.296740520  1.1478963 103.4753 2.536583e-01</span></span>
+<span><span class="co"># 5             karno -0.030623274 0.005653790 -5.4164149 106.3603 3.806255e-07</span></span>
+<span><span class="co"># 6          diagtime  0.001273007 0.009102230  0.1398566 108.7518 8.890320e-01</span></span>
+<span><span class="co"># 7               age -0.005587627 0.009379064 -0.5957554 105.3053 5.526170e-01</span></span>
+<span><span class="co"># 8             prior  0.005174395 0.023433186  0.2208148 112.4847 8.256369e-01</span></span>
 <span></span>
 <span><span class="co"># Compare with the results on the original data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, <span class="va">veteran</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">coefficients</span></span>

@@ -40,6 +40,15 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.6.0" id="missranger-260">missRanger 2.6.0<a class="anchor" aria-label="anchor" href="#missranger-260"></a></h2>
 <div class="section level4">
+<h4 id="major-bug-fix-2-6-0">Major bug fix<a class="anchor" aria-label="anchor" href="#major-bug-fix-2-6-0"></a></h4>
+<p>Fixes a major bug, by which responses would be used as covariates in the random forests. Thanks for reporting <a href="https://github.com/flystar233" class="external-link">@flystar233</a> (PR <a href="https://github.com/mayer79/missRanger/issues/78" class="external-link">#78</a>).</p>
+<p>You can expect to get</p>
+<ul><li>different imputations,</li>
+<li>better and more logical imputations,</li>
+<li>less good stated OOB prediction errors,</li>
+<li>higher variability in multiple imputation settings.</li>
+</ul></div>
+<div class="section level4">
 <h4 id="major-feature-2-6-0">Major feature<a class="anchor" aria-label="anchor" href="#major-feature-2-6-0"></a></h4>
 <p>Out-of-sample application is now possible! Thanks to <a href="https://github.com/jeandigitale" class="external-link">@jeandigitale</a> for pushing the idea in <a href="https://github.com/mayer79/missRanger/issues/58" class="external-link">#58</a>.</p>
 <p>This means you can run <code>imp &lt;- missRanger(..., keep_forests = TRUE)</code> and then apply its models to new data via <code>predict(imp, newdata)</code>. The “missRanger” object can be saved/loaded as binary file, e.g, via <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code>/<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code> for later use.</p>
