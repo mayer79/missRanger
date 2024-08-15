@@ -1,14 +1,12 @@
-# missRanger 2.5.0
+# missRanger 2.6.0
 
-Hello CRAN team
+Hello CRAN
 
-This update fixes a nasty bug with the formula parser. Furthermore, the documentation is improved.
+This update brings a long awaited feature of out-of-sample application of the imputation models.
 
 ## R CMD check (local)
 
-- 0 errors
-- 0 warnings
-- 0 notes
+0 errors | 0 warnings | 0 notes
 
 ## Winbuilder
 
@@ -16,5 +14,5 @@ Status: OK
 
 ## revdepcheck results
 
-OK: 7                                                                                                                                            
+OK: 7
 BROKEN: 0
