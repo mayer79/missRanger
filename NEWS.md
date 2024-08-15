@@ -1,5 +1,17 @@
 # missRanger 2.6.0
 
+### Major bug fix
+
+Fixes a major bug, by which responses would be used as covariates in the random forests. Thanks for reporting @flystar233 (PR #78).
+
+You can expect to get
+
+- different imputations,
+- better and more logical imputations,
+- less good stated OOB prediction errors,
+- higher variability in multiple imputation settings.
+
+
 ### Major feature
 
 Out-of-sample application is now possible! Thanks to [@jeandigitale](https://github.com/jeandigitale) for pushing the idea in [#58](https://github.com/mayer79/missRanger/issues/58).

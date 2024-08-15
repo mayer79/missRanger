@@ -295,8 +295,9 @@ missRanger <- function(
 
     for (v in to_impute) {
       v.na <- data_NA[, v]
+      xvars <- setdiff(completed, v)
 
-      if (length(completed) == 0L) {
+      if (length(xvars) == 0L) {
         data[[v]] <- imputeUnivariate(data[[v]])
       } else {
         y <- data[[v]][!v.na]
@@ -316,13 +317,13 @@ missRanger <- function(
           case.weights = if (!is.null(case.weights)) case.weights[!v.na],
           num.threads = num.threads,
           save.memory = save.memory,
-          x = data[!v.na, completed, drop = FALSE],
+          x = data[!v.na, xvars, drop = FALSE],
           y = y,
           verbose = verbose >= 1,
           ...
         )
 
-        pred <- stats::predict(fit, data[v.na, completed, drop = FALSE])$predictions
+        pred <- stats::predict(fit, data[v.na, xvars, drop = FALSE])$predictions
         
         if (pmm.k >= 1L) {
           pred <- pmm(xtrain = fit$predictions, xtest = pred, ytrain = y, k = pmm.k)

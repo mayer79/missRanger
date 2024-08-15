@@ -194,9 +194,8 @@ predict.missRanger <- function(
     stop("No random forests in 'object'. Use missRanger(, keep_forests = TRUE).")
   }
   
-  # Do we have a random forest for all variables with missings?
-  # This can fire only if the first iteration in missRanger() was the best, and only
-  # for maximal one variable. It is a rare case.
+  # Do we have a random forest for all variables with missings? If no, we don't repeat
+  # its univariate imputation.
   forests_missing <- setdiff(to_impute, names(object$forests))
   if (length(forests_missing) > 0L) {
     if (verbose >= 1L) {

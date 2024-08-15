@@ -45,13 +45,13 @@ head(iris_NA)
 iris_filled <- missRanger(iris_NA, pmm.k = 5, num.trees = 100)
 head(iris_filled)
 
-# Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-#          5.1         3.5          1.4         0.2  setosa
-#          4.9         3.0          1.4         0.2  setosa
-#          4.7         3.2          1.3         0.2  setosa
-#          4.6         3.1          1.5         0.2  setosa
-#          5.7         3.6          1.4         0.2  setosa
-#          5.4         3.9          1.7         0.4  setosa
+#   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+# 1          5.1         3.5          1.4         0.2  setosa
+# 2          4.9         3.0          1.4         0.2  setosa
+# 3          4.7         3.2          1.3         0.2  setosa
+# 4          4.6         3.1          1.5         0.2  setosa
+# 5          5.2         3.6          1.4         0.2  setosa
+# 6          5.4         3.9          1.7         0.4  setosa
 ```
 
 ## How it works
