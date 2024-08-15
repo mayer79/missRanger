@@ -1,5 +1,9 @@
 # missRanger 2.6.0
 
+### Major bug fix
+
+- Fixes a major bug introduced in version 2.3.0, by which responses would be used as covariates in the random forests. Thanks for reporting @flystar233 (Issue #77).
+
 ### Major feature
 
 Out-of-sample application is now possible! Thanks to [@jeandigitale](https://github.com/jeandigitale) for pushing the idea in [#58](https://github.com/mayer79/missRanger/issues/58).

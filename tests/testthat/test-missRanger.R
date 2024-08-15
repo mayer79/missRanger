@@ -245,6 +245,9 @@ test_that("formula interface works with unspecified left side", {
   expect_true(!anyNA(imp$data))
   expect_true(.setequal(imp$to_impute, colnames(X_NA)))
   expect_equal(imp$impute_by, "int")
+  
+  # Prediction error is on its default 1 for int (issue #77)
+  expect_equal(imp$pred_errors[, "int"], rep(1, length(imp$mean_pred_errors)))
 })
 
 test_that("dropping columns on left side leaves missing values", {

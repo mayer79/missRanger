@@ -2,7 +2,9 @@
 
 Hello CRAN
 
-This update brings a long awaited feature of out-of-sample application of the imputation models.
+This update
+- fixes a major bug introduced in 2.3.0
+- and brings a long awaited feature of out-of-sample application of the imputation models.
 
 ## R CMD check (local)
 
