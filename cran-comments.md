@@ -3,7 +3,7 @@
 Hello CRAN
 
 This update
-- fixes a major bug
+- fixes a major bug,
 - and brings a long awaited feature of out-of-sample application of the imputation models.
 
 ## R CMD check (local)

@@ -2,15 +2,8 @@
 
 ### Major bug fix
 
-Fixes a major bug, by which responses would be used as covariates in the random forests. Thanks for reporting @flystar233 (PR #78).
-
-You can expect to get
-
-- different imputations,
-- better and more logical imputations,
-- less good stated OOB prediction errors,
-- higher variability in multiple imputation settings.
-
+Fixes a major bug, by which responses would be used as covariates in the random forests. Thanks for reporting [@flystar233](https://github.com/flystar233), see [#78](https://github.com/mayer79/missRanger/pull/78).
+You can expect different and better imputations.
 
 ### Major feature
 
