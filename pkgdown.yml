@@ -1,8 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   missRanger: missRanger.html
   multiple_imputation: multiple_imputation.html
   working_with_censoring: working_with_censoring.html
-last_built: 2024-08-17T16:08Z
+last_built: 2024-12-07T08:17Z
