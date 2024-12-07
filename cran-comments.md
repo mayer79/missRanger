@@ -1,10 +1,8 @@
-# missRanger 2.6.0
+# missRanger 2.6.1
 
-Hello CRAN
+Dear CRAN team
 
-This update
-- fixes a major bug,
-- and brings a long awaited feature of out-of-sample application of the imputation models.
+This update introduces a workaround around an incompatibility issue with {formula.tools}.
 
 ## R CMD check (local)
 
@@ -16,5 +14,5 @@ Status: OK
 
 ## revdepcheck results
 
-OK: 7
+OK: 6
 BROKEN: 0
