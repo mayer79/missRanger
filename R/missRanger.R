@@ -426,11 +426,20 @@ missRanger <- function(
   if (!inherits(formula, "formula")) {
     stop("'formula' should be a formula!")
   }
-  formula <- as.character(formula)
-  if (length(formula) != 3L) {
-    stop("Formula must have left and right hand side. If it has: Don't load {formula.tools}. It breaks base R's as.character()")
+  out <- as.character(formula)
+  if (length(out) == 1L) {
+    # {formula.tools} seems to be loaded, which breaks base's as.character().
+    # This is a workaround.
+    out <- strsplit(out, "~", fixed = TRUE)[[1L]]
+    if (any(out == "")) {
+      stop("Formula must have left and right hand side.")
+    }
+    out <- c("~", out)
   }
-  return(lapply(formula[2:3], FUN = .string_parser, data = data))
+  if (length(out) != 3L) {
+    stop("Formula must have left and right hand side.")
+  }
+  return(lapply(out[2:3], FUN = .string_parser, data = data))
 }
 
 # Checks if response type can be used in ranger (or easily converted to)
