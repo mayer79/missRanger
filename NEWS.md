@@ -1,3 +1,10 @@
+# missRanger 2.6.1
+
+### Improvement
+
+Solves an incompatibility with the {formula.tools} package. `formula.tools:::as.character.formula()` breaks `base::as.character()` for formulas, which prevented {missRanger} from working, see also
+https://github.com/decisionpatterns/formula.tools/issues/11. We have added a workaround in [#81](https://github.com/mayer79/missRanger/pull/81).
+
 # missRanger 2.6.0
 
 ### Major bug fix

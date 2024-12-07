@@ -15,7 +15,7 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Version = "2.6.0",
+    Version = "2.6.1",
     Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
     mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
     Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 

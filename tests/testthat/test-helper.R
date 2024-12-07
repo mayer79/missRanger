@@ -31,6 +31,14 @@ test_that(".formula_parser() works", {
     .formula_parser(. - Species ~ . - Species - Sepal.Length, data = iris),
     list(names(iris[1:4]), names(iris[2:4]))
   )
+  
+  # Non-syntactic name
+  ir <- iris
+  colnames(ir)[1] <- "a b"
+  expect_equal(
+    .formula_parser(Sepal.Width ~ . - Petal.Length - Petal.Width - Species, ir),
+    list("Sepal.Width", c("a b", "Sepal.Width"))
+  )
 })
 
 test_that(".check_response() works", {
