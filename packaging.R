@@ -1,6 +1,6 @@
-#=============================================================================
+# =============================================================================
 # Put together the package
-#=============================================================================
+# =============================================================================
 
 # WORKFLOW: UPDATE EXISTING PACKAGE
 # 1) Modify package content and documentation.
@@ -15,15 +15,15 @@ library(usethis)
 use_description(
   fields = list(
     Title = "Fast Imputation of Missing Values",
-    Version = "2.6.1",
-    Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute 
-    mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and 
-    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the 
-    lightning fast random forest package 'ranger'. Between the iterative model fitting, 
-    we offer the option of using predictive mean matching. This firstly avoids imputation 
-    with values not already present in the original data (like a value 0.3334 in 0-1 coded variable). 
-    Secondly, predictive mean matching tries to raise the variance in the resulting conditional 
-    distributions to a realistic level. This would allow, e.g., to do multiple imputation when 
+    Version = "2.6.2",
+    Description = "Alternative implementation of the beautiful 'MissForest' algorithm used to impute
+    mixed-type data sets by chaining random forests, introduced by Stekhoven, D.J. and
+    Buehlmann, P. (2012) <doi:10.1093/bioinformatics/btr597>. Under the hood, it uses the
+    lightning fast random forest package 'ranger'. Between the iterative model fitting,
+    we offer the option of using predictive mean matching. This firstly avoids imputation
+    with values not already present in the original data (like a value 0.3334 in 0-1 coded variable).
+    Secondly, predictive mean matching tries to raise the variance in the resulting conditional
+    distributions to a realistic level. This would allow, e.g., to do multiple imputation when
     repeating the call to missRanger(). Out-of-sample application is supported as well.",
     `Authors@R` = "person('Michael', 'Mayer', email = 'mayermichael79@gmail.com', role = c('aut', 'cre'))",
     Depends = "R (>= 3.5.0)",
@@ -42,8 +42,10 @@ use_gpl_license(2)
 use_github_links() # use this if this project is on github
 
 # Your files that do not belong to the package itself (others are added by "use_* function")
-use_build_ignore(c("^packaging.R$", "[.]Rproj$", "^backlog$",
-                   "^cran-comments.md$", "^logo.png$"), escape = FALSE)
+use_build_ignore(c(
+  "^packaging.R$", "[.]Rproj$", "^backlog$",
+  "^cran-comments.md$", "^logo.png$"
+), escape = FALSE)
 
 # If your code uses the pipe operator %>%
 # use_pipe()
@@ -81,9 +83,9 @@ use_github_action("pkgdown")
 
 use_revdep()
 
-#=============================================================================
+# =============================================================================
 # Finish package building (can use fresh session)
-#=============================================================================
+# =============================================================================
 
 library(devtools)
 
@@ -98,7 +100,7 @@ install()
 if (FALSE) {
   check_win_devel()
   check_rhub()
-  
+
   # Takes long # devtools::install_github("r-lib/revdepcheck")
   revdepcheck::revdep_check(num_workers = 4L, bioc = FALSE)
 

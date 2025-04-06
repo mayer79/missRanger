@@ -3,7 +3,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/mayer79/missRanger/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mayer79/missRanger/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/mayer79/missRanger/branch/main/graph/badge.svg)](https://app.codecov.io/gh/mayer79/missRanger?branch=main)
+[![Codecov test coverage](https://codecov.io/gh/mayer79/missRanger/graph/badge.svg)](https://app.codecov.io/gh/mayer79/missRanger)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/missRanger)](https://cran.r-project.org/package=missRanger)
 
 [![](https://cranlogs.r-pkg.org/badges/missRanger)](https://cran.r-project.org/package=missRanger) 

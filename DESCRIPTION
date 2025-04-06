@@ -1,6 +1,6 @@
 Package: missRanger
 Title: Fast Imputation of Missing Values
-Version: 2.6.1
+Version: 2.6.2
 Authors@R: 
     person("Michael", "Mayer", , "mayermichael79@gmail.com", role = c("aut", "cre"))
 Description: Alternative implementation of the beautiful 'MissForest'
