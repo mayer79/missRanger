@@ -1,3 +1,9 @@
+# missRanger 2.6.2
+
+### Maintenance
+
+- Update code coverage version [#86](https://github.com/mayer79/missRanger/pull/86).
+
 # missRanger 2.6.1
 
 ### Improvement
